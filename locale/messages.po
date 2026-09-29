@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-29 15:20+0000\n"
+"POT-Creation-Date: 2026-09-29 21:31+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -4376,6 +4376,9 @@ msgid "Enter your username and password as usual"
 msgstr ""
 
 msgid "Entering a Prompt value will allow the association of a free-form value."
+msgstr ""
+
+msgid "Entire Family / Unassigned"
 msgstr ""
 
 msgid "Envelope"
@@ -9598,6 +9601,9 @@ msgid "Pledge group not found"
 msgstr ""
 
 msgid "Pledged Amount"
+msgstr ""
+
+msgid "Pledged By (Individual)"
 msgstr ""
 
 #. Context: queryparameters_qrp
