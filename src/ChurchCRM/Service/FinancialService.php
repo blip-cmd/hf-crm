@@ -172,6 +172,7 @@ class FinancialService
      *
      * @param string $groupKey
      * @return array{
+     *   pledgeId: int,
      *   groupKey: string,
      *   familyId: int,
      *   familyName: string,
@@ -183,9 +184,11 @@ class FinancialService
      *   pledgeOrPayment: string,
      *   schedule: string|null,
      *   total: float,
+     *   total_formatted: string,
      *   funds: list<array{
-     *     fundId: int, fundName: string, amount: float,
-     *     nonDeductible: float, comment: string
+     *     pledgeId: int, fundId: int, fundName: string, amount: float,
+     *     amount_formatted: string, nonDeductible: float,
+     *     nonDeductible_formatted: string, comment: string
      *   }>
      * }
      * @throws \InvalidArgumentException when the group key does not exist

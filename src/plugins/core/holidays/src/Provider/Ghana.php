@@ -63,6 +63,11 @@ class Ghana extends AbstractProvider
         2035 => '02-18',
     ];
 
+    /**
+     * Initialize all fixed and movable public holidays for Ghana.
+     *
+     * @return void
+     */
     public function initialize(): void
     {
         $this->timezone = 'Africa/Accra';
@@ -164,6 +169,9 @@ class Ghana extends AbstractProvider
      * Eid al-Fitr 2034 falls on Dec 23, which means the month-day belongs
      * to the same Gregorian year as $this->year, so no cross-year logic
      * is needed for the lookup table as structured.
+     *
+     * @param DateTimeZone $tz The time zone instance for Accra.
+     * @return void
      */
     private function addEidAlFitr(DateTimeZone $tz): void
     {
@@ -182,6 +190,9 @@ class Ghana extends AbstractProvider
 
     /**
      * Add Eid al-Adha if an estimated date is available for this year.
+     *
+     * @param DateTimeZone $tz The time zone instance for Accra.
+     * @return void
      */
     private function addEidAlAdha(DateTimeZone $tz): void
     {
