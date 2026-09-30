@@ -2,6 +2,17 @@
 
 Loaded by Claude Code every session. Other agents should follow the same files.
 
+## This fork (blip-cmd/hf-crm)
+
+This is the Holy Family fork, deployed to `crm.icgchft.com`. Its branch model overrides the upstream process in the skills below:
+
+- Work and test on `develop`. Branch from `develop`, and open PRs against `develop`.
+- A push to `main` deploys to the Hetzner production server, after a required reviewer approves. Agents never push, merge, or open PRs into `main` without being asked.
+- `master` only mirrors upstream ChurchCRM for fork syncs, and never deploys.
+- Never open issues, PRs, or comments on upstream `ChurchCRM/CRM` unless asked.
+
+Release and rollback: `docs/operations/CRM_RELEASE.md` in the `hf-workspace` repository.
+
 ## Skills
 
 Index: [`.agents/skills/churchcrm/SKILL.md`](.agents/skills/churchcrm/SKILL.md).
