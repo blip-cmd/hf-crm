@@ -1,0 +1,120 @@
+name: Build & Release Church CRM
+
+# Branch model (hf-workspace docs/operations/CRM_RELEASE.md):
+#   develop  -> work and test; bot checks and a release build, no deploy
+#   main     -> production; bot checks, release build, then deploy to Hetzner
+#               once a required reviewer approves the `production` environment
+#   master   -> mirror of upstream ChurchCRM for fork syncs; never deploys
+#
+# The release is built here and shipped as a tarball. The server never runs
+# composer, npm, or a build; hf-cloud/scripts/crm-release.sh unpacks it into a
+# new release directory, carries configuration forward, switches the live
+# symlink, health-checks, and rolls back automatically on failure.
+
+on:
+  push:
+    branches:
+      - develop
+      - main
+  pull_request:
+    branches:
+      - develop
+      - main
+  workflow_dispatch:
+
+concurrency:
+  group: crm-release-${{ github.ref_name }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Bot Checks & Release Build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - uses: ./.github/actions/checkout-node-npm
+
+      - uses: ./.github/actions/composer-install
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Validate SQL upgrade scripts
+        run: npm run validate:mysql-upgrade-syntax
+
+      - name: Build and package
+        run: npm run package
+
+      - name: Validate PHP (syntax, namespaces, ORM)
+        run: npm run build:php:validate:all
+
+      - name: PHP error-redaction tests
+        run: npm run test:php
+
+      - name: Assemble release tarball
+        run: |
+          set -euo pipefail
+          zip=$(ls temp/ChurchCRM-*.zip)
+          rm -rf release-staging release && mkdir -p release-staging release
+          unzip -q "$zip" -d release-staging
+          test -f release-staging/churchcrm/index.php
+          test -f release-staging/churchcrm/vendor/autoload.php
+          test ! -e release-staging/churchcrm/Include/Config.php
+          tar -czf release/churchcrm-release.tar.gz -C release-staging churchcrm
+          (cd release && sha256sum churchcrm-release.tar.gz > churchcrm-release.tar.gz.sha256)
+          echo "Packaged $(basename "$zip") at ${GITHUB_SHA}"
+
+      - name: Upload release artifact
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: churchcrm-release
+          path: release
+          retention-days: 14
+
+  deploy-production:
+    name: Deploy to Production (crm.icgchft.com)
+    needs: build
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+      url: https://crm.icgchft.com
+
+    steps:
+      - name: Download release artifact
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          name: churchcrm-release
+          path: release
+
+      - name: Verify checksum
+        working-directory: release
+        run: sha256sum -c churchcrm-release.tar.gz.sha256
+
+      - name: Upload release to server
+        uses: appleboy/scp-action@917f8b81dfc1ccd331fef9e2d61bdc6c8be94634 # v0.1.7
+        with:
+          host: ${{ secrets.SERVER_IP }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          source: "release/churchcrm-release.tar.gz,release/churchcrm-release.tar.gz.sha256"
+          target: "/var/tmp/churchcrm-release/${{ github.sha }}"
+          strip_components: 1
+
+      - name: Activate release
+        uses: appleboy/ssh-action@029f5b4aeeeb58fdfe1410a5d17f967dacf36262 # v1.0.3
+        with:
+          host: ${{ secrets.SERVER_IP }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            set -euo pipefail
+            cd "/var/tmp/churchcrm-release/${{ github.sha }}"
+            sha256sum -c churchcrm-release.tar.gz.sha256
+            sudo /var/www/html/hf-cloud/scripts/crm-release.sh deploy "$PWD/churchcrm-release.tar.gz" "${{ github.sha }}"
