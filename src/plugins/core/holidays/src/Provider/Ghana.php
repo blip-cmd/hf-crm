@@ -208,4 +208,16 @@ class Ghana extends AbstractProvider
             Holiday::TYPE_OFFICIAL
         ));
     }
+
+    /**
+     * Get the sources used for Ghana public holidays.
+     *
+     * @return array<string> List of official source URLs.
+     */
+    public function getSources(): array
+    {
+        return [
+            'https://mint.gov.gh/',
+        ];
+    }
 }
