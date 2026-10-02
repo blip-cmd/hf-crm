@@ -6,7 +6,7 @@
 function initPaymentTable() {
   var colDef = [
     {
-      width: "35%",
+      width: "25%",
       title: i18next.t("Family"),
       data: "FamilyString",
       render: (data, type, full, meta) => {
@@ -27,6 +27,25 @@ function initPaymentTable() {
           familyName +
           "</span>"
         );
+      },
+    },
+    {
+      width: "18%",
+      title: i18next.t("Paid By"),
+      data: "PersonName",
+      render: (data, type, full, meta) => {
+        if (full.PersonId && data) {
+          return (
+            '<a href="' +
+            window.CRM.root +
+            "/people/person/" +
+            full.PersonId +
+            '">' +
+            window.CRM.escapeHtml(data) +
+            "</a>"
+          );
+        }
+        return '<span class="badge bg-secondary-lt text-secondary">' + i18next.t("Entire Family") + "</span>";
       },
     },
     {

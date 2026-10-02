@@ -3,7 +3,6 @@
 use ChurchCRM\dto\ChurchMetaData;
 use ChurchCRM\dto\SystemURLs;
 use ChurchCRM\Utils\InputUtils;
-use ChurchCRM\view\ChurchLogo;
 
 $sPageTitle = gettext('My Account');
 // Plain auth background (no church-photo/dark overlay): this self-service landing
@@ -18,12 +17,11 @@ require SystemURLs::getDocumentRoot() . '/Include/HeaderNotLoggedIn.php';
   <div class="login-wrapper">
     <div class="login-form-section">
       <div class="login-form-inner">
-        <!-- Header with Logo and Church Name -->
+        <!-- Header with Logo -->
         <div class="login-form-header">
           <div class="login-header-logo">
-            <?= ChurchLogo::img() ?>
+            <img src="<?= SystemURLs::getRootPath() ?>/Images/churchcrm-logo-ink-blue.svg" alt="<?= InputUtils::escapeAttribute(ChurchMetaData::getChurchName() ?: 'ChurchCRM') ?>" />
           </div>
-          <h2 class="login-header-church-name"><?= InputUtils::escapeHTML(ChurchMetaData::getChurchName()) ?></h2>
         </div>
 
         <!-- Greeting -->

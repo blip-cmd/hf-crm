@@ -144,4 +144,29 @@ class PersonPledgeService
 
         return $result;
     }
+
+    /**
+     * Batch lookup person full names for an array of person IDs.
+     *
+     * @param int[] $personIds List of person IDs (per_ID).
+     * @return array<int, string> Map of person ID to full name.
+     */
+    public static function getPersonNames(array $personIds): array
+    {
+        $validIds = array_values(array_unique(array_filter(array_map('intval', $personIds), static fn(int $id): bool => $id > 0)));
+        if (empty($validIds)) {
+            return [];
+        }
+
+        $people = PersonQuery::create()
+            ->filterById($validIds)
+            ->find();
+
+        $result = [];
+        foreach ($people as $person) {
+            $result[(int) $person->getId()] = $person->getFirstName() . ' ' . $person->getLastName();
+        }
+
+        return $result;
+    }
 }

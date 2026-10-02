@@ -95,7 +95,7 @@ $pledgeDepositId = $isEdit ? ($pledge['depositId'] ?? 0) : $depositId;
 
                 <!-- Individual Person Selector -->
                 <div class="col-lg-4">
-                    <label class="form-label" for="PersonID"><?= gettext('Pledged By (Individual)') ?></label>
+                    <label class="form-label" for="PersonID"><?= $isPledge ? gettext('Pledged By (Individual)') : gettext('Paid By (Individual)') ?></label>
                     <select class="form-select" id="PersonID" name="PersonID">
                         <option value="0"><?= gettext('Entire Family / Unassigned') ?></option>
                         <?php
@@ -410,13 +410,18 @@ $pledgeDepositId = $isEdit ? ($pledge['depositId'] ?? 0) : $depositId;
                 if (personSelect && value) {
                     fetch(ROOT + '/api/payments/family/' + encodeURIComponent(value) + '/members')
                         .then(function (res) { return res.json(); })
-                        .then(function (members) {
+                        .then(function (data) {
                             personSelect.innerHTML = '<option value="0"><?= gettext("Entire Family / Unassigned") ?></option>';
-                            if (members && typeof members === 'object') {
-                                Object.keys(members).forEach(function (id) {
+                            var memberMap = (data && data.members) ? data.members : data;
+                            if (memberMap && typeof memberMap === 'object') {
+                                Object.keys(memberMap).forEach(function (id) {
+                                    if (id === 'members') return;
                                     var opt = document.createElement('option');
                                     opt.value = id;
-                                    opt.textContent = members[id];
+                                    var val = memberMap[id];
+                                    opt.textContent = (typeof val === 'object' && val !== null)
+                                        ? (val.name || val.text || JSON.stringify(val))
+                                        : val;
                                     personSelect.appendChild(opt);
                                 });
                             }

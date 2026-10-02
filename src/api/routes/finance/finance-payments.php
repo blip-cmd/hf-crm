@@ -159,9 +159,11 @@ $app->group('/payments', function (RouteCollectorProxy $group): void {
             $pledgeIds[] = (int) $row->getId();
         }
         $personMap = PersonPledgeService::getPersonsForPledges($pledgeIds);
+        $personNames = PersonPledgeService::getPersonNames(array_values($personMap));
 
         $rows = [];
         foreach ($data as $row) {
+            $personId = $personMap[$row->getId()] ?? 0;
             $newRow = [];
             $newRow['FormattedFY'] = $row->getFormattedFY();
             $newRow['GroupKey'] = $row->getGroupKey();
@@ -177,7 +179,8 @@ $app->group('/payments', function (RouteCollectorProxy $group): void {
             $newRow['DateLastEdited'] = $row->getDateLastEdited('Y-m-d');
             $newRow['EditedBy'] = $row->getPerson() ? $row->getPerson()->getFullName() : '';
             $newRow['Fund'] = $row->getDonationFund() ? $row->getDonationFund()->getName() : '';
-            $newRow['PersonId'] = $personMap[$row->getId()] ?? 0;
+            $newRow['PersonId'] = $personId;
+            $newRow['PersonName'] = $personNames[$personId] ?? '';
             $rows[] = $newRow;
         }
 

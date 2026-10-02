@@ -14,7 +14,8 @@ PHP 8.4+. Versions: `package.json`, `composer.json`. Review: `maintainer-review-
 - IDs: `(int)` or `InputUtils::filterInt()`
 - Output: `InputUtils::escapeHTML()` / `escapeAttribute()`
 - JSON in `<script>`: `InputUtils::jsonEncodeForScript()`
-- Redirects: `RedirectUtils` — not raw `header('Location')`
+- Redirects: `RedirectUtils` (not raw `header('Location')`)
+- Template symbol safety: PHP templates must only call static methods and classes verified to exist in `src/ChurchCRM/`. Run `npm run build:php:validate:template-symbols` before submitting template edits. On public auth screens, use defensive resolution or direct asset paths to prevent deployment classmap drift from causing HTTP 500 errors.
 - UI: Tabler + Bootstrap 5. Wrap `gettext()` / `i18next.t()`
 - Tests with behavior changes
 - Comments are rare. Names and tests carry intent. Do not restate the next line. Comment only a *why* that the code cannot say (CI trap, security invariant, deliberate deviation). Do not add paragraph comments in specs.
