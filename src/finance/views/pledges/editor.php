@@ -95,7 +95,7 @@ $pledgeDepositId = $isEdit ? ($pledge['depositId'] ?? 0) : $depositId;
 
                 <!-- Individual Person Selector -->
                 <div class="col-lg-4">
-                    <label class="form-label" for="PersonID"><?= gettext('Pledged By (Individual)') ?></label>
+                    <label class="form-label" for="PersonID"><?= $isPledge ? gettext('Pledged By (Individual)') : gettext('Paid By (Individual)') ?></label>
                     <select class="form-select" id="PersonID" name="PersonID">
                         <option value="0"><?= gettext('Entire Family / Unassigned') ?></option>
                         <?php

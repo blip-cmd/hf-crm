@@ -12,6 +12,7 @@ use ChurchCRM\model\ChurchCRM\DonationFundQuery;
 use ChurchCRM\model\ChurchCRM\FamilyQuery;
 use ChurchCRM\model\ChurchCRM\Map\DonationFundTableMap;
 use ChurchCRM\model\ChurchCRM\Map\PledgeTableMap;
+use ChurchCRM\model\ChurchCRM\PersonQuery;
 use ChurchCRM\model\ChurchCRM\Pledge;
 use ChurchCRM\model\ChurchCRM\PledgeQuery;
 use ChurchCRM\Plugin\Hook\HookManager;
@@ -22,6 +23,7 @@ use ChurchCRM\Utils\FunctionsUtils;
 use ChurchCRM\Utils\InputUtils;
 use ChurchCRM\Service\AuthService;
 use ChurchCRM\Service\DonationFundService;
+use ChurchCRM\Service\PersonPledgeService;
 use Propel\Runtime\ActiveQuery\Criteria;
 use Propel\Runtime\Collection\ObjectCollection;
 use Propel\Runtime\Map\TableMap;
@@ -62,8 +64,17 @@ class FinancialService
         $query->innerJoinDonationFund()->addAsColumn('PledgeName', DonationFundTableMap::COL_FUN_NAME);
         $data = $query->find();
 
+        $pledgeIds = [];
+        foreach ($data as $row) {
+            $pledgeIds[] = (int) $row->getId();
+        }
+        $personMap = PersonPledgeService::getPersonsForPledges($pledgeIds);
+        $personNames = PersonPledgeService::getPersonNames(array_values($personMap));
+
         $rows = [];
         foreach ($data as $row) {
+            $personId = $personMap[(int) $row->getId()] ?? 0;
+            $newRow = [];
             $newRow['FormattedFY'] = $row->getFormattedFY();
             $newRow['GroupKey'] = $row->getGroupKey();
             $newRow['Amount'] = $row->getAmount();
@@ -78,6 +89,8 @@ class FinancialService
             $newRow['DateLastEdited'] = $row->getDateLastEdited('Y-m-d');
             $newRow['EditedBy'] = $row->getPerson() ? $row->getPerson()->getFullName() : '';
             $newRow['Fund'] = $row->getPledgeName();
+            $newRow['PersonId'] = $personId;
+            $newRow['PersonName'] = $personNames[$personId] ?? '';
             $rows[] = $newRow;
         }
 
@@ -249,6 +262,15 @@ class FinancialService
         $header['total_formatted'] = CurrencyFormatter::format($total);
         $header['funds'] = $funds;
 
+        $personId = PersonPledgeService::getPersonForPledge($header['pledgeId']);
+        $header['personId'] = $personId;
+        if ($personId > 0) {
+            $person = PersonQuery::create()->findOneById($personId);
+            $header['personName'] = $person ? ($person->getFirstName() . ' ' . $person->getLastName()) : '';
+        } else {
+            $header['personName'] = '';
+        }
+
         return $header;
     }
 
@@ -393,7 +415,7 @@ class FinancialService
             : $payment->FundSplit;
 
         // $presetGroupKey reuses the caller's GroupKey (updatePledgeOrPayment) instead of
-        // generating a new one — the loop below only auto-generates when this is null.
+        // generating a new one, as the loop below only auto-generates when this is null.
         $sGroupKey = $presetGroupKey;
 
         foreach ($FundSplit as $Fund) {
@@ -440,13 +462,13 @@ class FinancialService
                 if (!empty($payment->iAutID)) {
                     $pledge->setAutId($payment->iAutID);
                 }
-                // Always set NonDeductible — the column is NOT NULL with no default.
+                // Always set NonDeductible: the column is NOT NULL with no default.
                 // Using empty() here would skip 0, leaving the property null and
                 // causing a MySQL constraint error on INSERT.
                 $pledge->setNondeductible((float) ($Fund->NonDeductible ?? 0));
                 $pledge->save();
                 HookManager::doAction(Hooks::DONATION_RECEIVED, $pledge);
-                // Do NOT return here — continue to save all fund rows before returning.
+                // Do NOT return here: continue to save all fund rows before returning.
             }
         }
 
@@ -514,10 +536,10 @@ class FinancialService
         $con->beginTransaction();
         try {
             // Existence check is inside the transaction so the check, denomination
-            // cleanup, and pledge delete are all atomic — avoids a TOCTOU race.
+            // cleanup, and pledge delete are all atomic, which avoids a TOCTOU race.
             $existingCount = PledgeQuery::create()->filterByGroupKey($groupKey)->count($con);
             if ($existingCount === 0) {
-                // No explicit rollBack() here — the catch (\Throwable) block below
+                // No explicit rollBack() here: the catch (\Throwable) block below
                 // handles rollback for every exception thrown inside this try{},
                 // including \InvalidArgumentException.  Calling rollBack() here first
                 // and then rethrowing would close the transaction before catch fires,
@@ -911,7 +933,7 @@ class FinancialService
      * Get the oldest fiscal year ID that has pledge/payment data (plg_date).
      *
      * Used to build the FY selector on the Finance Dashboard, where YTD stat
-     * methods filter by pledge date — not deposit date. FYs that have pledges
+     * methods filter by pledge date, not deposit date. FYs that have pledges
      * but no deposit slips would be absent from the dropdown if we used the
      * deposit-based helper instead.
      *
@@ -920,7 +942,7 @@ class FinancialService
     public function getOldestPledgeFyId(): int
     {
         $oldest = PledgeQuery::create()
-            ->orderByFyId()          // plg_FYID is integer — no NULL risk (unlike plg_date)
+            ->orderByFyId()          // plg_FYID is integer: no NULL risk (unlike plg_date)
             ->select(['FyId'])
             ->findOne();
         return $oldest !== null ? (int) $oldest : FiscalYearUtils::getCurrentFiscalYearId();

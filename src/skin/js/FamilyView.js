@@ -92,12 +92,12 @@ function initializeFamilyView() {
     });
   });
 
-  // Pledges & Payments table — init after ensuring both types are returned by API
+  // Pledges & Payments table: init after ensuring both types are returned by API
   if ($("#pledge-payment-v2-table").length) {
     // Build the ajax URL, always sending fyid explicitly (including 0 for All
     // Time). The API distinguishes fyid=0 ("All Time", no date filter at all)
     // from an absent fyid param (falls back to the user's ShowSince
-    // preference) — this client always has a resolved value (current FY by
+    // preference); this client always has a resolved value (current FY by
     // default, or an explicit selection), so it must never omit the param,
     // or an explicit All-Time selection would silently be reinterpreted
     // server-side as "nothing selected, use ShowSince".
@@ -109,7 +109,7 @@ function initializeFamilyView() {
     // Determine initial FY from URL param, falling back to the active pill's data-fy
     // (the active pill is set server-side to the current FY by default).
     // Must distinguish an ABSENT fyid param (fall back to current FY) from an
-    // EXPLICIT fyid=0 (All Time) — `parseInt(...) || activePillFy` treated 0 as
+    // EXPLICIT fyid=0 (All Time): `parseInt(...) || activePillFy` treated 0 as
     // falsy and silently reverted an explicit All-Time selection back to the
     // current FY on refresh or when opening a copied/bookmarked URL.
     var urlParams = new URLSearchParams(window.location.search);
@@ -123,7 +123,7 @@ function initializeFamilyView() {
     // If the resolved FY doesn't correspond to any rendered pill (e.g. a
     // stale bookmark for a fiscal year this family has no history in), fall
     // back to the current-FY default for BOTH the fetched data and the
-    // highlighted pill — rather than fetching data for a mismatched FY while
+    // highlighted pill, rather than fetching data for a mismatched FY while
     // a different pill (previously: whichever pill happened to be first,
     // i.e. All Time) lit up as if it were active.
     // Also fix the browser URL so a refresh doesn't loop the same mismatch.
@@ -151,6 +151,28 @@ function initializeFamilyView() {
           },
         },
         { title: i18next.t("Fund"), data: "Fund" },
+        {
+          title: i18next.t("Attributed To"),
+          data: "PersonName",
+          render: (data, type, row) => {
+            if (row.PersonId && data) {
+              return (
+                '<a href="' +
+                window.CRM.root +
+                "/people/person/" +
+                row.PersonId +
+                '">' +
+                window.CRM.escapeHtml(data) +
+                "</a>"
+              );
+            }
+            return (
+              '<span class="badge bg-secondary-lt text-secondary">' +
+              i18next.t("Entire Family") +
+              "</span>"
+            );
+          },
+        },
         { title: i18next.t("Date"), type: "date", data: "Date" },
         {
           title: i18next.t("Amount"),
@@ -195,7 +217,7 @@ function initializeFamilyView() {
           searchable: false,
         },
       ],
-      order: [[2, "desc"]],
+      order: [[3, "desc"]],
     };
     $.extend(dataTableConfig, window.CRM.plugin.dataTable);
 
@@ -226,7 +248,7 @@ function initializeFamilyView() {
           $(".pledge-fy-pill").first().addClass("active");
         }
 
-        // Type filter pills: client-side column 0 (Type) search — unchanged
+        // Type filter pills: client-side column 0 (Type) search, unchanged
         $(".pledge-type-pill").on("click", function (e) {
           e.preventDefault();
           $(".pledge-type-pill").removeClass("active");
@@ -246,8 +268,8 @@ function initializeFamilyView() {
           // Persist selection in URL without page reload. All Time is written
           // as an explicit fyid=0 (not by deleting the param) so a refresh or
           // shared/bookmarked URL can tell "All Time was chosen" apart from
-          // "no selection yet, use the current-FY default" — see initialFyid
-          // parsing above.
+          // "no selection yet, use the current-FY default" (see initialFyid
+          // parsing above).
           var params = new URLSearchParams(window.location.search);
           params.set("fyid", fy);
           window.history.replaceState(
