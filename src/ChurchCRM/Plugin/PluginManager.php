@@ -901,9 +901,9 @@ class PluginManager
         // frontend does NOT need any changes to locale-loader.js.
         try {
             $localeInfo = \ChurchCRM\Bootstrapper::getCurrentLocale();
-            $currentLocale = $localeInfo->getLocale() ?: 'en_US';
+            $currentLocale = $localeInfo->getLocale() ?: 'en_GB';
         } catch (\Throwable $e) {
-            $currentLocale = 'en_US';
+            $currentLocale = 'en_GB';
         }
 
         $activeMetadata = [];

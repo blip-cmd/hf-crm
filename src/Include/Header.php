@@ -348,21 +348,6 @@ $_currencySymbolCss = json_encode(CurrencyFormatter::symbol(), JSON_UNESCAPED_UN
           </div>
         </div>
 
-        <!-- Locale: flag links directly to the localization tab on the profile page -->
-        <?php
-        $flagCode    = $localeInfo->getCountryFlagCode();
-        $nativeName  = $localeInfo->getNativeName();
-        $englishName = $localeInfo->getName();
-        $hasNative   = $nativeName !== '' && $nativeName !== $englishName;
-        $localeUrl   = SystemURLs::getRootPath() . '/v2/user/' . AuthenticationManager::getCurrentUser()->getId() . '#tab-localization';
-        ?>
-        <div class="nav-item ms-1">
-          <a class="nav-link px-0" href="<?= $localeUrl ?>"
-             title="<?= InputUtils::escapeAttribute($hasNative ? $nativeName . ' — ' . $englishName : $englishName) ?>">
-            <i class="fi fi-<?= $flagCode ?> fi-squared"></i>
-          </a>
-        </div>
-
         <!-- Cart -->
         <div class="nav-item dropdown ms-1">
           <a class="nav-link px-0 position-relative" data-bs-toggle="dropdown" href="#">

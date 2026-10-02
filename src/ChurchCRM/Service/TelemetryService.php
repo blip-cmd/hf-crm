@@ -84,7 +84,7 @@ class TelemetryService
         return [
             '$lib'        => 'churchcrm-php',
             'crm_version' => VersionUtils::getInstalledVersion(),
-            'locale'      => SystemConfig::getValue('sLanguage') ?: 'en_US',
+            'locale'      => SystemConfig::getValue('sLanguage') ?: 'en_GB',
             'php_version' => PHP_MAJOR_VERSION . '.' . PHP_MINOR_VERSION,
             'os_family'   => explode(' ', (string) php_uname('s'), 2)[0],
         ];

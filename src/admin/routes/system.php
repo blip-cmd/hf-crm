@@ -829,8 +829,8 @@ $app->group('/system', function (RouteCollectorProxy $group): void {
         $body = $request->getParsedBody();
 
         $supportedLocaleCodes = array_column(LocaleService::getSupportedLocales(), 'locale');
-        $lang = $body['sLanguage'] ?? 'en_US';
-        SystemConfig::setValue('sLanguage', in_array($lang, $supportedLocaleCodes, true) ? $lang : 'en_US');
+        $lang = $body['sLanguage'] ?? 'en_GB';
+        SystemConfig::setValue('sLanguage', in_array($lang, $supportedLocaleCodes, true) ? $lang : 'en_GB');
         $tz = trim((string)($body['sTimeZone'] ?? ''));
         SystemConfig::setValue('sTimeZone', in_array($tz, timezone_identifiers_list(), true) ? $tz : date_default_timezone_get());
         $distanceUnit = $body['sDistanceUnit'] ?? 'miles';
