@@ -479,10 +479,6 @@ msgid "Photos"
 msgstr "Fotoğraflar"
 
 #: 
-msgid "Number of Columns"
-msgstr "Sütun sayısı"
-
-#: 
 msgid "Paper Size"
 msgstr "Kağıt boyutu"
 
@@ -846,10 +842,6 @@ msgstr "Fotoğrafı sil"
 #: 
 msgid "Timeline"
 msgstr "Zaman çizelgesi"
-
-#: 
-msgid "Pledges and Payments"
-msgstr "Taahhütler ve ödemeler"
 
 #: 
 msgid "Value"
@@ -4508,10 +4500,6 @@ msgid "For defining the date in Date-Picker, per default : Y-m-d, In French : d/
 msgstr "Tarih seçmesinin tarihini tanımlamak için, varsayılan başına: y-m-d, Fransızca: D/m/y Örneğin."
 
 #: 
-msgid "Comma Separated list of PersonIDs of people to notify when a new family or person is added"
-msgstr "Yeni bir aile veya kişi eklendiğinde bilgilendirilecek kişilerin kişilerinin virgül ayrılmış listesi"
-
-#: 
 msgid "Allow unauthenticated reads of events from the external calendar API"
 msgstr "Harici takvim API'sından kimlik doğrulanmamış olayların okunmasına izin verin"
 
@@ -7360,10 +7348,6 @@ msgstr "Bu katılım sayısını kaldır?"
 #: 
 msgid "Select the type of record this property applies to"
 msgstr "Bu özelliğin uygulandığı kayıt türünü seçin"
-
-#: 
-msgid "Total Pledges"
-msgstr "Toplam Taahhütler"
 
 #: 
 msgid "Track and manage pledge commitments by family and fund"
@@ -10949,10 +10933,6 @@ msgstr "Takvim etkinliklerine genel HTML, ICS ve JSON URL'leri aracılığıyla 
 msgid "Allow visitors to create their own family record via the self-registration page"
 msgstr "Ziyaretçilerin kendi kendine kayıt sayfası aracılığıyla aile kaydı oluşturmasına izin ver"
 
-#: 
-msgid "Allow visitors to self-register as new families."
-msgstr "Ziyaretçilerin yeni aileler olarak kendi kendine kaydolmasına izin verin."
-
 #. plugin:external-backup:section:5:content
 #: 
 msgid "Any WebDAV-compatible service works with this plugin:\n"
@@ -12728,10 +12708,6 @@ msgstr "Toplam Kiosk"
 #: 
 msgid "Upcoming Events"
 msgstr "Yaklaşan Etkinlikler"
-
-#: 
-msgid "Absolute http(s) URL of the church logo shown in email templates (and re-used elsewhere in the future). For best rendering across email clients, use a wide banner image at roughly a 3.5:1 aspect ratio (for example 350×100 px), PNG or JPG, served over HTTPS. Leave blank or enter an invalid value to fall back to the default ChurchCRM logo."
-msgstr "E-posta şablonlarında gösterilen (ve gelecekte başka yerlerde yeniden kullanılacak) kilise logosunun mutlak http(s) URL'si. E-posta istemcilerinde en iyi görüntüleme için yaklaşık 3,5:1 en-boy oranında (örneğin 350×100 px) geniş bir afiş resmi, PNG veya JPG, HTTPS üzerinden sunulan bir resim kullanın. Varsayılan ChurchCRM logosuna geri dönmek için boş bırakın veya geçersiz bir değer girin."
 
 #: 
 msgid "An option with that name already exists"
@@ -14932,10 +14908,6 @@ msgstr "Tüm Metni"
 #: 
 msgid "The selected file exceeds this servers maximum upload size of"
 msgstr "Seçilen dosya, bu sunucuların maksimum yükleme boyutunu aşıyor"
-
-#: 
-msgid "There are no events scheduled for today"
-msgstr "Bugün için planlanmış etkinlik yok"
 
 #: 
 msgid "There was a problem retrieving the requested object"
@@ -18030,10 +18002,6 @@ msgid "Errors"
 msgstr "Hatalar"
 
 #: 
-msgid "Exclude deceased members from the printed directory and CSV exports."
-msgstr "Vefat etmiş üyeleri basılı rehberden ve CSV dışa aktarımlarından hariç tut."
-
-#: 
 msgid "Failed Files"
 msgstr "Başarısız Dosyalar"
 
@@ -18544,4 +18512,648 @@ msgstr "E-posta istemcisi için çok fazla alıcı ({{total}} > {{max}}). Bunun 
 #: 
 msgid "{{minutes}} min left"
 msgstr "{{minutes}} dk kaldı"
+
+#: 
+msgid "%d tax document emailed to the family successfully."
+msgstr "%d vergi belgesi aileye başarıyla e-posta ile gönderildi."
+
+#: 
+msgid "%s %d Giving Statement"
+msgstr "%s %d Bağış Açıklaması"
+
+#: 
+msgid "All classifications"
+msgstr "Tüm sınıflandırmalar"
+
+#: 
+msgid "As an admin, please also review the"
+msgstr "Yönetici olarak lütfen aşağıdakileri de gözden geçirin"
+
+#: 
+msgid "Birthdays, anniversaries, volunteers and other people lists with a classification filter"
+msgstr "Doğum günleri, yıldönümleri, gönüllüler ve sınıflandırma filtresine sahip diğer kişi listeleri"
+
+#: 
+msgid "Choose %s to run this report."
+msgstr "Bu raporu çalıştırmak için %s seçin."
+
+#: 
+msgid "Choose events"
+msgstr "Etkinlikleri seçin"
+
+#: 
+msgid "Choose..."
+msgstr "Seçin..."
+
+#: 
+msgid "Church Logo"
+msgstr "Kilise Logosu"
+
+#: 
+msgid "Columns per Page"
+msgstr "Sayfa Başına Sütunlar"
+
+#: 
+msgid "Dear %s Family,\n"
+"\n"
+"Please find your %d giving statement from %s attached to this email.\n"
+"\n"
+"If you have any questions, please contact the church office.\n"
+"\n"
+"Thank you for your generosity."
+msgstr "Sevgili %s Ailesi,\n"
+"\n"
+"Lütfen %s tarihinden itibaren %d bağış beyannamenizi bu e-postaya ektedir.\n"
+"\n"
+"Sorunuz varsa lütfen kilise ofisine başvurun.\n"
+"\n"
+"Cömertliğiniz için teşekkür ederiz."
+
+#: 
+msgid "Download CSV"
+msgstr "CSV İndir"
+
+#: 
+msgid "Email %d Tax Doc"
+msgstr "%d Vergi Belgesi E-posta"
+
+#: 
+msgid "Enable or disable the Finance module and sidebar menu."
+msgstr "Finans modülünü ve yan çubuk menüsünü etkinleştirin veya devre dışı bırakın."
+
+#: 
+msgid "Enable or disable the Fundraiser module."
+msgstr "Bağış toplama modülünü etkinleştirin veya devre dışı bırakın."
+
+#: 
+msgid "Failed to remove church logo"
+msgstr "Kilise logosu kaldırılamadı"
+
+#: 
+msgid "Failed to upload church logo"
+msgstr "Kilise logosu yüklenemedi"
+
+#: 
+msgid "Fallback logo URL for email templates, used only when no church logo has been uploaded on the Church Information page. The application's own pages ignore this setting and always use the uploaded logo or the default ChurchCRM logo. Must be an absolute http(s) URL. For best rendering across email clients, use a wide banner image at roughly a 3.5:1 aspect ratio (for example 350×100 px), PNG or JPG, served over HTTPS. Leave blank or enter an invalid value to fall back to the default ChurchCRM logo."
+msgstr "E-posta şablonları için yedek logo URL'si. Kilise Bilgileri sayfasında kilise logosu yüklenmediğinde kullanılır. Uygulamanın kendi sayfaları bu ayarı yoksayar ve her zaman yüklenen logoyu veya varsayılan ChurchCRM logosunu kullanır. Mutlak bir http(s) URL'si olmalıdır. E-posta istemcileri arasında en iyi işleme için, HTTPS üzerinden sağlanan kabaca 3.5:1 en boy oranına (örneğin 350×100 px) sahip geniş bir banner görüntüsü kullanın. Varsayılan ChurchCRM logosuna geri dönmek için boş bırakın veya geçersiz bir değer girin."
+
+#: 
+msgid "Finance Module"
+msgstr "Finans Modülü"
+
+#: 
+msgid "Find people who did not attend an event"
+msgstr "Etkinliğe katılmayan kişileri bulun"
+
+#: 
+msgid "Find volunteers who match two specific opportunity codes"
+msgstr "İki belirli fırsat kodunu eşleştiren gönüllüleri bulun"
+
+#: 
+msgid "First Volunteer Opportunity"
+msgstr "İlk Gönüllü Fırsat"
+
+#: 
+msgid "Folded Booklet"
+msgstr "Katlanmış Kitapçık"
+
+#: 
+msgid "Fundraiser Module"
+msgstr "Bağış Toplama Modülü"
+
+#: 
+msgid "Giving History"
+msgstr "Bağış Tarihi"
+
+#: 
+msgid "Last Gift"
+msgstr "Son Hediye"
+
+#: 
+msgid "Leave empty for all classifications."
+msgstr "Tüm sınıflandırmalar için boş bırakın."
+
+#: 
+msgid "Maximum number of tax year documents to show per family profile (0 = no limit)"
+msgstr "Aile profili başına gösterilecek maksimum vergi yılı belge sayısı (0 = sınır yok)"
+
+#: 
+msgid "Maximum tax years shown per family"
+msgstr "Aile başına gösterilen maksimum vergi yılları"
+
+#: 
+msgid "Membership Anniversaries"
+msgstr "Üyelik Yıldönümleri"
+
+#: 
+msgid "Missing People"
+msgstr "Eksik İnsanlar"
+
+#: 
+msgid "No giving history found."
+msgstr "Bağış tarihi bulunamadı."
+
+#: 
+msgid "No people match these filters."
+msgstr "Bu filtrelerle eşleşen kişi yok."
+
+#: 
+msgid "One directory page per sheet, portrait."
+msgstr "Sayfa başına bir rehber sayfası, dikey."
+
+#: 
+msgid "Only http and https schemes are allowed."
+msgstr "Yalnızca http ve https şemaları izin verilir."
+
+#: 
+msgid "PNG, JPG, GIF or WebP. A wide banner of roughly 3.5:1 (for example 700x200) works best; transparent PNG preferred."
+msgstr "PNG, JPG, GIF veya WebP. Kabaca 3.5:1 oranında geniş bir banner (örneğin 700x200) en iyi sonuçları verir; şeffaf PNG tercih edilir."
+
+#: 
+msgid "Page Layout"
+msgstr "Sayfa Düzeni"
+
+#: 
+msgid "People who joined in a particular month"
+msgstr "Belirli bir ayda katılan kişiler"
+
+#: 
+msgid "Pledged"
+msgstr "Söz Verilen"
+
+#: 
+msgid "Print %d Tax Doc"
+msgstr "%d Vergi Belgesi Yazdır"
+
+#: 
+msgid "Queries"
+msgstr "Sorgular"
+
+#: 
+msgid "Recent Friends"
+msgstr "Son Arkadaşlar"
+
+#: 
+msgid "Report not found"
+msgstr "Rapor bulunamadı"
+
+#: 
+msgid "Run Report"
+msgstr "Rapor Çalıştır"
+
+#: 
+msgid "Second Volunteer Opportunity"
+msgstr "İkinci Gönüllü Fırsat"
+
+#: 
+msgid "Shown in the sidebar, on the login page and in emails. Uploading a logo replaces the ChurchCRM branding everywhere it appears."
+msgstr "Yan çubukta, oturum açma sayfasında ve e-postaların gösterilir. Logo yüklemek, ChurchCRM markalamalarını her yerde göründüğü yerlerde değiştirir."
+
+#: 
+msgid "Single Pages"
+msgstr "Tek Sayfalar"
+
+#: 
+msgid "Tax Documents"
+msgstr "Vergi Belgeleri"
+
+#: 
+msgid "Tax document email failed to send. Please check your email server settings."
+msgstr "Vergi belgesi e-postası gönderilemedi. Lütfen e-posta sunucu ayarlarınızı kontrol edin."
+
+#: 
+msgid "Two half-size pages side by side on each landscape sheet, in booklet order. Print double-sided with \"flip on short edge\", then fold the stack in half. Columns are counted per half page."
+msgstr "Her yatay sayfada yan yana iki yarım boyutlu sayfa, kitapçık sırasında. \"Kısa kenardan çevir\" ile çift taraflı yazdırın, ardından yığını yarısına katlayın. Sütunlar yarım sayfa başına sayılır."
+
+#: 
+msgid "Unable to email tax document: no payment data found for that year."
+msgstr "Vergi belgesi e-posta ile gönderilemez: o yıl için ödeme verisi bulunamadı."
+
+#: 
+msgid "Unable to email tax document: this family has no email address on file."
+msgstr "Vergi belgesi e-posta ile gönderilemez: bu ailenin dosyada e-posta adresi yok."
+
+#: 
+msgid "Unable to resolve OpenLP server hostname. Check the address and your network connection."
+msgstr "OpenLP sunucu ana bilgisayar adı çözülemedi. Adresi ve ağ bağlantınızı kontrol edin."
+
+#: 
+msgid "Upload"
+msgstr "Yükle"
+
+#: 
+msgid "Using default ChurchCRM logo"
+msgstr "Varsayılan ChurchCRM logosu kullanılıyor"
+
+#: 
+msgid "View Full Family Giving"
+msgstr "Tam Aile Bağışını Görüntüle"
+
+#: 
+msgid "Volunteer Opportunity"
+msgstr "Gönüllü Fırsat"
+
+#: 
+msgid "Volunteers for Two Opportunities"
+msgstr "İki Fırsat için Gönüllüler"
+
+#: 
+msgid "YTD"
+msgstr "Yıl başından beri"
+
+#: 
+msgid "YTD Paid"
+msgstr "YTD Ödendi"
+
+#: 
+msgid "for errors around the time this happened, and download and attach the relevant log file to your GitHub issue — it helps us fix the problem without asking follow-up questions."
+msgstr "bu olayın etrafındaki hatalar için ilgili günlük dosyasını indirin ve GitHub sorununuza ekleyin - bu sorunu takip eden sorular sormadan düzeltmemize yardımcı olur."
+
+#: 
+msgid "system logs"
+msgstr "sistem günlükleri"
+
+#: 
+msgid "Access Control & Security"
+msgstr "Erişim Kontrolü ve Güvenliği"
+
+#: 
+msgid "Allow recording non-tax-deductible payments (e.g., merchandise sales)"
+msgstr "Vergi indirimine tabi olmayan ödemelerin kaydedilmesine izin ver (örneğin, ürün satışları)"
+
+#: 
+msgid "Allow unauthenticated access to public events (for embedding calendars)"
+msgstr "Genel etkinliklere kimliği doğrulanmamış erişime izin ver (takvimleri gömme için)"
+
+#: 
+msgid "Automatically send birthday emails (requires background job scheduler)"
+msgstr "Doğum günü e-postalarını otomatik olarak gönder (arka plan iş zamanlayıcısı gerekir)"
+
+#: 
+msgid "Birthday Greeting Emails"
+msgstr "Doğum Günü Tebrik E-postaları"
+
+#: 
+msgid "Communication & Email"
+msgstr "İletişim ve E-posta"
+
+#: 
+msgid "Content Security Policy"
+msgstr "İçerik Güvenliği Politikası"
+
+#: 
+msgid "Email System"
+msgstr "E-posta Sistemi"
+
+#: 
+msgid "Enable or disable features for your organization"
+msgstr "Kuruluşunuz için özellikleri etkinleştirin veya devre dışı bırakın"
+
+#: 
+msgid "Enable/disable the Events section in main navigation"
+msgstr "Ana navigasyonda Etkinlikler bölümünü etkinleştirin/devre dışı bırakın"
+
+#: 
+msgid "Enable/disable the Finance menu and all finance features (deposits, payments, reports)"
+msgstr "Finans menüsünü ve tüm finansal özellikleri etkinleştirin/devre dışı bırakın (mevduatlar, ödemeler, raporlar)"
+
+#: 
+msgid "Enable/disable the Fundraiser menu"
+msgstr "Bağış Toplayıcı menüsünü etkinleştirin/devre dışı bırakın"
+
+#: 
+msgid "Enforce strict CSP headers to protect against XSS attacks"
+msgstr "XSS saldırılarına karşı korunmak için katı CSP başlıklarını uygula"
+
+#: 
+msgid "Events Module"
+msgstr "Etkinlikler Modülü"
+
+#: 
+msgid "Feature Toggles"
+msgstr "Özellik Değiştirgeleri"
+
+#: 
+msgid "Feature toggles control which modules and features are available in ChurchCRM. Changes take effect immediately."
+msgstr "Özellik değiştirgeleri, ChurchCRM'de hangi modüllerin ve özelliklerin kullanılabilir olduğunu kontrol eder. Değişiklikler hemen geçerli olur."
+
+#: 
+msgid "Finance Features"
+msgstr "Finansal Özellikler"
+
+#: 
+msgid "Include addresses in quick global search"
+msgstr "Hızlı genel aramaya adresleri dahil et"
+
+#: 
+msgid "Include calendar events in quick global search"
+msgstr "Hızlı genel aramaya takvim etkinliklerini dahil et"
+
+#: 
+msgid "Include custom family properties in quick global search"
+msgstr "Hızlı genel aramaya özel aile özelliklerini dahil et"
+
+#: 
+msgid "Include deposits in quick global search"
+msgstr "Hızlı genel aramaya mevduatları dahil et"
+
+#: 
+msgid "Include families in quick global search"
+msgstr "Hızlı genel aramaya aileleri dahil et"
+
+#: 
+msgid "Include groups in quick global search"
+msgstr "Hızlı genel aramaya grupları dahil et"
+
+#: 
+msgid "Include payments in quick global search"
+msgstr "Hızlı genel aramaya ödemeleri dahil et"
+
+#: 
+msgid "Include people in quick global search"
+msgstr "Hızlı genel aramaya insanları dahil et"
+
+#: 
+msgid "Invalid setting"
+msgstr "Geçersiz ayar"
+
+#: 
+msgid "Lost Password Link"
+msgstr "Kaybolan Şifre Bağlantısı"
+
+#: 
+msgid "Manage All Features"
+msgstr "Tüm Özellikleri Yönet"
+
+#: 
+msgid "Master toggle for email sending. REQUIRED for password resets and notifications"
+msgstr "E-posta gönderimi için ana değiştirge. Parola sıfırlaması ve bildirimler için GEREKLİDİR"
+
+#: 
+msgid "Non-Deductible Payments"
+msgstr "Düşülemez Ödemeler"
+
+#: 
+msgid "Primary Modules"
+msgstr "Birincil Modüller"
+
+#: 
+msgid "Public Calendar API"
+msgstr "Genel Takvim API"
+
+#: 
+msgid "Saved"
+msgstr "Kaydedildi"
+
+#: 
+msgid "Search Families"
+msgstr "Aileleri Ara"
+
+#: 
+msgid "Search Family Custom Properties"
+msgstr "Aile Özel Özelliklerini Ara"
+
+#: 
+msgid "Search Settings"
+msgstr "Arama Ayarları"
+
+#: 
+msgid "Self-Registration"
+msgstr "Kendi Kendine Kayıt"
+
+#: 
+msgid "Show \"Lost Password\" option on login screen (allows user self-reset)"
+msgstr "Giriş ekranında \"Kaybolan Şifre\" seçeneğini göster (kullanıcının kendi kendine sıfırlamasına izin verir)"
+
+#: 
+msgid "Show/hide the Sunday School module in sidebar"
+msgstr "Yan çubukta Pazar Okulu modülünü göster/gizle"
+
+#: 
+msgid "Can't deactivate the only administrator who can sign in"
+msgstr "Giriş yapabilen tek yöneticiyi devre dışı bırakamazsınız"
+
+#: 
+msgid "Can't mark the only administrator who can sign in as deceased"
+msgstr "Giriş yapabilen tek yöneticiyi vefat etmiş olarak işaretleyemezsiniz"
+
+#: 
+msgid "Deceased — cannot sign in"
+msgstr "Vefat etmiş — giriş yapamaz"
+
+#: 
+msgid "Enter a second address before marking it as the mailing address"
+msgstr "Posta adresi olarak işaretlemeden önce ikinci bir adres girin"
+
+#: 
+msgid "Inactive — cannot sign in"
+msgstr "Etkin değil — giriş yapamaz"
+
+#: 
+msgid "Mail goes to the second address; the primary address stays the physical location used for maps and directions."
+msgstr "Posta ikinci adrese gider; birincil adres, haritalar ve yönergeler için kullanılan fiziksel konum kalır."
+
+#: 
+msgid "Mail is sent to this address instead of the primary address"
+msgstr "Posta, birincil adres yerine bu adrese gönderilir"
+
+#: 
+msgid "Mailing Address"
+msgstr "Posta Adresi"
+
+#: 
+msgid "Mailing Address if Different"
+msgstr "Farklıysa Posta Adresi"
+
+#: 
+msgid "Primary Address"
+msgstr "Birincil Adres"
+
+#: 
+msgid "Receives Mail"
+msgstr "Posta Alır"
+
+#: 
+msgid "Second Address"
+msgstr "İkinci Adres"
+
+#: 
+msgid "Second Home"
+msgstr "İkinci Ev"
+
+#: 
+msgid "The linked person is deceased or inactive. Sign-in, sessions and the API key are blocked until the person is made active again."
+msgstr "Bağlantılı kişi vefat etmiş veya etkin değil. Kişi yeniden etkin hale getirilene kadar oturum açma, oturumlar ve API anahtarı engellenir."
+
+#: 
+msgid "This is the mailing address"
+msgstr "Bu, posta adresidir"
+
+#: 
+msgid "This person is deceased or inactive, so this account cannot sign in"
+msgstr "Bu kişi vefat etmiş veya etkin değil, bu nedenle bu hesap giriş yapamaz"
+
+#: 
+msgid "Only an administrator can delete a person who has a login."
+msgstr "Yalnızca bir yönetici, bir girişi olan bir kişiyi silebilir."
+
+#: 
+msgid "The last administrator cannot be deleted."
+msgstr "Son yönetici silinemez."
+
+#: 
+msgid "Category"
+msgstr "Kategori"
+
+#: 
+msgid "Category updated."
+msgstr "Kategori güncellendi."
+
+#: 
+msgid "Delete Category"
+msgstr "Kategoriyi Sil"
+
+#: 
+msgid "Failed to delete category"
+msgstr "Kategori silme başarısız"
+
+#: 
+msgid "Failed to rename category"
+msgstr "Kategoriyi yeniden adlandırma başarısız"
+
+#: 
+msgid "Fund Categories"
+msgstr "Fon Kategorileri"
+
+#: 
+msgid "Fund activated."
+msgstr "Fon etkinleştirildi."
+
+#: 
+msgid "Fund deactivated."
+msgstr "Fon devre dışı bırakıldı."
+
+#: 
+msgid "Funds in this category will become uncategorized. The funds themselves are not deleted."
+msgstr "Bu kategorideki fonlar kategorisiz hale gelecek. Fonların kendileri silinmez."
+
+#: 
+msgid "INACTIVE"
+msgstr "Aktif olmayan"
+
+#: 
+msgid "New category name (an existing name merges the two)"
+msgstr "Yeni kategori adı (mevcut bir ad ikisini birleştirir)"
+
+#: 
+msgid "Optional"
+msgstr "İsteğe bağlı"
+
+#: 
+msgid "Optional — pick or type a new category"
+msgstr "İsteğe bağlı — yeni bir kategori seçin veya yazın"
+
+#: 
+msgid "Paid beyond the pledge"
+msgstr "Sözün ötesinde ödenen"
+
+#: 
+msgid "Pledged but not yet paid"
+msgstr "Söz verildi ancak henüz ödenmedi"
+
+#: 
+msgid "Rename Category"
+msgstr "Kategoriyi Yeniden Adlandır"
+
+#: 
+msgid "Still Owed"
+msgstr "Hâlâ Borçlu"
+
+#: 
+msgid "Summary by Category"
+msgstr "Kategoriye Göre Özet"
+
+#: 
+msgid "Total Paid"
+msgstr "Toplam Ödenen"
+
+#: 
+msgid "Uncategorized"
+msgstr "Kategorisiz"
+
+#: 
+msgid "Could not load the current settings. Reload the page to try again."
+msgstr "Geçerli ayarlar yüklenemedi. Tekrar denemek için sayfayı yenileyin."
+
+#: 
+msgid "This setting must be a number"
+msgstr "Bu ayar bir sayı olmalıdır"
+
+#: 
+msgid "Child Role"
+msgstr "Çocuk rolü"
+
+#: 
+msgid "Directory inclusion can only be toggled for the classifications list"
+msgstr "Rehbere dahil etme yalnızca sınıflandırma listesi için açılıp kapatılabilir"
+
+#: 
+msgid "Greeter Message 1"
+msgstr "Karşılama mesajı 1"
+
+#: 
+msgid "Greeter Message 2"
+msgstr "Karşılama mesajı 2"
+
+#: 
+msgid "Head of House Role"
+msgstr "Hane reisi rolü"
+
+#: 
+msgid "Hide Address Without Family"
+msgstr "Ailesi olmayan adresleri gizle"
+
+#: 
+msgid "Hide Friend Date"
+msgstr "Arkadaşlık tarihini gizle"
+
+#: 
+msgid "Hide Newsletter Subscriptions"
+msgstr "Bülten aboneliklerini gizle"
+
+#: 
+msgid "Hide Wedding Date"
+msgstr "Evlilik tarihini gizle"
+
+#: 
+msgid "In Directory"
+msgstr "Rehberde"
+
+#: 
+msgid "Include Details in Notifications"
+msgstr "Bildirimlere ayrıntıları dahil et"
+
+#: 
+msgid "Notification Recipients"
+msgstr "Bildirim alıcıları"
+
+#: 
+msgid "People to notify when a new family or person is added"
+msgstr "Yeni bir aile veya kişi eklendiğinde bilgilendirilecek kişiler"
+
+#: 
+msgid "Person initials style"
+msgstr "Kişi baş harfleri stili"
+
+#: 
+msgid "Person name display style"
+msgstr "Kişi adı görüntüleme stili"
+
+#: 
+msgid "Spouse Role"
+msgstr "Eş rolü"
+
+#: 
+msgid "Uppercase Zip/Postcodes"
+msgstr "Posta kodlarını büyük harf yap"
 

@@ -14,6 +14,7 @@ use ChurchCRM\model\ChurchCRM\PersonQuery;
 use ChurchCRM\model\ChurchCRM\User;
 use ChurchCRM\model\ChurchCRM\UserQuery;
 use ChurchCRM\Service\AppIntegrityService;
+use ChurchCRM\Service\ClassificationService;
 use ChurchCRM\Service\LocaleService;
 use ChurchCRM\Service\UserService;
 use ChurchCRM\Slim\Middleware\CSRFMiddleware;
@@ -119,37 +120,38 @@ $app->group('/system', function (RouteCollectorProxy $group): void {
             ->orderByOptionSequence()
             ->find();
 
-        // For classifications mode, compute which options are marked inactive
+        // For classifications mode, compute which options are inactive / included in the directory
         $inactiveClasses = [];
+        $directoryClasses = [];
         if ($mode === 'classes') {
-            $inactiveRaw = (string) SystemConfig::getValue('sInactiveClassification');
-            if ($inactiveRaw !== '') {
-                $inactiveClasses = array_filter(
-                    explode(',', $inactiveRaw),
-                    fn($k) => is_numeric($k)
-                );
-            }
+            $classificationService = new ClassificationService();
+            $inactiveClasses = $classificationService->getInactiveIds();
+            $directoryClasses = $classificationService->getDirectoryIds();
         }
 
         $breadcrumbParent = match ($mode) {
             'grptypes', 'grproles', 'groupcustom' => [gettext('Groups'), '/groups/dashboard'],
-            'famroles', 'famcustom' => [gettext('People'), '/people/dashboard'],
-            'classes', 'custom' => [gettext('People'), '/people/dashboard'],
+            'famroles', 'famcustom', 'classes', 'custom' => [gettext('People'), '/people/dashboard'],
             default => [gettext('Admin'), '/admin/'],
         };
         $pageArgs = [
             'sRootPath' => SystemURLs::getRootPath(),
             'sPageTitle' => $listConfig['title'],
             'sPageSubtitle' => sprintf(gettext('Manage %s options'), $listConfig['noun']),
-            'aBreadcrumbs' => PageHeader::breadcrumbs([
+            'aBreadcrumbs' => PageHeader::breadcrumbs(array_values(array_filter([
                 $breadcrumbParent,
+                in_array($mode, ['famroles', 'famcustom', 'classes', 'custom'], true)
+                    ? [gettext('People Settings'), '/admin/people']
+                    : null,
                 [$listConfig['title']],
-            ]),
+            ]))),
+            'sPageHeaderButtons' => in_array($mode, ['famroles', 'famcustom', 'classes', 'custom'], true) ? PageHeader::peopleSettingsButton() : '',
             'mode' => $mode,
             'listId' => $listConfig['listId'],
             'noun' => $listConfig['noun'],
             'optionRows' => $optionRows,
             'inactiveClasses' => $inactiveClasses,
+            'directoryClasses' => $directoryClasses,
         ];
 
         return $renderer->render($response, 'option-manager.php', $pageArgs);
@@ -905,6 +907,23 @@ $app->group('/system', function (RouteCollectorProxy $group): void {
         // sThousandsSeparator / sDecimalSeparator intentionally omitted: sanitizeText()
         // trims, which would strip a space separator. The handler caps them to one char.
     ]));
+
+    // Feature Toggles page
+    $group->get('/feature-toggles', function (Request $request, Response $response): Response {
+        $renderer = new PhpRenderer(__DIR__ . '/../views/');
+
+        $pageArgs = [
+            'sRootPath' => SystemURLs::getRootPath(),
+            'sPageTitle' => gettext('Feature Toggles'),
+            'sPageSubtitle' => gettext('Enable or disable features for your organization'),
+            'aBreadcrumbs' => PageHeader::breadcrumbs([
+                [gettext('Admin'), '/admin/'],
+                [gettext('Feature Toggles')],
+            ]),
+        ];
+
+        return $renderer->render($response, 'feature-toggles.php', $pageArgs);
+    });
 
     // User editor — create new user (GET shows form, POST processes it)
     $group->get('/users/new', 'adminUserEditorNew');

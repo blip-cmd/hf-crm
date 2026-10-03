@@ -49,7 +49,7 @@ No hard blocks.
 6. Locale-sensitive values — dates, times, numbers, currency, or timezone that ignore ChurchCRM conventions. See below.
 7. Tests — feature or bug fix with no new or updated tests.
 8. Repo process — issue rule in `git-workflow.md` not met; title or body that describes different work than the diff.
-9. Query View freeze — any new feature or filter on `QueryView.php`, `QueryList.php`, or predefined `query_qry` / `queryparameters_qrp` rows for that UI. Raw SQL substitution, not ORM, leak history. Point the author at Slim/Tabler MVC + Propel, or a reports plugin. Security-only patches on Query View need an explicit maintainer exception. See #9995.
+9. Query View freeze — any new feature or filter on `QueryView.php`, `QueryList.php`, or predefined `query_qry` / `queryparameters_qrp` rows for that UI. Raw SQL substitution, not ORM, leak history. Point the author at Slim/Tabler MVC + Propel (`src/v2/`), or a reports plugin (`src/plugins/`; `src/plugins/community/` to share). See #9921. Security-only patches on Query View need an explicit maintainer exception. See #9995.
 
 Missing comments are not a hard block. Do not ask the author to add more comments. Wrong or essay comments can be deleted; that is not Request changes.
 
@@ -71,6 +71,7 @@ If hard blocks stay open and the author goes quiet, maintainers may close the PR
 
 - Demo-import in `src/admin/demo/config.json`. Never Cypress seed if that would break tests.
 - User manual tracking issue on ChurchCRM/CRM. Docs PRs merge after the release ships.
+- Playwright capture issue when the PR changes UI that belongs on a marketing or docs page. Ask the author to open it (or open it yourself) and link it. Not a blocker.
 - Marketing / blog only on a full end-to-end feature. Ask George. Skip bug/security-only.
 - Member-facing consumer when this PR is storage-only.
 - Extra screenshots. If they have tablet/mobile shots, ask them to attach. Do not Request changes only because shots are missing.

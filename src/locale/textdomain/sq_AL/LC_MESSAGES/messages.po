@@ -479,10 +479,6 @@ msgid "Photos"
 msgstr "Photos"
 
 #: 
-msgid "Number of Columns"
-msgstr "Numri i Columns"
-
-#: 
 msgid "Paper Size"
 msgstr "Madhësia e letrës"
 
@@ -846,10 +842,6 @@ msgstr "Fshij Foto"
 #: 
 msgid "Timeline"
 msgstr "Linja kohore"
-
-#: 
-msgid "Pledges and Payments"
-msgstr "Premton dhe Pagesat"
 
 #: 
 msgid "Value"
@@ -4504,10 +4496,6 @@ msgid "For defining the date in Date-Picker, per default : Y-m-d, In French : d/
 msgstr "Për përcaktimin e datës në zgjedhësin e datave, si parazgjedhje: Y-m-d, në frëngjisht: d/m/Y për shembull."
 
 #: 
-msgid "Comma Separated list of PersonIDs of people to notify when a new family or person is added"
-msgstr "Listë e ndarë me presje e ID-ve të personave që do të njoftohen kur shtohet një familje ose person i ri"
-
-#: 
 msgid "Allow unauthenticated reads of events from the external calendar API"
 msgstr "Lejo leximin e paautentifikuar të ngjarjeve nga API e kalendarit të jashtëm"
 
@@ -7350,10 +7338,6 @@ msgstr "Hiq këtë numërim pjesëmarrjeje?"
 #: 
 msgid "Select the type of record this property applies to"
 msgstr "Zgjidhni llojin e rekordit që kjo veti aplikon"
-
-#: 
-msgid "Total Pledges"
-msgstr "Totali i zotimeve"
 
 #: 
 msgid "Track and manage pledge commitments by family and fund"
@@ -10939,10 +10923,6 @@ msgstr "Lejo aksesin e pavërtetuar te ngjarjet e kalendarit përmes URL-ve publ
 msgid "Allow visitors to create their own family record via the self-registration page"
 msgstr "Lejo vizitorët të krijojnë regjistrimin e tyre familjar përmes faqes së vetë-regjistrimit"
 
-#: 
-msgid "Allow visitors to self-register as new families."
-msgstr "Lejo vizitorët të vetë-regjistrohen si familje të reja."
-
 #. plugin:external-backup:section:5:content
 #: 
 msgid "Any WebDAV-compatible service works with this plugin:\n"
@@ -12718,10 +12698,6 @@ msgstr "Totali i Kiosk-eve"
 #: 
 msgid "Upcoming Events"
 msgstr "Ngjarjet e ardhshme"
-
-#: 
-msgid "Absolute http(s) URL of the church logo shown in email templates (and re-used elsewhere in the future). For best rendering across email clients, use a wide banner image at roughly a 3.5:1 aspect ratio (for example 350×100 px), PNG or JPG, served over HTTPS. Leave blank or enter an invalid value to fall back to the default ChurchCRM logo."
-msgstr "URL absolut http(s) i logos së kishës që shfaqet në shablonet e emailit (dhe ripërdoret gjetkë në të ardhmen). Për renderim më të mirë në klientët e emailit, përdorni një imazh baner të gjerë me raport pamjeje rreth 3.5:1 (p.sh. 350×100 px), PNG ose JPG, të shërbyer mbi HTTPS. Lini bosh ose vendosni një vlerë të pavlefshme për t'u rikthyer te logoja e parazgjedhur e ChurchCRM."
 
 #: 
 msgid "An option with that name already exists"
@@ -14922,10 +14898,6 @@ msgstr "Teksti Të Gjithë"
 #: 
 msgid "The selected file exceeds this servers maximum upload size of"
 msgstr "Skedari i përzgjedhur tejkalon madhësinë maksimale të ngarkimit të këtij serveri prej"
-
-#: 
-msgid "There are no events scheduled for today"
-msgstr "Nuk ka ngjarje të planifikuara për sot"
 
 #: 
 msgid "There was a problem retrieving the requested object"
@@ -18016,10 +17988,6 @@ msgid "Errors"
 msgstr "Gabime"
 
 #: 
-msgid "Exclude deceased members from the printed directory and CSV exports."
-msgstr "Përjashto anëtarët e ndjerë nga direktoria e shtypur dhe eksportet CSV."
-
-#: 
 msgid "Failed Files"
 msgstr "Skedarë të Dështuar"
 
@@ -18530,4 +18498,648 @@ msgstr "Shumë marrës për klientin e emailit ({{total}} > {{max}}). Përdorni 
 #: 
 msgid "{{minutes}} min left"
 msgstr "{{minutes}} min të mbetura"
+
+#: 
+msgid "%d tax document emailed to the family successfully."
+msgstr "%d dokument tatimor i dërguar me sukses në familje me email."
+
+#: 
+msgid "%s %d Giving Statement"
+msgstr "Deklarata e dhurimit %s %d"
+
+#: 
+msgid "All classifications"
+msgstr "Të gjitha klasifikimet"
+
+#: 
+msgid "As an admin, please also review the"
+msgstr "Si administrator, ju lutemi rishikoni edhe"
+
+#: 
+msgid "Birthdays, anniversaries, volunteers and other people lists with a classification filter"
+msgstr "Ditëlindjet, jubileumet, vullnetarët dhe listat e tjera të njerëzve me një filtër klasifikimi"
+
+#: 
+msgid "Choose %s to run this report."
+msgstr "Zgjidhni %s për të drejtuar këtë raport."
+
+#: 
+msgid "Choose events"
+msgstr "Zgjidhni ngjarje"
+
+#: 
+msgid "Choose..."
+msgstr "Zgjidhni..."
+
+#: 
+msgid "Church Logo"
+msgstr "Logoja e kishës"
+
+#: 
+msgid "Columns per Page"
+msgstr "Kolona për faqe"
+
+#: 
+msgid "Dear %s Family,\n"
+"\n"
+"Please find your %d giving statement from %s attached to this email.\n"
+"\n"
+"If you have any questions, please contact the church office.\n"
+"\n"
+"Thank you for your generosity."
+msgstr "I nderuar %s Familje,\n"
+"\n"
+"Ju lutemi gjeni deklaratën tuaj të dhurimit %d nga %s në bashkëlidhje me këtë email.\n"
+"\n"
+"Nëse keni ndonjë pyetje, ju lutemi kontaktoni zyrën e kishës.\n"
+"\n"
+"Faleminderit për bamirësinë tuaj."
+
+#: 
+msgid "Download CSV"
+msgstr "Shkarko CSV"
+
+#: 
+msgid "Email %d Tax Doc"
+msgstr "Dërgo me email %d Dokument tatimor"
+
+#: 
+msgid "Enable or disable the Finance module and sidebar menu."
+msgstr "Aktivizo ose çaktivizo modulin e Financës dhe menynë anësore."
+
+#: 
+msgid "Enable or disable the Fundraiser module."
+msgstr "Aktivizo ose çaktivizo modulin e Mbledhësit të Fondeve."
+
+#: 
+msgid "Failed to remove church logo"
+msgstr "Dështoi heqja e logos s kishës"
+
+#: 
+msgid "Failed to upload church logo"
+msgstr "Dështoi ngarkimi i logos s kishës"
+
+#: 
+msgid "Fallback logo URL for email templates, used only when no church logo has been uploaded on the Church Information page. The application's own pages ignore this setting and always use the uploaded logo or the default ChurchCRM logo. Must be an absolute http(s) URL. For best rendering across email clients, use a wide banner image at roughly a 3.5:1 aspect ratio (for example 350×100 px), PNG or JPG, served over HTTPS. Leave blank or enter an invalid value to fall back to the default ChurchCRM logo."
+msgstr "URL-ja e logos zëvendësuese për shabllonet e email-it, përdoret vetëm kur asnjë logo kishe nuk është ngarkuar në faqen e Informacionit të Kishës. Faqet e vetë aplikacionit e injorojnë këtë rregullim dhe gjithmonë përdorin logon e ngarkuar ose logon parazgjedhur të ChurchCRM. Duhet të jetë një URL absolute http(s). Për paraqitjen më të mirë në të gjithë klientët e email-it, përdorni një imazh të gjerë baner me përafërsisht raportin 3.5:1 (për shembull 350×100 px), PNG ose JPG, i shërbyer mbi HTTPS. Lini bosh ose futni një vlerë të pavlefshme për të kthyer logon parazgjedhur të ChurchCRM."
+
+#: 
+msgid "Finance Module"
+msgstr "Moduli i Financës"
+
+#: 
+msgid "Find people who did not attend an event"
+msgstr "Gjeni njerëzit që nuk morën pjesë në një ngjarje"
+
+#: 
+msgid "Find volunteers who match two specific opportunity codes"
+msgstr "Gjeni vullnetarë që përputhen me dy kodet specifike të mundësisë"
+
+#: 
+msgid "First Volunteer Opportunity"
+msgstr "Mundësia e parë e vullnetarizmit"
+
+#: 
+msgid "Folded Booklet"
+msgstr "Broshurë e palosur"
+
+#: 
+msgid "Fundraiser Module"
+msgstr "Moduli i Mbledhësit të Fondeve"
+
+#: 
+msgid "Giving History"
+msgstr "Historiku i dhurimit"
+
+#: 
+msgid "Last Gift"
+msgstr "Dhurata e fundit"
+
+#: 
+msgid "Leave empty for all classifications."
+msgstr "Leni bosh për të gjitha klasifikimet."
+
+#: 
+msgid "Maximum number of tax year documents to show per family profile (0 = no limit)"
+msgstr "Numri maksimal i dokumenteve të vitit tatimor për të shfaqur për profilin familjar (0 = pa limit)"
+
+#: 
+msgid "Maximum tax years shown per family"
+msgstr "Vitet maksimale të tatimit të shfaqura për familje"
+
+#: 
+msgid "Membership Anniversaries"
+msgstr "Jubileumet e anëtarësimit"
+
+#: 
+msgid "Missing People"
+msgstr "Njerëzit që mungojnë"
+
+#: 
+msgid "No giving history found."
+msgstr "Nuk u gjet ndonjë historik dhurimi."
+
+#: 
+msgid "No people match these filters."
+msgstr "Asnjë person nuk përputhet me këta filtra."
+
+#: 
+msgid "One directory page per sheet, portrait."
+msgstr "Një faqe direktoriumi për fletë, portret."
+
+#: 
+msgid "Only http and https schemes are allowed."
+msgstr "Vetëm skemat http dhe https janë të lejuara."
+
+#: 
+msgid "PNG, JPG, GIF or WebP. A wide banner of roughly 3.5:1 (for example 700x200) works best; transparent PNG preferred."
+msgstr "PNG, JPG, GIF ose WebP. Një banner i gjerë me përafërsisht 3.5:1 (për shembull 700x200) funksionon më mirë; PNG transparent është i preferuar."
+
+#: 
+msgid "Page Layout"
+msgstr "Paraqitja e faqes"
+
+#: 
+msgid "People who joined in a particular month"
+msgstr "Njerëzit që u bashkuan në një muaj të veçantë"
+
+#: 
+msgid "Pledged"
+msgstr "Premtuar"
+
+#: 
+msgid "Print %d Tax Doc"
+msgstr "Shtyp %d Dokument tatimor"
+
+#: 
+msgid "Queries"
+msgstr "Pyetje"
+
+#: 
+msgid "Recent Friends"
+msgstr "Miqtë e fundit"
+
+#: 
+msgid "Report not found"
+msgstr "Raporti nuk u gjet"
+
+#: 
+msgid "Run Report"
+msgstr "Ekzekuto raportin"
+
+#: 
+msgid "Second Volunteer Opportunity"
+msgstr "Mundësia e dytë e vullnetarizmit"
+
+#: 
+msgid "Shown in the sidebar, on the login page and in emails. Uploading a logo replaces the ChurchCRM branding everywhere it appears."
+msgstr "Shfaqur në shiritin anësor, në faqen e hyrjes dhe në emailet. Ngarkimi i një loge zëvendëson shënjimin e markës ChurchCRM kudo që shfaqet."
+
+#: 
+msgid "Single Pages"
+msgstr "Faqe të vetme"
+
+#: 
+msgid "Tax Documents"
+msgstr "Dokumentet tatimore"
+
+#: 
+msgid "Tax document email failed to send. Please check your email server settings."
+msgstr "Dështoi dërgimi i emailit të dokumentit tatimor. Ju lutemi kontrolloni cilësimet e serverit të email-it."
+
+#: 
+msgid "Two half-size pages side by side on each landscape sheet, in booklet order. Print double-sided with \"flip on short edge\", then fold the stack in half. Columns are counted per half page."
+msgstr "Dy faqe të gjysëm madhësie krah për krah në secilin fletë të gjerë, në rendin e broshurës. Shtypni me të dyja anët me \"flip në skajin e shkurtër\", pastaj palosni grumbullin në gjysmë. Kolonat numërohen për çdo gjysmë faqeje."
+
+#: 
+msgid "Unable to email tax document: no payment data found for that year."
+msgstr "Nuk është e mundur të dërgohet dokumenti tatimor me email: nuk u gjet ndonjë të dhënë pagese për atë vit."
+
+#: 
+msgid "Unable to email tax document: this family has no email address on file."
+msgstr "Nuk është e mundur të dërgohet dokumenti tatimor me email: kjo familje nuk ka adresë emaili në dosje."
+
+#: 
+msgid "Unable to resolve OpenLP server hostname. Check the address and your network connection."
+msgstr "Nuk është e mundur të zgjidhet emri i host-it të serverit OpenLP. Kontrolloni adresën dhe lidhjen tuaj të rrjetit."
+
+#: 
+msgid "Upload"
+msgstr "Ngarko"
+
+#: 
+msgid "Using default ChurchCRM logo"
+msgstr "Përdorimi i logos parazgjedhur të ChurchCRM"
+
+#: 
+msgid "View Full Family Giving"
+msgstr "Shiko dhurimin e plotë të familjes"
+
+#: 
+msgid "Volunteer Opportunity"
+msgstr "Mundësia e vullnetarizmit"
+
+#: 
+msgid "Volunteers for Two Opportunities"
+msgstr "Vullnetarë për dy mundësi"
+
+#: 
+msgid "YTD"
+msgstr "Nga fillimi i vitit"
+
+#: 
+msgid "YTD Paid"
+msgstr "YTD Paguar"
+
+#: 
+msgid "for errors around the time this happened, and download and attach the relevant log file to your GitHub issue — it helps us fix the problem without asking follow-up questions."
+msgstr "për gabimet rreth kohës kur ndodhi kjo, dhe shkarkoni dhe bashkangjitni skedarin e log-ut përkatës në çështjen tuaj në GitHub — na ndihmon të rregullojmë problemin pa bërë pyetje ndjekese."
+
+#: 
+msgid "system logs"
+msgstr "regjistra sistemi"
+
+#: 
+msgid "Access Control & Security"
+msgstr "Kontrolli i Aksesit dhe Siguria"
+
+#: 
+msgid "Allow recording non-tax-deductible payments (e.g., merchandise sales)"
+msgstr "Lejoni regjistrimin e pagesave që nuk mund të zbriten nga tatimi (p.sh. shitje merce)"
+
+#: 
+msgid "Allow unauthenticated access to public events (for embedding calendars)"
+msgstr "Lejoni qasjen e pa-vërtetuar në ngjarje publike (për ngulitjen e kalendarëve)"
+
+#: 
+msgid "Automatically send birthday emails (requires background job scheduler)"
+msgstr "Dërgoni automatikisht email-et e ditëlindjes (kërkon planifikuesi i punës në prapavijë)"
+
+#: 
+msgid "Birthday Greeting Emails"
+msgstr "Email-et e Përshëndetjes për Ditëlindje"
+
+#: 
+msgid "Communication & Email"
+msgstr "Komunikimi dhe Email"
+
+#: 
+msgid "Content Security Policy"
+msgstr "Politika e Sigurimit të Përmbajtjes"
+
+#: 
+msgid "Email System"
+msgstr "Sistemi i Email"
+
+#: 
+msgid "Enable or disable features for your organization"
+msgstr "Aktivizoni ose çaktivizoni funksionet për organizatën tuaj"
+
+#: 
+msgid "Enable/disable the Events section in main navigation"
+msgstr "Aktivizoni/çaktivizoni seksionin e ngjarjeve në navigacionin kryesor"
+
+#: 
+msgid "Enable/disable the Finance menu and all finance features (deposits, payments, reports)"
+msgstr "Aktivizoni/çaktivizoni menynë e Financës dhe të gjithë funksionet e financave (depozita, pagesa, raporte)"
+
+#: 
+msgid "Enable/disable the Fundraiser menu"
+msgstr "Aktivizoni/çaktivizoni menynë e grumbullimit të fondeve"
+
+#: 
+msgid "Enforce strict CSP headers to protect against XSS attacks"
+msgstr "Zbatoni kokë CSP të rreptë për të mbrojtur kundër sulmeve XSS"
+
+#: 
+msgid "Events Module"
+msgstr "Moduli i Ngjarjeve"
+
+#: 
+msgid "Feature Toggles"
+msgstr "Çelësat e Funksionit"
+
+#: 
+msgid "Feature toggles control which modules and features are available in ChurchCRM. Changes take effect immediately."
+msgstr "Çelësat e funksionit kontrollojnë cilat module dhe funksione janë të disponueshme në ChurchCRM. Ndryshimet hyjnë në fuqi menjëherë."
+
+#: 
+msgid "Finance Features"
+msgstr "Funksionet e Financës"
+
+#: 
+msgid "Include addresses in quick global search"
+msgstr "Përfshi adresa në kërkimin global të shpejtë"
+
+#: 
+msgid "Include calendar events in quick global search"
+msgstr "Përfshi ngjarjet e kalendarit në kërkimin global të shpejtë"
+
+#: 
+msgid "Include custom family properties in quick global search"
+msgstr "Përfshi pronësi të familjes së personalizuar në kërkimin global të shpejtë"
+
+#: 
+msgid "Include deposits in quick global search"
+msgstr "Përfshi depozita në kërkimin global të shpejtë"
+
+#: 
+msgid "Include families in quick global search"
+msgstr "Përfshi familje në kërkimin global të shpejtë"
+
+#: 
+msgid "Include groups in quick global search"
+msgstr "Përfshi grupe në kërkimin global të shpejtë"
+
+#: 
+msgid "Include payments in quick global search"
+msgstr "Përfshi pagesa në kërkimin global të shpejtë"
+
+#: 
+msgid "Include people in quick global search"
+msgstr "Përfshi njerëz në kërkimin global të shpejtë"
+
+#: 
+msgid "Invalid setting"
+msgstr "Rregullim i pavlefshëm"
+
+#: 
+msgid "Lost Password Link"
+msgstr "Lidhja e fjalëkalimit të humbur"
+
+#: 
+msgid "Manage All Features"
+msgstr "Menaxhoni të Gjithë Funksionet"
+
+#: 
+msgid "Master toggle for email sending. REQUIRED for password resets and notifications"
+msgstr "Çelës kryesor për dërgimin e email. I NEVOJSHËM për rivendosjen e fjalëkalimit dhe njoftimet"
+
+#: 
+msgid "Non-Deductible Payments"
+msgstr "Pagesa të pakapshme"
+
+#: 
+msgid "Primary Modules"
+msgstr "Modulet Kryesore"
+
+#: 
+msgid "Public Calendar API"
+msgstr "API i Kalendarit Publik"
+
+#: 
+msgid "Saved"
+msgstr "Ruajtur"
+
+#: 
+msgid "Search Families"
+msgstr "Kërkimi i Familjeve"
+
+#: 
+msgid "Search Family Custom Properties"
+msgstr "Kërkimi i Pronësive të Familjes të Personalizuar"
+
+#: 
+msgid "Search Settings"
+msgstr "Cilësimet e Kërkimit"
+
+#: 
+msgid "Self-Registration"
+msgstr "Regjistrimi i Vetë"
+
+#: 
+msgid "Show \"Lost Password\" option on login screen (allows user self-reset)"
+msgstr "Shfaq opsionin \"Fjalëkalim i humbur\" në ekranin e hyrjes (lejon rivendosje të vetë të përdoruesit)"
+
+#: 
+msgid "Show/hide the Sunday School module in sidebar"
+msgstr "Shfaq/fshih modulin e Shkolës të Dielës në shiritin anësor"
+
+#: 
+msgid "Can't deactivate the only administrator who can sign in"
+msgstr "Nuk mund të çaktivizoni administratorin e vetëm që mund të hyjë"
+
+#: 
+msgid "Can't mark the only administrator who can sign in as deceased"
+msgstr "Nuk mund të shënoni administratorin e vetëm që mund të hyjë si të vdekur"
+
+#: 
+msgid "Deceased — cannot sign in"
+msgstr "I vdekur — nuk mund të hyj"
+
+#: 
+msgid "Enter a second address before marking it as the mailing address"
+msgstr "Futni një adresë të dytë përpara se ta shënoni si adresë postale"
+
+#: 
+msgid "Inactive — cannot sign in"
+msgstr "Joaktiv — nuk mund të hyj"
+
+#: 
+msgid "Mail goes to the second address; the primary address stays the physical location used for maps and directions."
+msgstr "Posta shkon në adresën e dytë; adresa parësore mbetet vendndodhja fizike e përdorur për hartat dhe udhëzimet."
+
+#: 
+msgid "Mail is sent to this address instead of the primary address"
+msgstr "Posta dërgohet në këtë adresë në vend të adresës parësore"
+
+#: 
+msgid "Mailing Address"
+msgstr "Adresa Postale"
+
+#: 
+msgid "Mailing Address if Different"
+msgstr "Adresa Postale nëse ndryshon"
+
+#: 
+msgid "Primary Address"
+msgstr "Adresa Parësore"
+
+#: 
+msgid "Receives Mail"
+msgstr "Merr Postë"
+
+#: 
+msgid "Second Address"
+msgstr "Adresa e Dytë"
+
+#: 
+msgid "Second Home"
+msgstr "Shtëpia e Dytë"
+
+#: 
+msgid "The linked person is deceased or inactive. Sign-in, sessions and the API key are blocked until the person is made active again."
+msgstr "Personi i lidhur është i vdekur ose joaktiv. Hyrja, seanseve dhe çelësi i API janë bllokuar derisa personi të bëhet përsëri aktiv."
+
+#: 
+msgid "This is the mailing address"
+msgstr "Kjo është adresa postale"
+
+#: 
+msgid "This person is deceased or inactive, so this account cannot sign in"
+msgstr "Ky person është i vdekur ose joaktiv, kështu që ky llogari nuk mund të hyj"
+
+#: 
+msgid "Only an administrator can delete a person who has a login."
+msgstr "Vetëm një administrator mund të fshijë një person që ka një hyrje."
+
+#: 
+msgid "The last administrator cannot be deleted."
+msgstr "Administratori i fundit nuk mund të fshihet."
+
+#: 
+msgid "Category"
+msgstr "Kategoria"
+
+#: 
+msgid "Category updated."
+msgstr "Kategoria u përditësua."
+
+#: 
+msgid "Delete Category"
+msgstr "Fshi kategorinë"
+
+#: 
+msgid "Failed to delete category"
+msgstr "Dështoi fshirja e kategorisë"
+
+#: 
+msgid "Failed to rename category"
+msgstr "Dështoi ndryshe emri i kategorisë"
+
+#: 
+msgid "Fund Categories"
+msgstr "Kategorite e Fondeve"
+
+#: 
+msgid "Fund activated."
+msgstr "Fondi u aktivizua."
+
+#: 
+msgid "Fund deactivated."
+msgstr "Fondi u deaktivizua."
+
+#: 
+msgid "Funds in this category will become uncategorized. The funds themselves are not deleted."
+msgstr "Fondet në këtë kategori do të bëhen të pakategorizuara. Vetë fondet nuk fshihen."
+
+#: 
+msgid "INACTIVE"
+msgstr "Joaktiv"
+
+#: 
+msgid "New category name (an existing name merges the two)"
+msgstr "Emri i ri i kategorisë (një emër ekzistues bashkon të dyja)"
+
+#: 
+msgid "Optional"
+msgstr "Opsional"
+
+#: 
+msgid "Optional — pick or type a new category"
+msgstr "Opsional — zgjedh ose shkruaj një kategori të re"
+
+#: 
+msgid "Paid beyond the pledge"
+msgstr "Paguar përtej premtimit"
+
+#: 
+msgid "Pledged but not yet paid"
+msgstr "Premtuar por akoma nuk është paguar"
+
+#: 
+msgid "Rename Category"
+msgstr "Ndrysho emrin e kategorisë"
+
+#: 
+msgid "Still Owed"
+msgstr "Akoma ka borxh"
+
+#: 
+msgid "Summary by Category"
+msgstr "Përmbledhja sipas kategorisë"
+
+#: 
+msgid "Total Paid"
+msgstr "Totali i paguar"
+
+#: 
+msgid "Uncategorized"
+msgstr "I pakategorizuar"
+
+#: 
+msgid "Could not load the current settings. Reload the page to try again."
+msgstr "Cilësimet aktuale nuk u ngarkuan dot. Rifreskoni faqen për të provuar përsëri."
+
+#: 
+msgid "This setting must be a number"
+msgstr "Ky cilësim duhet të jetë një numër"
+
+#: 
+msgid "Child Role"
+msgstr "Roli i fëmijës"
+
+#: 
+msgid "Directory inclusion can only be toggled for the classifications list"
+msgstr "Përfshirja në drejtori mund të ndërrohet vetëm për listën e klasifikimeve"
+
+#: 
+msgid "Greeter Message 1"
+msgstr "Mesazhi i mirëseardhjes 1"
+
+#: 
+msgid "Greeter Message 2"
+msgstr "Mesazhi i mirëseardhjes 2"
+
+#: 
+msgid "Head of House Role"
+msgstr "Roli i kryefamiljarit"
+
+#: 
+msgid "Hide Address Without Family"
+msgstr "Fshih adresat pa familje"
+
+#: 
+msgid "Hide Friend Date"
+msgstr "Fshih datën e miqësisë"
+
+#: 
+msgid "Hide Newsletter Subscriptions"
+msgstr "Fshih abonimet në buletin"
+
+#: 
+msgid "Hide Wedding Date"
+msgstr "Fshih datën e martesës"
+
+#: 
+msgid "In Directory"
+msgstr "Në drejtori"
+
+#: 
+msgid "Include Details in Notifications"
+msgstr "Përfshi detaje në njoftime"
+
+#: 
+msgid "Notification Recipients"
+msgstr "Marrësit e njoftimeve"
+
+#: 
+msgid "People to notify when a new family or person is added"
+msgstr "Personat që njoftohen kur shtohet një familje ose person i ri"
+
+#: 
+msgid "Person initials style"
+msgstr "Stili i inicialeve të personit"
+
+#: 
+msgid "Person name display style"
+msgstr "Stili i shfaqjes së emrit të personit"
+
+#: 
+msgid "Spouse Role"
+msgstr "Roli i bashkëshortit/es"
+
+#: 
+msgid "Uppercase Zip/Postcodes"
+msgstr "Kodet postare me shkronja të mëdha"
 

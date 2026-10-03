@@ -475,10 +475,6 @@ msgid "Photos"
 msgstr "तस्वीरें"
 
 #: 
-msgid "Number of Columns"
-msgstr "स्तंभों की संख्या"
-
-#: 
 msgid "Paper Size"
 msgstr "कागज का आकार"
 
@@ -842,10 +838,6 @@ msgstr "फोटो हटाएं"
 #: 
 msgid "Timeline"
 msgstr "समयरेखा"
-
-#: 
-msgid "Pledges and Payments"
-msgstr "प्रतिज्ञाएं और भुगतान"
 
 #: 
 msgid "Value"
@@ -4482,10 +4474,6 @@ msgid "For defining the date in Date-Picker, per default : Y-m-d, In French : d/
 msgstr "डेट-पिकर में तिथि परिभाषित करने के लिए, डिफ़ॉल्ट रूप से: Y-m-d।"
 
 #: 
-msgid "Comma Separated list of PersonIDs of people to notify when a new family or person is added"
-msgstr "नया परिवार या व्यक्ति जोड़े जाने पर सूचित किए जाने वाले व्यक्तियों की PersonIDs की सूची"
-
-#: 
 msgid "Allow unauthenticated reads of events from the external calendar API"
 msgstr "बाहरी कैलेंडर API से कार्यक्रमों को बिना प्रमाणीकरण के पढ़ने की अनुमति दें"
 
@@ -7324,10 +7312,6 @@ msgstr "यह उपस्थिति गणना हटाएं?"
 #: 
 msgid "Select the type of record this property applies to"
 msgstr "इस संपत्ति पर लागू होने वाले रिकॉर्ड का प्रकार चुनें"
-
-#: 
-msgid "Total Pledges"
-msgstr "कुल प्रतिज्ञाएं"
 
 #: 
 msgid "Track and manage pledge commitments by family and fund"
@@ -10913,10 +10897,6 @@ msgstr "सार्वजनिक HTML, ICS और JSON URL के माध�
 msgid "Allow visitors to create their own family record via the self-registration page"
 msgstr "आगंतुकों को स्व-पंजीकरण पृष्ठ के माध्यम से अपना परिवार रिकॉर्ड बनाने की अनुमति दें"
 
-#: 
-msgid "Allow visitors to self-register as new families."
-msgstr "आगंतुकों को नए परिवार के रूप में स्व-पंजीकरण करने की अनुमति दें।"
-
 #. plugin:external-backup:section:5:content
 #: 
 msgid "Any WebDAV-compatible service works with this plugin:\n"
@@ -12692,10 +12672,6 @@ msgstr "कुल कियोस्क"
 #: 
 msgid "Upcoming Events"
 msgstr "आगामी ईवेंट"
-
-#: 
-msgid "Absolute http(s) URL of the church logo shown in email templates (and re-used elsewhere in the future). For best rendering across email clients, use a wide banner image at roughly a 3.5:1 aspect ratio (for example 350×100 px), PNG or JPG, served over HTTPS. Leave blank or enter an invalid value to fall back to the default ChurchCRM logo."
-msgstr "ईमेल टेम्पलेट में दिखाए जाने वाले चर्च लोगो का पूर्ण http(s) URL (और भविष्य में अन्य स्थानों पर पुनः उपयोग किया जाएगा)। ईमेल क्लाइंट में सर्वोत्तम रेंडरिंग के लिए, लगभग 3.5:1 पहलू अनुपात (उदाहरण के लिए 350×100 px) की एक चौड़ी बैनर छवि, PNG या JPG, HTTPS के माध्यम से सर्व की गई, उपयोग करें। डिफ़ॉल्ट ChurchCRM लोगो पर वापस जाने के लिए खाली छोड़ें या अमान्य मान दर्ज करें।"
 
 #: 
 msgid "An option with that name already exists"
@@ -14896,10 +14872,6 @@ msgstr "सभी को टेक्स्ट करें"
 #: 
 msgid "The selected file exceeds this servers maximum upload size of"
 msgstr "चयनित फ़ाइल इस सर्वर के अधिकतम अपलोड आकार से अधिक है"
-
-#: 
-msgid "There are no events scheduled for today"
-msgstr "आज के लिए कोई कार्यक्रम निर्धारित नहीं है"
 
 #: 
 msgid "There was a problem retrieving the requested object"
@@ -17994,10 +17966,6 @@ msgid "Errors"
 msgstr "त्रुटियाँ"
 
 #: 
-msgid "Exclude deceased members from the printed directory and CSV exports."
-msgstr "मुद्रित निर्देशिका और CSV एक्सपोर्ट से दिवंगत सदस्यों को बाहर रखें।"
-
-#: 
 msgid "Failed Files"
 msgstr "विफल फ़ाइलें"
 
@@ -18508,4 +18476,648 @@ msgstr "ईमेल क्लाइंट के लिए बहुत अध�
 #: 
 msgid "{{minutes}} min left"
 msgstr "{{minutes}} मिनट शेष"
+
+#: 
+msgid "%d tax document emailed to the family successfully."
+msgstr "%d कर दस्तावेज़ परिवार को सफलतापूर्वक ईमेल किए गए।"
+
+#: 
+msgid "%s %d Giving Statement"
+msgstr "%s %d दान विवरण"
+
+#: 
+msgid "All classifications"
+msgstr "सभी वर्गीकरण"
+
+#: 
+msgid "As an admin, please also review the"
+msgstr "प्रशासक के रूप में, कृपया की भी समीक्षा करें"
+
+#: 
+msgid "Birthdays, anniversaries, volunteers and other people lists with a classification filter"
+msgstr "जन्मदिन, वर्षगांठ, स्वयंसेवक और अन्य लोगों की सूची वर्गीकरण फ़िल्टर के साथ"
+
+#: 
+msgid "Choose %s to run this report."
+msgstr "इस रिपोर्ट को चलाने के लिए %s चुनें।"
+
+#: 
+msgid "Choose events"
+msgstr "ईवेंट चुनें"
+
+#: 
+msgid "Choose..."
+msgstr "चुनें..."
+
+#: 
+msgid "Church Logo"
+msgstr "चर्च लोगो"
+
+#: 
+msgid "Columns per Page"
+msgstr "प्रति पृष्ठ स्तंभ"
+
+#: 
+msgid "Dear %s Family,\n"
+"\n"
+"Please find your %d giving statement from %s attached to this email.\n"
+"\n"
+"If you have any questions, please contact the church office.\n"
+"\n"
+"Thank you for your generosity."
+msgstr "प्रिय %1$s परिवार,\n"
+"\n"
+"कृपया इस ईमेल में %3$s से आपके %2$d दान विवरण को संलग्न पाएं।\n"
+"\n"
+"यदि आपके कोई प्रश्न हैं, तो कृपया चर्च कार्यालय से संपर्क करें।\n"
+"\n"
+"आपकी उदारता के लिए धन्यवाद।"
+
+#: 
+msgid "Download CSV"
+msgstr "CSV डाउनलोड करें"
+
+#: 
+msgid "Email %d Tax Doc"
+msgstr "%d कर दस्तावेज़ ईमेल करें"
+
+#: 
+msgid "Enable or disable the Finance module and sidebar menu."
+msgstr "वित्त मॉड्यूल और साइडबार मेनू को सक्षम या अक्षम करें।"
+
+#: 
+msgid "Enable or disable the Fundraiser module."
+msgstr "धनराशि संग्रह मॉड्यूल को सक्षम या अक्षम करें।"
+
+#: 
+msgid "Failed to remove church logo"
+msgstr "चर्च लोगो को हटाने में विफल"
+
+#: 
+msgid "Failed to upload church logo"
+msgstr "चर्च लोगो अपलोड करने में विफल"
+
+#: 
+msgid "Fallback logo URL for email templates, used only when no church logo has been uploaded on the Church Information page. The application's own pages ignore this setting and always use the uploaded logo or the default ChurchCRM logo. Must be an absolute http(s) URL. For best rendering across email clients, use a wide banner image at roughly a 3.5:1 aspect ratio (for example 350×100 px), PNG or JPG, served over HTTPS. Leave blank or enter an invalid value to fall back to the default ChurchCRM logo."
+msgstr "ईमेल टेम्पलेट के लिए फ़ॉलबैक लोगो URL, केवल तभी उपयोग किया जाता है जब चर्च की जानकारी पृष्ठ पर कोई चर्च लोगो अपलोड नहीं किया गया हो। एप्लिकेशन के अपने पृष्ठ इस सेटिंग को अनदेखा करते हैं और हमेशा अपलोड किए गए लोगो या डिफ़ॉल्ट ChurchCRM लोगो का उपयोग करते हैं। एक निरपेक्ष http(s) URL होना चाहिए। ईमेल क्लाइंट्स में सर्वोत्तम प्रतिपादन के लिए, लगभग 3.5:1 पहलू अनुपात (उदाहरण के लिए 350×100 px) पर एक विस्तृत बैनर छवि का उपयोग करें, HTTPS पर परोसी गई PNG या JPG। डिफ़ॉल्ट ChurchCRM लोगो पर वापस जाने के लिए खाली छोड़ें या एक अमान्य मान दर्ज करें।"
+
+#: 
+msgid "Finance Module"
+msgstr "वित्त मॉड्यूल"
+
+#: 
+msgid "Find people who did not attend an event"
+msgstr "उन लोगों को खोजें जो किसी ईवेंट में नहीं आए"
+
+#: 
+msgid "Find volunteers who match two specific opportunity codes"
+msgstr "दो विशिष्ट अवसर कोड से मेल खाने वाले स्वयंसेवकों को खोजें"
+
+#: 
+msgid "First Volunteer Opportunity"
+msgstr "पहला स्वयंसेवक अवसर"
+
+#: 
+msgid "Folded Booklet"
+msgstr "तह की गई पुस्तिका"
+
+#: 
+msgid "Fundraiser Module"
+msgstr "धनराशि संग्रह मॉड्यूल"
+
+#: 
+msgid "Giving History"
+msgstr "दान का इतिहास"
+
+#: 
+msgid "Last Gift"
+msgstr "अंतिम उपहार"
+
+#: 
+msgid "Leave empty for all classifications."
+msgstr "सभी वर्गीकरण के लिए खाली छोड़ें।"
+
+#: 
+msgid "Maximum number of tax year documents to show per family profile (0 = no limit)"
+msgstr "प्रति परिवार प्रोफ़ाइल दिखाने के लिए कर वर्ष दस्तावेज़ों की अधिकतम संख्या (0 = कोई सीमा नहीं)"
+
+#: 
+msgid "Maximum tax years shown per family"
+msgstr "प्रति परिवार दिखाए गए अधिकतम कर वर्ष"
+
+#: 
+msgid "Membership Anniversaries"
+msgstr "सदस्यता वर्षगांठ"
+
+#: 
+msgid "Missing People"
+msgstr "लापता लोग"
+
+#: 
+msgid "No giving history found."
+msgstr "कोई दान का इतिहास नहीं मिला।"
+
+#: 
+msgid "No people match these filters."
+msgstr "कोई भी व्यक्ति इन फ़िल्टर से मेल नहीं खाता।"
+
+#: 
+msgid "One directory page per sheet, portrait."
+msgstr "प्रति शीट एक निर्देशिका पृष्ठ, पोर्ट्रेट।"
+
+#: 
+msgid "Only http and https schemes are allowed."
+msgstr "केवल http और https योजनाएं अनुमति हैं।"
+
+#: 
+msgid "PNG, JPG, GIF or WebP. A wide banner of roughly 3.5:1 (for example 700x200) works best; transparent PNG preferred."
+msgstr "PNG, JPG, GIF या WebP। लगभग 3.5:1 (उदाहरण के लिए 700x200) का एक विस्तृत बैनर सर्वोत्तम काम करता है; पारदर्शी PNG पसंदीदा।"
+
+#: 
+msgid "Page Layout"
+msgstr "पृष्ठ लेआउट"
+
+#: 
+msgid "People who joined in a particular month"
+msgstr "जो लोग किसी विशेष महीने में शामिल हुए"
+
+#: 
+msgid "Pledged"
+msgstr "प्रतिज्ञा की गई"
+
+#: 
+msgid "Print %d Tax Doc"
+msgstr "%d कर दस्तावेज़ प्रिंट करें"
+
+#: 
+msgid "Queries"
+msgstr "क्वेरी"
+
+#: 
+msgid "Recent Friends"
+msgstr "हाल के मित्र"
+
+#: 
+msgid "Report not found"
+msgstr "रिपोर्ट नहीं मिली"
+
+#: 
+msgid "Run Report"
+msgstr "रिपोर्ट चलाएं"
+
+#: 
+msgid "Second Volunteer Opportunity"
+msgstr "दूसरा स्वयंसेवक अवसर"
+
+#: 
+msgid "Shown in the sidebar, on the login page and in emails. Uploading a logo replaces the ChurchCRM branding everywhere it appears."
+msgstr "साइडबार में, लॉगिन पृष्ठ पर और ईमेल में दिखाया गया। एक लोगो अपलोड करना ChurchCRM ब्रांडिंग को हर जगह बदल देता है।"
+
+#: 
+msgid "Single Pages"
+msgstr "एकल पृष्ठ"
+
+#: 
+msgid "Tax Documents"
+msgstr "कर दस्तावेज़"
+
+#: 
+msgid "Tax document email failed to send. Please check your email server settings."
+msgstr "कर दस्तावेज़ ईमेल भेजने में विफल। कृपया अपनी ईमेल सर्वर सेटिंग की जांच करें।"
+
+#: 
+msgid "Two half-size pages side by side on each landscape sheet, in booklet order. Print double-sided with \"flip on short edge\", then fold the stack in half. Columns are counted per half page."
+msgstr "प्रत्येक लैंडस्केप शीट पर एक दूसरे के बगल में दो आधे आकार के पृष्ठ, पुस्तिका क्रम में। \"छोटी किनारे पर फ़्लिप\" के साथ दोनों ओर प्रिंट करें, फिर स्टैक को आधा में मोड़ें। स्तंभ प्रति आधे पृष्ठ की गणना की जाती है।"
+
+#: 
+msgid "Unable to email tax document: no payment data found for that year."
+msgstr "कर दस्तावेज़ ईमेल करने में असमर्थ: उस वर्ष के लिए कोई भुगतान डेटा नहीं मिला।"
+
+#: 
+msgid "Unable to email tax document: this family has no email address on file."
+msgstr "कर दस्तावेज़ ईमेल करने में असमर्थ: इस परिवार के पास फ़ाइल में कोई ईमेल पता नहीं है।"
+
+#: 
+msgid "Unable to resolve OpenLP server hostname. Check the address and your network connection."
+msgstr "OpenLP सर्वर होस्टनाम को हल करने में असमर्थ। पता और अपने नेटवर्क कनेक्शन की जांच करें।"
+
+#: 
+msgid "Upload"
+msgstr "अपलोड"
+
+#: 
+msgid "Using default ChurchCRM logo"
+msgstr "डिफ़ॉल्ट ChurchCRM लोगो का उपयोग करते हुए"
+
+#: 
+msgid "View Full Family Giving"
+msgstr "पूर्ण परिवार दान देखें"
+
+#: 
+msgid "Volunteer Opportunity"
+msgstr "स्वयंसेवक अवसर"
+
+#: 
+msgid "Volunteers for Two Opportunities"
+msgstr "दो अवसरों के लिए स्वयंसेवक"
+
+#: 
+msgid "YTD"
+msgstr "वर्ष-से-अब तक"
+
+#: 
+msgid "YTD Paid"
+msgstr "YTD भुगतान"
+
+#: 
+msgid "for errors around the time this happened, and download and attach the relevant log file to your GitHub issue — it helps us fix the problem without asking follow-up questions."
+msgstr "इस समय के आसपास त्रुटियों के लिए, और अपने GitHub समस्या में प्रासंगिक लॉग फ़ाइल को डाउनलोड और संलग्न करें - यह हमें अनुवर्ती प्रश्नों के बिना समस्या को ठीक करने में मदद करता है।"
+
+#: 
+msgid "system logs"
+msgstr "सिस्टम लॉग"
+
+#: 
+msgid "Access Control & Security"
+msgstr "अभिगम नियंत्रण और सुरक्षा"
+
+#: 
+msgid "Allow recording non-tax-deductible payments (e.g., merchandise sales)"
+msgstr "कर-कटौती योग्य न होने वाले भुगतान दर्ज करने की अनुमति दें (जैसे, सामग्री की बिक्री)"
+
+#: 
+msgid "Allow unauthenticated access to public events (for embedding calendars)"
+msgstr "सार्वजनिक कार्यक्रमों तक बिना लॉगिन के पहुंच की अनुमति दें (कैलेंडर एम्बेड करने के लिए)"
+
+#: 
+msgid "Automatically send birthday emails (requires background job scheduler)"
+msgstr "जन्मदिन के ईमेल स्वचालित रूप से भेजें (बैकग्राउंड जॉब शेड्यूलर आवश्यक है)"
+
+#: 
+msgid "Birthday Greeting Emails"
+msgstr "जन्मदिन की शुभकामना ईमेल"
+
+#: 
+msgid "Communication & Email"
+msgstr "संचार और ईमेल"
+
+#: 
+msgid "Content Security Policy"
+msgstr "सामग्री सुरक्षा नीति"
+
+#: 
+msgid "Email System"
+msgstr "ईमेल प्रणाली"
+
+#: 
+msgid "Enable or disable features for your organization"
+msgstr "अपने संगठन के लिए सुविधाएं सक्षम या अक्षम करें"
+
+#: 
+msgid "Enable/disable the Events section in main navigation"
+msgstr "मुख्य नेविगेशन में कार्यक्रम अनुभाग सक्षम/अक्षम करें"
+
+#: 
+msgid "Enable/disable the Finance menu and all finance features (deposits, payments, reports)"
+msgstr "वित्त मेनू और सभी वित्त सुविधाओं (जमा, भुगतान, रिपोर्ट) को सक्षम/अक्षम करें"
+
+#: 
+msgid "Enable/disable the Fundraiser menu"
+msgstr "धन-संग्रह मेनू सक्षम/अक्षम करें"
+
+#: 
+msgid "Enforce strict CSP headers to protect against XSS attacks"
+msgstr "XSS हमलों से बचाव के लिए सख्त CSP हेडर लागू करें"
+
+#: 
+msgid "Events Module"
+msgstr "कार्यक्रम मॉड्यूल"
+
+#: 
+msgid "Feature Toggles"
+msgstr "सुविधा स्विच"
+
+#: 
+msgid "Feature toggles control which modules and features are available in ChurchCRM. Changes take effect immediately."
+msgstr "सुविधा स्विच नियंत्रित करते हैं कि ChurchCRM में कौन से मॉड्यूल और सुविधाएं उपलब्ध हैं। परिवर्तन तुरंत प्रभावी होते हैं।"
+
+#: 
+msgid "Finance Features"
+msgstr "वित्त सुविधाएं"
+
+#: 
+msgid "Include addresses in quick global search"
+msgstr "त्वरित वैश्विक खोज में पते शामिल करें"
+
+#: 
+msgid "Include calendar events in quick global search"
+msgstr "त्वरित वैश्विक खोज में कैलेंडर कार्यक्रम शामिल करें"
+
+#: 
+msgid "Include custom family properties in quick global search"
+msgstr "त्वरित वैश्विक खोज में कस्टम परिवार गुण शामिल करें"
+
+#: 
+msgid "Include deposits in quick global search"
+msgstr "त्वरित वैश्विक खोज में जमा शामिल करें"
+
+#: 
+msgid "Include families in quick global search"
+msgstr "त्वरित वैश्विक खोज में परिवार शामिल करें"
+
+#: 
+msgid "Include groups in quick global search"
+msgstr "त्वरित वैश्विक खोज में मंत्रालय शामिल करें"
+
+#: 
+msgid "Include payments in quick global search"
+msgstr "त्वरित वैश्विक खोज में भुगतान शामिल करें"
+
+#: 
+msgid "Include people in quick global search"
+msgstr "त्वरित वैश्विक खोज में लोग शामिल करें"
+
+#: 
+msgid "Invalid setting"
+msgstr "अमान्य सेटिंग"
+
+#: 
+msgid "Lost Password Link"
+msgstr "पासवर्ड भूल गए लिंक"
+
+#: 
+msgid "Manage All Features"
+msgstr "सभी सुविधाएं प्रबंधित करें"
+
+#: 
+msgid "Master toggle for email sending. REQUIRED for password resets and notifications"
+msgstr "ईमेल भेजने का मुख्य स्विच। पासवर्ड रीसेट और सूचनाओं के लिए आवश्यक"
+
+#: 
+msgid "Non-Deductible Payments"
+msgstr "कर-कटौती योग्य न होने वाले भुगतान"
+
+#: 
+msgid "Primary Modules"
+msgstr "प्रमुख मॉड्यूल"
+
+#: 
+msgid "Public Calendar API"
+msgstr "सार्वजनिक कैलेंडर API"
+
+#: 
+msgid "Saved"
+msgstr "सहेजा गया"
+
+#: 
+msgid "Search Families"
+msgstr "परिवार खोजें"
+
+#: 
+msgid "Search Family Custom Properties"
+msgstr "परिवार के कस्टम गुण खोजें"
+
+#: 
+msgid "Search Settings"
+msgstr "सेटिंग खोजें"
+
+#: 
+msgid "Self-Registration"
+msgstr "स्व-पंजीकरण"
+
+#: 
+msgid "Show \"Lost Password\" option on login screen (allows user self-reset)"
+msgstr "लॉगिन स्क्रीन पर \"पासवर्ड भूल गए\" विकल्प दिखाएं (उपयोगकर्ता को स्वयं रीसेट करने देता है)"
+
+#: 
+msgid "Show/hide the Sunday School module in sidebar"
+msgstr "साइडबार में रविवारीय पाठशाला मॉड्यूल दिखाएं/छिपाएं"
+
+#: 
+msgid "Can't deactivate the only administrator who can sign in"
+msgstr "एकमात्र ऐसे व्यवस्थापक को निष्क्रिय नहीं किया जा सकता जो साइन इन कर सकता है"
+
+#: 
+msgid "Can't mark the only administrator who can sign in as deceased"
+msgstr "एकमात्र ऐसे व्यवस्थापक को दिवंगत के रूप में चिह्नित नहीं किया जा सकता जो साइन इन कर सकता है"
+
+#: 
+msgid "Deceased — cannot sign in"
+msgstr "दिवंगत — साइन इन नहीं कर सकते"
+
+#: 
+msgid "Enter a second address before marking it as the mailing address"
+msgstr "दूसरे पते को डाक पते के रूप में चिह्नित करने से पहले उसे दर्ज करें"
+
+#: 
+msgid "Inactive — cannot sign in"
+msgstr "निष्क्रिय — साइन इन नहीं कर सकते"
+
+#: 
+msgid "Mail goes to the second address; the primary address stays the physical location used for maps and directions."
+msgstr "डाक दूसरे पते पर जाती है; प्राथमिक पता वह भौतिक स्थान बना रहता है जो मानचित्र और दिशा-निर्देशों के लिए उपयोग होता है।"
+
+#: 
+msgid "Mail is sent to this address instead of the primary address"
+msgstr "डाक प्राथमिक पते के बजाय इस पते पर भेजी जाती है"
+
+#: 
+msgid "Mailing Address"
+msgstr "डाक पता"
+
+#: 
+msgid "Mailing Address if Different"
+msgstr "यदि भिन्न हो तो डाक पता"
+
+#: 
+msgid "Primary Address"
+msgstr "प्राथमिक पता"
+
+#: 
+msgid "Receives Mail"
+msgstr "डाक प्राप्त करता है"
+
+#: 
+msgid "Second Address"
+msgstr "दूसरा पता"
+
+#: 
+msgid "Second Home"
+msgstr "दूसरा घर"
+
+#: 
+msgid "The linked person is deceased or inactive. Sign-in, sessions and the API key are blocked until the person is made active again."
+msgstr "संबद्ध व्यक्ति दिवंगत या निष्क्रिय है। व्यक्ति के पुनः सक्रिय होने तक साइन-इन, सत्र और API कुंजी अवरुद्ध हैं।"
+
+#: 
+msgid "This is the mailing address"
+msgstr "यह डाक पता है"
+
+#: 
+msgid "This person is deceased or inactive, so this account cannot sign in"
+msgstr "यह व्यक्ति दिवंगत या निष्क्रिय है, इसलिए यह खाता साइन इन नहीं कर सकता"
+
+#: 
+msgid "Only an administrator can delete a person who has a login."
+msgstr "केवल व्यवस्थापक ही लॉगिन वाले व्यक्ति को हटा सकता है।"
+
+#: 
+msgid "The last administrator cannot be deleted."
+msgstr "अंतिम व्यवस्थापक को हटाया नहीं जा सकता।"
+
+#: 
+msgid "Category"
+msgstr "श्रेणी"
+
+#: 
+msgid "Category updated."
+msgstr "श्रेणी अपडेट की गई।"
+
+#: 
+msgid "Delete Category"
+msgstr "श्रेणी हटाएं"
+
+#: 
+msgid "Failed to delete category"
+msgstr "श्रेणी हटाने में विफल"
+
+#: 
+msgid "Failed to rename category"
+msgstr "श्रेणी का नाम बदलने में विफल"
+
+#: 
+msgid "Fund Categories"
+msgstr "निधि श्रेणियां"
+
+#: 
+msgid "Fund activated."
+msgstr "निधि सक्रिय की गई।"
+
+#: 
+msgid "Fund deactivated."
+msgstr "निधि निष्क्रिय की गई।"
+
+#: 
+msgid "Funds in this category will become uncategorized. The funds themselves are not deleted."
+msgstr "इस श्रेणी की निधियां अवर्गीकृत हो जाएंगी। निधियां स्वयं हटाई नहीं जाती हैं।"
+
+#: 
+msgid "INACTIVE"
+msgstr "निष्क्रिय"
+
+#: 
+msgid "New category name (an existing name merges the two)"
+msgstr "नई श्रेणी का नाम (मौजूदा नाम डालने पर दोनों मिल जाएंगी)"
+
+#: 
+msgid "Optional"
+msgstr "वैकल्पिक"
+
+#: 
+msgid "Optional — pick or type a new category"
+msgstr "वैकल्पिक — कोई श्रेणी चुनें या नई लिखें"
+
+#: 
+msgid "Paid beyond the pledge"
+msgstr "वित्तीय प्रतिबद्धता से अधिक भुगतान"
+
+#: 
+msgid "Pledged but not yet paid"
+msgstr "वित्तीय प्रतिबद्धता की गई पर अभी भुगतान नहीं हुआ"
+
+#: 
+msgid "Rename Category"
+msgstr "श्रेणी का नाम बदलें"
+
+#: 
+msgid "Still Owed"
+msgstr "अभी देय शेष"
+
+#: 
+msgid "Summary by Category"
+msgstr "श्रेणी के अनुसार सारांश"
+
+#: 
+msgid "Total Paid"
+msgstr "कुल भुगतान"
+
+#: 
+msgid "Uncategorized"
+msgstr "अवर्गीकृत"
+
+#: 
+msgid "Could not load the current settings. Reload the page to try again."
+msgstr "वर्तमान सेटिंग लोड नहीं हो सकीं। पुनः प्रयास करने के लिए पृष्ठ को रीलोड करें।"
+
+#: 
+msgid "This setting must be a number"
+msgstr "यह सेटिंग एक संख्या होनी चाहिए"
+
+#: 
+msgid "Child Role"
+msgstr "बच्चे की भूमिका"
+
+#: 
+msgid "Directory inclusion can only be toggled for the classifications list"
+msgstr "निर्देशिका में शामिल करना केवल वर्गीकरण सूची के लिए बदला जा सकता है"
+
+#: 
+msgid "Greeter Message 1"
+msgstr "स्वागत संदेश 1"
+
+#: 
+msgid "Greeter Message 2"
+msgstr "स्वागत संदेश 2"
+
+#: 
+msgid "Head of House Role"
+msgstr "परिवार के मुखिया की भूमिका"
+
+#: 
+msgid "Hide Address Without Family"
+msgstr "बिना परिवार वाले पते छिपाएँ"
+
+#: 
+msgid "Hide Friend Date"
+msgstr "मित्रता की तारीख छिपाएँ"
+
+#: 
+msgid "Hide Newsletter Subscriptions"
+msgstr "न्यूज़लेटर सदस्यताएँ छिपाएँ"
+
+#: 
+msgid "Hide Wedding Date"
+msgstr "विवाह की तारीख छिपाएँ"
+
+#: 
+msgid "In Directory"
+msgstr "निर्देशिका में"
+
+#: 
+msgid "Include Details in Notifications"
+msgstr "सूचनाओं में विवरण शामिल करें"
+
+#: 
+msgid "Notification Recipients"
+msgstr "सूचना प्राप्तकर्ता"
+
+#: 
+msgid "People to notify when a new family or person is added"
+msgstr "नया परिवार या व्यक्ति जोड़े जाने पर सूचित किए जाने वाले लोग"
+
+#: 
+msgid "Person initials style"
+msgstr "व्यक्ति के आद्याक्षर की शैली"
+
+#: 
+msgid "Person name display style"
+msgstr "व्यक्ति के नाम की प्रदर्शन शैली"
+
+#: 
+msgid "Spouse Role"
+msgstr "जीवनसाथी की भूमिका"
+
+#: 
+msgid "Uppercase Zip/Postcodes"
+msgstr "पिन कोड बड़े अक्षरों में"
 
