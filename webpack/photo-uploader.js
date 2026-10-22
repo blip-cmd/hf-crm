@@ -73,6 +73,16 @@ function shrinkToBox(blob, maxWidth, maxHeight) {
   });
 }
 
+const HEIC_PATTERN = /\.(heic|heif)$/i;
+
+/**
+ * @param {{name?: string, type?: string}} file
+ * @returns {boolean}
+ */
+function isHeic(file) {
+  return /^image\/hei[cf]/i.test(file.type || "") || HEIC_PATTERN.test(file.name || "");
+}
+
 /**
  * @param {Blob} blob
  * @returns {Promise<string>} The blob as a data: URL
@@ -121,13 +131,22 @@ export function createPhotoUploader(config) {
   const allowWebcam = config.webcam !== false;
   const dashboardTitle = config.title || "Upload Photo";
 
+  let heicConversions = 0;
+
   const uppy = new Uppy({
     id: "photo-uploader",
     autoProceed: false,
+    onBeforeUpload: (files) => {
+      if (heicConversions > 0) {
+        showPersistentError("This HEIC photo is still being converted. Try again in a moment.");
+        return false;
+      }
+      return files;
+    },
     restrictions: {
       maxNumberOfFiles: 1,
       maxFileSize: MAX_SOURCE_FILE_BYTES,
-      allowedFileTypes: ["image/*"],
+      allowedFileTypes: ["image/*", ".heic", ".heif"],
     },
   }).use(Dashboard, {
     inline: false, // Use modal mode
@@ -230,6 +249,47 @@ export function createPhotoUploader(config) {
     showPersistentError(message);
   });
 
+  // Browsers cannot open HEIC (iPhone) photos, so convert them to JPEG as they are added;
+  // the editor, the resize and the server then only ever see a JPEG. The converter is a
+  // large library, loaded only when a HEIC file is picked.
+  uppy.on("file-added", async (file) => {
+    if (!isHeic(file) || !(file.data instanceof Blob)) {
+      return;
+    }
+    clearPersistentError();
+    heicConversions++;
+    let jpeg;
+    let sourceStillPresent = false;
+    try {
+      const { default: heic2any } = await import("heic2any");
+      const converted = await heic2any({ blob: file.data, toType: "image/jpeg", quality: 0.9 });
+      jpeg = Array.isArray(converted) ? converted[0] : converted;
+    } catch (error) {
+      console.error("HEIC conversion failed", error);
+      showPersistentError("This HEIC photo could not be converted. Export it as a JPEG and try again.");
+    } finally {
+      heicConversions--;
+      // A remove click during conversion must not be undone by adding the JPEG.
+      sourceStillPresent = Boolean(uppy.getFile(file.id));
+      if (sourceStillPresent) {
+        uppy.removeFile(file.id);
+      }
+    }
+    if (!jpeg || !sourceStillPresent) {
+      return;
+    }
+    try {
+      uppy.addFile({
+        name: file.name.replace(HEIC_PATTERN, ".jpg"),
+        type: "image/jpeg",
+        data: jpeg,
+        source: file.source,
+      });
+    } catch (error) {
+      console.error("Converted HEIC photo was rejected", error);
+    }
+  });
+
   // An uploader step, not an `upload` listener: Uppy emits `complete` only after this
   // resolves, so onComplete (a page reload) cannot run before the photo is sent (#10269).
   uppy.addUploader(async (fileIDs) => {
@@ -315,26 +375,14 @@ function showPersistentError(message) {
   if (!errorContainer) {
     errorContainer = document.createElement("div");
     errorContainer.id = "uppy-error-container";
-    errorContainer.style.cssText =
-      "position:fixed;top:20px;right:20px;z-index:10000;max-width:400px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;";
+    errorContainer.className = "uppy-error-container";
     document.body.appendChild(errorContainer);
   }
 
-  // Inject slide-in animation once
-  if (!document.getElementById("uppy-error-animation")) {
-    const style = document.createElement("style");
-    style.id = "uppy-error-animation";
-    style.textContent =
-      "@keyframes uppySlideIn{from{transform:translateX(500px);opacity:0}to{transform:translateX(0);opacity:1}}";
-    document.head.appendChild(style);
-  }
-
   const alertDiv = document.createElement("div");
-  alertDiv.className = "alert alert-danger alert-dismissible fade show";
+  alertDiv.className = "alert alert-danger alert-dismissible fade show uppy-error-alert";
   alertDiv.role = "alert";
-  alertDiv.style.cssText =
-    "margin:0;padding:12px 16px;border-radius:4px;box-shadow:0 2px 8px rgba(0,0,0,.15);animation:uppySlideIn .3s ease-out;";
-  alertDiv.innerHTML = `<strong>Upload Error</strong><p style="margin:4px 0 0;font-size:.95em;">${escapeHtml(message)}</p><button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>`;
+  alertDiv.innerHTML = `<strong>Upload Error</strong><p class="uppy-error-message">${escapeHtml(message)}</p><button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>`;
 
   // No auto-dismiss — user must close manually or start a new upload
   errorContainer.appendChild(alertDiv);

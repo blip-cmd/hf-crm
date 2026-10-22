@@ -17,6 +17,8 @@ export interface CaptureOptions {
   category: string;
   /** Name of this capture's dark-mode twin, when there is one. */
   dark?: string;
+  /** Where a page links this capture. A used capture is never deleted: `npm run lint`. */
+  usedIn?: ReadonlyArray<'docs' | 'website'>;
 }
 
 /**
@@ -80,6 +82,8 @@ export async function captureScreen(page: Page, testInfo: TestInfo, opts: Captur
   }
 
   // For screenshot tests, capture all viewports in a single test run (3x faster)
+  // The kiosk goes fullscreen on its first tap, and Chrome refuses to resize a fullscreen window.
+  await page.evaluate(() => document.fullscreenElement && document.exitFullscreen());
   for (const vp of VIEWPORTS) {
     await page.setViewportSize({ width: vp.width, height: vp.height });
     await captureAtViewport(page, testInfo, opts, vp.device);
@@ -170,6 +174,7 @@ async function captureAtViewport(
     title: opts.title,
     category: opts.category,
     dark: opts.dark ?? null,
+    usedIn: opts.usedIn ?? [],
     device,
     viewport: { width: viewport.width, height: viewport.height },
     screenshot: screenshotPath,

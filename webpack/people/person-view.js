@@ -8,10 +8,10 @@
  * Also handles the "Refresh Coordinates" button shown when the person's family
  * has no stored coordinates (calls POST /family/{id}/geocode).
  *
- * Leaflet is loaded as a global from skin/external/leaflet/leaflet.js
- * (see webpack externals: { leaflet: 'L' }).
+ * Leaflet comes from webpack/leaflet-global.js.
  */
-import L from "leaflet";
+import L from "../leaflet-global";
+import { formatTimeElements } from "../ministries/components/ui";
 import { initAttendanceHistory } from "./attendance-history";
 import { initRefreshCoordinatesBtn } from "./geo-refresh";
 import { initGroupManager } from "./person-group-manager";
@@ -19,6 +19,8 @@ import { initTimelineFilter } from "./timeline-filter";
 
 document.addEventListener("DOMContentLoaded", () => {
   document.querySelectorAll(".timeline-container").forEach(initTimelineFilter);
+  // The Volunteer v2 pane's dates (#9711), in ChurchCRM's locale.
+  formatTimeElements();
   // Map initialisation
   const config = window.CRM?.personMapConfig;
   if (config) {

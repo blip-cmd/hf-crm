@@ -6,6 +6,7 @@ require_once __DIR__ . '/Include/PageInit.php';
 use ChurchCRM\Authentication\AuthenticationManager;
 use ChurchCRM\model\ChurchCRM\PersonQuery;
 use ChurchCRM\model\ChurchCRM\PersonVolunteerOpportunityQuery;
+use ChurchCRM\model\ChurchCRM\User;
 use ChurchCRM\model\ChurchCRM\VolunteerOpportunity;
 use ChurchCRM\model\ChurchCRM\VolunteerOpportunityQuery;
 use ChurchCRM\Utils\CSRFUtils;
@@ -17,6 +18,13 @@ use ChurchCRM\view\PageHeader;
 // For now ... require $bAdmin
 // Future ... $bManageVol
 AuthenticationManager::redirectHomeIfNotAdmin();
+
+// Volunteer rollout (#9704): in v2-only mode this legacy editor is retired from
+// the UI, so enforce that server-side rather than relying on the hidden menu
+// item. 'both' keeps it reachable for the duration of the migration (#9702).
+if (User::getVolunteerVersion() === 'v2') {
+    RedirectUtils::redirect('ministries/dashboard');
+}
 
 // top down design....
 // title line
@@ -50,9 +58,8 @@ $sDeleteError = '';
 if ($sAction === 'delete' && $iOpp > 0) {
     // Delete Confirmation Page
 
-    // Security: User must have Delete records permission
-    // Otherwise, redirect to the main menu
-    AuthenticationManager::redirectHomeIfFalse(AuthenticationManager::getCurrentUser()->isDeleteRecordsEnabled(), 'DeleteRecords');
+    // The editor is already Admin-only via redirectHomeIfNotAdmin() above.
+    // Deleting a volunteer opportunity is not a person/family DeleteRecords action.
 
     $opp = VolunteerOpportunityQuery::create()->findPk((int) $iOpp);
     if ($opp === null) {
@@ -139,9 +146,8 @@ if ($sAction === 'delete' && $iOpp > 0) {
 }
 
 if ($sAction === 'ConfDelete' && $iOpp > 0) {
-    // Security: User must have Delete records permission
-    // Otherwise, redirect to the main menu
-    AuthenticationManager::redirectHomeIfFalse(AuthenticationManager::getCurrentUser()->isDeleteRecordsEnabled(), 'DeleteRecords');
+    // The editor is already Admin-only via redirectHomeIfNotAdmin() above.
+    // Deleting a volunteer opportunity is not a person/family DeleteRecords action.
 
     // Verify CSRF token for POST requests
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -419,7 +425,7 @@ if (isset($_POST['SaveChanges'])) {
                         </h5>
                         <span class="badge bg-info text-white ms-auto"><?= $numRows ?> <?= gettext('opportunities') ?></span>
                     </div>
-                    <div class="card-body" style="overflow: visible;">
+                    <div class="card-body overflow-visible">
                         <table class="table table-hover table-sm">
                             <thead>
                                 <tr>

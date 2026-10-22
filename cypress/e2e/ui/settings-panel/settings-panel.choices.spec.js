@@ -11,21 +11,6 @@
 describe("Settings Panel — Choice Dropdowns", () => {
     beforeEach(() => cy.setupAdminSession());
 
-    describe("Email Dashboard — SMTP Encryption", () => {
-        it("encryption dropdown has None, TLS, and SSL options", () => {
-            cy.visit("v2/email/dashboard");
-            cy.contains("Email Settings").click();
-            cy.get("#emailSettings", { timeout: 10000 }).should("be.visible");
-
-            cy.get("#emailSettings").within(() => {
-                cy.get("select[name='sPHPMailerSMTPSecure']").should("exist");
-                cy.get("select[name='sPHPMailerSMTPSecure'] option").should("have.length.at.least", 3);
-                cy.get("select[name='sPHPMailerSMTPSecure']").contains("option", "TLS");
-                cy.get("select[name='sPHPMailerSMTPSecure']").contains("option", "SSL");
-            });
-        });
-    });
-
     describe("Finance Dashboard — Settings Panel", () => {
         it("admin can open financial settings panel", () => {
             cy.visit("/finance/");
@@ -89,26 +74,6 @@ describe("Settings Panel — Choice Dropdowns", () => {
                 cy.get("select[name='sLogLevel']").contains("option", "INFO");
                 cy.get("select[name='sLogLevel']").contains("option", "WARNING");
                 cy.get("select[name='sLogLevel']").contains("option", "ERROR");
-            });
-        });
-    });
-
-    describe("Map View — Zoom Level", () => {
-        it("zoom level dropdown has geographic scale options", () => {
-            cy.visit("people/map");
-            // Map settings may not render if church address is not geocoded;
-            // skip gracefully if the settings panel container doesn't exist
-            cy.get("body").then(($body) => {
-                if ($body.find("#mapAdminSettings").length === 0) {
-                    cy.log("Map settings panel not rendered (church address may not be geocoded) — skipping");
-                    return;
-                }
-
-                cy.get("#mapAdminSettings", { timeout: 10000 }).should("exist");
-                cy.get("#mapAdminSettings").within(() => {
-                    cy.get("select[name='iMapZoom']").should("exist");
-                    cy.get("select[name='iMapZoom'] option").should("have.length.at.least", 5);
-                });
             });
         });
     });

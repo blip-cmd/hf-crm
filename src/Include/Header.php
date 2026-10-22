@@ -34,9 +34,8 @@ PluginManager::init($pluginsPath);
 // Resolve theme attributes from user settings
 $_themeUser = AuthenticationManager::getCurrentUser();
 $_themeMode = $_themeUser->getThemeMode(); // 'auto' | 'default' | 'dark'
-$_themeAttrs = '';
-// Explicit dark: stamp data-bs-theme on <html> server-side for FOWT-safe rendering
-// without JS. Auto mode is handled by the inline <head> script below.
+$_themeAttrs = ' data-theme-mode="' . InputUtils::escapeAttribute($_themeMode) . '"';
+// Explicit dark: stamp data-bs-theme on <html> so first paint does not wait on theme.min.js.
 if ($_themeMode === 'dark') {
     $_themeAttrs .= ' data-bs-theme="dark"';
 }
@@ -57,57 +56,8 @@ $_currencySymbolCss = json_encode(CurrencyFormatter::symbol(), JSON_UNESCAPED_UN
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <!-- Theme controller: must run synchronously before page paint to prevent flash-of-wrong-theme. -->
-  <script nonce="<?= SystemURLs::getCSPNonce() ?>">
-    (function () {
-      // Ensure window.CRM exists; body script will Object.assign more properties later.
-      window.CRM = window.CRM || {};
-
-      var mql = window.matchMedia ? window.matchMedia('(prefers-color-scheme: dark)') : null;
-      var _listening = false;
-
-      function _applyDark() {
-        document.documentElement.setAttribute('data-bs-theme', 'dark');
-      }
-      function _applyLight() {
-        document.documentElement.removeAttribute('data-bs-theme');
-      }
-      function _onChange(e) {
-        if (e.matches) { _applyDark(); } else { _applyLight(); }
-      }
-      // Delegate to _onChange so both paths share the same dark/light logic.
-      // Falls back to light when matchMedia is unavailable (mql === null).
-      function _applySystem() {
-        _onChange({ matches: mql ? mql.matches : false });
-      }
-
-      /**
-       * Apply a theme mode and manage the matchMedia listener lifecycle.
-       * mode: 'auto' | 'default' | 'dark'
-       * Called once on page load (below) and by user.js when the user toggles the setting.
-       */
-      window.CRM.theme = {
-        setMode: function (mode) {
-          if (mode === 'auto') {
-            _applySystem();
-            if (mql && !_listening) {
-              mql.addEventListener('change', _onChange);
-              _listening = true;
-            }
-          } else {
-            if (_listening) {
-              mql.removeEventListener('change', _onChange);
-              _listening = false;
-            }
-            if (mode === 'dark') { _applyDark(); } else { _applyLight(); }
-          }
-        }
-      };
-
-      // Apply the server-resolved theme mode immediately (FOWT prevention).
-      window.CRM.theme.setMode(<?= InputUtils::jsonEncodeForScript($_themeMode) ?>);
-    }());
-  </script>
+  <!-- Before skin CSS so auto mode can set data-bs-theme before first paint. -->
+  <script src="<?= SystemURLs::assetVersioned('/skin/v2/theme.min.js') ?>"></script>
   <?php require_once __DIR__ . '/Header-HTML-Scripts.php'; ?>
   <?= PluginManager::getPluginHeadContent() ?>
   <style nonce="<?= SystemURLs::getCSPNonce() ?>">:root { --currency-symbol: <?= $_currencySymbolCss ?>; }</style>
@@ -115,6 +65,7 @@ $_currencySymbolCss = json_encode(CurrencyFormatter::symbol(), JSON_UNESCAPED_UN
 </head>
 
 <body class="antialiased">
+<a class="skip-link visually-hidden-focusable" href="#main-content"><?= gettext('Skip to main content') ?></a>
 <div class="page">
 
   <!-- Issue Report Modal -->
@@ -168,108 +119,55 @@ $_currencySymbolCss = json_encode(CurrencyFormatter::symbol(), JSON_UNESCAPED_UN
   }
   ?>
   <script nonce="<?= SystemURLs::getCSPNonce() ?>">
-      // Initialize window.CRM if not already created by webpack bundles
-      if (!window.CRM) {
-          window.CRM = {};
-      }
-
-      // Extend window.CRM with server-side configuration (preserving existing properties like notify)
-      Object.assign(window.CRM, {
-          root:"<?= SystemURLs::getRootPath() ?>",
-          fullURL:"<?= SystemURLs::getURL() ?>",
-          lang:"<?= $localeInfo->getLanguageCode() ?>",
-          isRTL:<?= $localeInfo->isRTL() ? 'true' : 'false' ?>,
-          userId:"<?= AuthenticationManager::getCurrentUser()->getId() ?>",
-          userName:<?= InputUtils::jsonEncodeForScript(AuthenticationManager::getCurrentUser()->getPerson()?->getFullName() ?? '') ?>,
-          version:"<?= $_SESSION['sSoftwareInstalledVersion'] ?? 'unknown' ?>",
-          systemLocale:"<?= $localeInfo->getSystemLocale() ?>",
-          locale:"<?= $localeInfo->getLocale() ?>",
-          shortLocale:"<?= $localeInfo->getShortLocale() ?>",
-          timeZone:<?= SystemConfig::getValueForJs('sTimeZone') ?>,
-          maxUploadSize:"<?= SystemService::getMaxUploadFileSize(true) ?>",
-          maxUploadSizeBytes:"<?= SystemService::getMaxUploadFileSize(false) ?>",
-          datePickerformat:<?= SystemConfig::getValueForJs('sDatePickerPlaceHolder') ?>,
-          churchWebSite:<?= SystemConfig::getValueForJs('sChurchWebSite') ?>,
-          systemConfigs: {
-            sDateTimeFormat:<?= DateTimeUtils::getDateTimeFormatForJs() ?>,
-          },
-          comm: {
-            smtpConfigured: <?= InputUtils::jsonEncodeForScript(SystemConfig::hasValidMailServerSettings()) ?>,
-            vonageEnabled: <?= InputUtils::jsonEncodeForScript(PluginManager::getPlugin('vonage')?->isConfigured() ?? false) ?>,
-            // Church default "to" address (sToEmailAddress); exposed only to email-enabled
-            // users. The email composer offers it as a removable default recipient.
-            defaultEmailToAddress: <?= AuthenticationManager::getCurrentUser()->isEmailEnabled() ? SystemConfig::getValueForJs('sToEmailAddress') : InputUtils::jsonEncodeForScript('') ?>,
-          },
-          // Plugin configs from active plugins (via getClientConfig())
-          plugins: <?= InputUtils::jsonEncodeForScript(PluginManager::getPluginsClientConfig(), JSON_FORCE_OBJECT) ?>,
-          // Legacy: keep bEnableGravatarPhotos for backward compatibility with existing JS
-          bEnableGravatarPhotos: <?= InputUtils::jsonEncodeForScript(PluginManager::getPluginsClientConfig()['gravatar']['enabled'] ?? false) ?>,
-          plugin: {
-              dataTable : {
-"pageLength": <?= $tableSize ?>,
-"lengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100,"All"]],
-"language": {
-"url":"<?= SystemURLs::getRootPath() ?>/locale/vendor/datatables/<?= $localeInfo->getDataTables() ?>.json"
-                  },
-                  responsive: true,
-                  layout: {
-                      topStart: 'search',
-                      topEnd: 'buttons',
-                      bottomStart: 'pageLength',
-                      bottomEnd: ['info', 'paging']
-                  },
-                  buttons: [
-                      {
-                          extend: 'csv',
-                          text: '<i class="fa-solid fa-table"></i>',
-                          titleAttr: 'Export CSV',
-                          exportOptions: {
-                              columns: ':not(.no-export)'
-                          }
-                      },
-                      {
-                          extend: 'print',
-                          text: '<i class="fa-solid fa-print"></i>',
-                          titleAttr: 'Print',
-                          exportOptions: {
-                              columns: ':not(.no-export)'
-                          }
-                      }
-                  ]
-              }
-          },
-          permissions: {
-              addRecords: <?= InputUtils::jsonEncodeForScript($currentUser->isAddRecordsEnabled()) ?>,
-              editRecords: <?= InputUtils::jsonEncodeForScript($currentUser->isEditRecordsEnabled()) ?>,
-          },
-          personDeleteBlocked: <?= InputUtils::jsonEncodeForScript((object) PersonService::getLoginDeletionBlockedReasons()) ?>,
-          PageName:<?= InputUtils::jsonEncodeForScript($_SERVER['REQUEST_URI'] ?? '') ?>,
-          telemetry: <?= InputUtils::jsonEncodeForScript([
-              'level'      => TelemetryService::getLevel(),
-              'key'        => TelemetryService::isEnabled() ? TelemetryService::POSTHOG_KEY : '',
-              'endpoint'   => TelemetryService::POSTHOG_ENDPOINT,
+      window.CRM.applyPageConfig(<?= InputUtils::jsonEncodeForScript([
+          'root' => SystemURLs::getRootPath(),
+          'fullURL' => SystemURLs::getURL(),
+          'lang' => $localeInfo->getLanguageCode(),
+          'isRTL' => $localeInfo->isRTL(),
+          'userId' => (string) $currentUser->getId(),
+          'userName' => $currentUser->getPerson()?->getFullName() ?? '',
+          'version' => $_SESSION['sSoftwareInstalledVersion'] ?? 'unknown',
+          'systemLocale' => $localeInfo->getSystemLocale(),
+          'locale' => $localeInfo->getLocale(),
+          'shortLocale' => $localeInfo->getShortLocale(),
+          'timeZone' => SystemConfig::getValue('sTimeZone'),
+          'maxUploadSize' => SystemService::getMaxUploadFileSize(true),
+          'maxUploadSizeBytes' => (string) SystemService::getMaxUploadFileSize(false),
+          'datePickerformat' => SystemConfig::getValue('sDatePickerPlaceHolder'),
+          'churchWebSite' => SystemConfig::getValue('sChurchWebSite'),
+          'systemConfigs' => [
+              'sDateTimeFormat' => json_decode(DateTimeUtils::getDateTimeFormatForJs(), true),
+          ],
+          'comm' => [
+              'emailSendingEnabled' => SystemConfig::isEmailEnabled(),
+              'emailSignature' => \ChurchCRM\Service\EmailComposerService::defaultSignature($currentUser),
+              'vonageEnabled' => PluginManager::getPlugin('vonage')?->isConfigured() ?? false,
+              'defaultEmailToAddress' => $currentUser->isEmailEnabled() ? SystemConfig::getValue('sToEmailAddress') : '',
+              'emailHistoryURL' => match (true) {
+                  $currentUser->isAdmin()        => SystemURLs::getRootPath() . '/admin/email/log',
+                  $currentUser->isEmailEnabled() => SystemURLs::getRootPath() . '/people/email',
+                  default                        => '',
+              },
+          ],
+          'plugins' => PluginManager::getPluginsClientConfig() ?: new stdClass(),
+          'bEnableGravatarPhotos' => PluginManager::getPluginsClientConfig()['gravatar']['enabled'] ?? false,
+          'permissions' => [
+              'addRecords' => $currentUser->isAddRecordsEnabled(),
+              'editRecords' => $currentUser->isEditRecordsEnabled(),
+          ],
+          'personDeleteBlocked' => (object) PersonService::getLoginDeletionBlockedReasons(),
+          'PageName' => $_SERVER['REQUEST_URI'] ?? '',
+          'telemetry' => [
+              'level' => TelemetryService::getLevel(),
+              'key' => TelemetryService::isEnabled() ? TelemetryService::POSTHOG_KEY : '',
+              'endpoint' => TelemetryService::POSTHOG_ENDPOINT,
               'distinctID' => SystemConfig::getValue('sSystemID'),
-          ]) ?>,
-          currency: <?= InputUtils::jsonEncodeForScript(CurrencyFormatter::toArray()) ?>
-      });
-      // Attach format() to window.CRM.currency so JS callers (DataTables, Chart.js)
-      // can render localised money via window.CRM.currency.format(amount [, decimals]).
-      window.CRM.currency.format = function (amount, decimals) {
-          if (decimals === undefined) decimals = 2;
-          var val = parseFloat(amount);
-          if (isNaN(val)) return '';          // match PHP empty-string fallback for non-numeric input
-          var parts = val.toFixed(decimals).split('.');
-          parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, this.thousand);
-          var formatted = parts[0] + (decimals > 0 ? this.decimal + parts[1] : '');
-          var sym = this.symbol.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-          return this.position === 'after'
-              ? formatted + '\u00A0' + sym
-              : sym + '\u00A0' + formatted;
-      };
-      // Initialize moment locale if available
-      if (typeof moment !== 'undefined' && window.CRM.shortLocale) {
-          moment.locale(window.CRM.shortLocale);
-      }
+          ],
+          'currency' => CurrencyFormatter::toArray(),
+          'dataTablePageLength' => (int) $tableSize,
+          'dataTableLanguageUrl' => SystemURLs::getRootPath() . '/locale/vendor/datatables/' . $localeInfo->getDataTables() . '.json',
+          'localeConfig' => $localeInfo->getLocaleConfigArray(),
+      ]) ?>);
   </script>
   <script src="<?= SystemURLs::assetVersioned('/skin/js/CRMJSOM.js') ?>"></script>
   <script src="<?= SystemURLs::assetVersioned('/skin/js/CommunicationUtils.js') ?>"></script>
@@ -394,7 +292,7 @@ $_currencySymbolCss = json_encode(CurrencyFormatter::symbol(), JSON_UNESCAPED_UN
             <i class="fa-solid fa-headphones"></i>
           </a>
           <div class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
-            <a href="<?= SystemURLs::getSupportURL() ?>" target="help" class="dropdown-item"
+            <a href="<?= InputUtils::escapeAttribute(SystemURLs::getSupportURL('', (string) ($sPageTitle ?? ''))) ?>" target="help" class="dropdown-item"
                title="<?= gettext('Documentation') ?>">
               <i class="fa-solid fa-book me-2"></i><?= gettext('Documentation') ?>
             </a>
@@ -409,9 +307,9 @@ $_currencySymbolCss = json_encode(CurrencyFormatter::symbol(), JSON_UNESCAPED_UN
               <i class="fa-brands fa-discord me-2"></i><?= gettext('Discord Chat') ?>
             </a>
             <div class="dropdown-divider"></div>
-            <a href="https://docs.churchcrm.io/contributing" target="_blank" class="dropdown-item"
+            <a href="<?= InputUtils::escapeAttribute(SystemURLs::attributed('https://docs.churchcrm.io/contributing', 'help_menu_contributing')) ?>" target="_blank" class="dropdown-item"
                title="<?= gettext('Contributing') ?>">
-              <i class="fa-brands fa-github me-2"></i><?= gettext('Documentation') ?>
+              <i class="fa-brands fa-github me-2"></i><?= gettext('Contributing') ?>
             </a>
           </div>
         </div>
@@ -448,7 +346,7 @@ $_currencySymbolCss = json_encode(CurrencyFormatter::symbol(), JSON_UNESCAPED_UN
             <?php if ($hasUploadedPhoto) { ?>
               <img src="<?= $avatarApiUrl ?>" class="avatar photo-small rounded-circle" alt="<?= htmlspecialchars($currentUserName) ?>">
             <?php } else { ?>
-              <span class="avatar avatar-sm" style="background-color: <?= $avatarColor ?>; color: #fff; flex-shrink: 0;">
+              <span class="avatar avatar-sm text-white flex-shrink-0" style="background-color: <?= $avatarColor ?>;">
                 <span class="avatar-title"><?= htmlspecialchars($userInitials) ?></span>
               </span>
             <?php } ?>
@@ -470,6 +368,10 @@ $_currencySymbolCss = json_encode(CurrencyFormatter::symbol(), JSON_UNESCAPED_UN
               <i class="fa-solid fa-cog me-2"></i><?= gettext('Change Settings') ?>
             </a>
             <div class="dropdown-divider"></div>
+            <a href="<?= SystemURLs::getRootPath() ?>/portal/" class="dropdown-item">
+              <i class="fa-solid fa-church me-2"></i><?= gettext('Member Portal') ?>
+            </a>
+            <div class="dropdown-divider"></div>
             <a href="<?= SystemURLs::getRootPath() ?>/v2/user/current/manage2fa" class="dropdown-item">
               <i class="fa-solid fa-shield me-2"></i><?= gettext("Manage Two-Factor Authentication") ?>
             </a>
@@ -484,7 +386,7 @@ $_currencySymbolCss = json_encode(CurrencyFormatter::symbol(), JSON_UNESCAPED_UN
 
       <!-- Search -->
       <div class="collapse navbar-collapse" id="navbar-menu">
-        <div style="position: relative; width: min(480px, 100%);">
+        <div class="global-search">
           <div class="input-icon">
             <span class="input-icon-addon">
               <i class="fa-solid fa-search"></i>
@@ -496,8 +398,7 @@ $_currencySymbolCss = json_encode(CurrencyFormatter::symbol(), JSON_UNESCAPED_UN
               <kbd title="<?= gettext('Press ? to focus search') ?>">?</kbd>
             </span>
           </div>
-          <div id="globalSearchDropdown" class="dropdown-menu w-100"
-               style="top: calc(100% + 2px); left: 0; position: absolute;"></div>
+          <div id="globalSearchDropdown" class="dropdown-menu w-100 global-search-dropdown"></div>
         </div>
       </div>
 
@@ -553,7 +454,7 @@ $_currencySymbolCss = json_encode(CurrencyFormatter::symbol(), JSON_UNESCAPED_UN
       <div class="collapse mb-3" id="<?= $sSettingsCollapseId ?>"></div>
     </div>
     <?php endif; ?>
-    <div class="page-body">
+    <div class="page-body" id="main-content" tabindex="-1">
       <div class="container-xl">
 <?php
 // Hydrate registry from session-cached remote notifications (no HTTP calls)

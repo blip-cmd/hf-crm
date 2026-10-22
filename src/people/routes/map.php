@@ -95,10 +95,9 @@ function getMapView(Request $request, Response $response, array $args): Response
                 [gettext('People'), '/people/dashboard'],
                 [gettext('Map')],
             ]),
-        'sSettingsCollapseId' => 'mapAdminSettings',
         'sPageHeaderButtons' => PageHeader::buttons([
             ['label' => gettext('Find Neighbors'), 'url' => '/people/map/neighbors', 'icon' => 'fa-people-roof', 'adminOnly' => false],
-            ['label' => gettext('Map Settings'), 'collapse' => '#mapAdminSettings', 'icon' => 'fa-sliders', 'adminOnly' => true],
+            ['label' => gettext('Map Settings'), 'url' => '/admin/people#peopleMap', 'icon' => 'fa-sliders', 'adminOnly' => true],
             [
                 'label'     => gettext('Update All Coordinates')
                     . ($missingCoordinatesCount > 0 ? ' (' . $missingCoordinatesCount . ')' : ''),
@@ -106,7 +105,8 @@ function getMapView(Request $request, Response $response, array $args): Response
                 'js'        => true,
                 'id'        => 'geocodeAllBtn',
                 'data'      => ['missing-count' => $missingCoordinatesCount],
-                'adminOnly' => true,
+                'adminOnly' => false,
+                'editRecords' => true,
             ],
         ]),
         'mapConfig'        => [

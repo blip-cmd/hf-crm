@@ -7,7 +7,9 @@
     "Minimum",
     "SHA1 Hash",
     "in",
-    "Content Security Policy"
+    "Content Security Policy",
+    "Min",
+    "{{team}}: {{staffing}}"
   ],
   "cs": [
     "AM / PM",
@@ -33,7 +35,9 @@
     "Material",
     "SHA1 Hash",
     "am / pm",
-    "Individual"
+    "Individual",
+    "{{team}}: {{staffing}}",
+    "General"
   ],
   "es-AR": [
     "AM / PM",
@@ -43,7 +47,9 @@
     "Manual",
     "Material",
     "SHA1 Hash",
-    "am / pm"
+    "am / pm",
+    "{{team}}: {{staffing}}",
+    "General"
   ],
   "es-CO": [
     "AM / PM",
@@ -54,7 +60,9 @@
     "Material",
     "SHA1 Hash",
     "am / pm",
-    "Individual"
+    "Individual",
+    "{{team}}: {{staffing}}",
+    "General"
   ],
   "es-MX": [
     "AM / PM",
@@ -65,7 +73,9 @@
     "Material",
     "SHA1 Hash",
     "am / pm",
-    "Individual"
+    "Individual",
+    "{{team}}: {{staffing}}",
+    "General"
   ],
   "es-SV": [
     "AM / PM",
@@ -76,7 +86,9 @@
     "Material",
     "SHA1 Hash",
     "am / pm",
-    "Individual"
+    "Individual",
+    "{{team}}: {{staffing}}",
+    "General"
   ],
   "et": [
     "Audit",
@@ -86,7 +98,9 @@
     "Test",
     "risk",
     "Link",
-    "Content Security Policy"
+    "Content Security Policy",
+    "Min",
+    "SMTP test"
   ],
   "fi": [
     "Azure",
@@ -500,7 +514,19 @@
     "Check-out",
     "Preview",
     "Teller",
-    "Mailing Address"
+    "Mailing Address",
+    "Address Line 2",
+    "Admin Console",
+    "Developer mode",
+    "File",
+    "Folder",
+    "Max",
+    "Min",
+    "Reset link",
+    "SMTP test",
+    "Kiosk Settings",
+    "{{team}}: {{staffing}}",
+    "HTTP Status: {{status}}"
   ],
   "fr": [
     "AM / PM",
@@ -527,12 +553,23 @@
     "Code",
     "Signature",
     "Classifications",
-    "Options"
+    "Options",
+    "Dates",
+    "Max",
+    "Message",
+    "Min",
+    "Notification",
+    "Notifications",
+    "Occurrences",
+    "Position",
+    "Positions",
+    "Validation"
   ],
   "hi": [
     "HTML URL",
     "ICS URL",
-    "SHA1 Hash"
+    "SHA1 Hash",
+    "{{team}}: {{staffing}}"
   ],
   "id": [
     "AM / PM",
@@ -549,19 +586,25 @@
     "SHA1 Hash",
     "Server",
     "am / pm",
-    "Data"
+    "Data",
+    "Folder",
+    "Min",
+    "Valid",
+    "{{team}}: {{staffing}}"
   ],
   "ja": [
     "Azure",
     "HTML URL",
     "ICS URL",
-    "SHA1 Hash"
+    "SHA1 Hash",
+    "{{team}}: {{staffing}}"
   ],
   "ko": [
     "Azure",
     "HTML URL",
     "ICS URL",
-    "SHA1 Hash"
+    "SHA1 Hash",
+    "{{team}}: {{staffing}}"
   ],
   "nl": [
     "4. Kiosk",
@@ -588,7 +631,13 @@
     "Items",
     "Planning",
     "Labels",
-    "Content Security Policy"
+    "Content Security Policy",
+    "Accounts",
+    "Max",
+    "Min",
+    "Team",
+    "Teams",
+    "{{team}}: {{staffing}}"
   ],
   "pt": [
     "AM / PM",
@@ -600,10 +649,12 @@
     "SHA1 Hash",
     "am / pm",
     "Offline",
-    "Individual"
+    "Individual",
+    "{{team}}: {{staffing}}"
   ],
   "pt-BR": [
-    "Azure"
+    "Azure",
+    "{{team}}: {{staffing}}"
   ],
   "pt-br": [
     "AM / PM",
@@ -619,7 +670,8 @@
   ],
   "ru": [
     "Azure",
-    "SHA1 Hash"
+    "SHA1 Hash",
+    "{{team}}: {{staffing}}"
   ],
   "sq": [
     "4. Kiosk",
@@ -629,7 +681,8 @@
     "Online",
     "SHA1 Hash",
     "Test",
-    "am / pm"
+    "am / pm",
+    "Min"
   ],
   "tr": [
     "4. Kiosk",
@@ -644,7 +697,9 @@
   "vi": [
     "Azure",
     "Email BCC",
-    "SHA1 Hash"
+    "SHA1 Hash",
+    "{{team}}: {{staffing}}",
+    "Scotland"
   ],
   "zh-CN": [
     "Azure",
@@ -660,7 +715,9 @@
     "ICS URL",
     "Online",
     "SHA1 Hash",
-    "Offline"
+    "Offline",
+    "Max",
+    "Min"
   ],
   "it": [
     "AM / PM",
@@ -681,7 +738,11 @@
     "Timeout",
     "am / pm",
     "in",
-    "Offline"
+    "Offline",
+    "File",
+    "Max",
+    "Min",
+    "{{team}}: {{staffing}}"
   ],
   "ml": [
     "-----------------------------------------------------------------------------------------------------------------------------------------------",
@@ -697,7 +758,8 @@
     "PDF",
     "SHA1 Hash",
     "URL",
-    "manifest."
+    "manifest.",
+    "{{team}}: {{staffing}}"
   ],
   "nb": [
     "4. Kiosk",
@@ -720,7 +782,11 @@
     "Vonage Dashboard",
     "Data",
     "Auto",
-    "Content Security Policy"
+    "Content Security Policy",
+    "Min",
+    "Send",
+    "Team",
+    "{{team}}: {{staffing}}"
   ],
   "pl": [
     "4. Kiosk",
@@ -737,7 +803,8 @@
     "Test",
     "am / pm",
     "Offline",
-    "Link"
+    "Link",
+    "Folder"
   ],
   "ro": [
     "AM / PM",
@@ -758,7 +825,12 @@
     "Individual",
     "Important",
     "Major",
-    "Catalog"
+    "Catalog",
+    "Max",
+    "Min",
+    "Valid",
+    "{{team}}: {{staffing}}",
+    "General"
   ],
   "sv": [
     "4. Kiosk",
@@ -779,7 +851,11 @@
     "Offline",
     "Data",
     "Auto",
-    "Content Security Policy"
+    "Content Security Policy",
+    "Max",
+    "Min",
+    "Team",
+    "{{team}}: {{staffing}}"
   ],
   "sw": [
     "AM / PM",
@@ -787,11 +863,13 @@
     "Indigo",
     "SHA1 Hash",
     "am / pm",
-    "Data"
+    "Data",
+    "{{team}}: {{staffing}}"
   ],
   "ta": [
     "Azure",
-    "SHA1 Hash"
+    "SHA1 Hash",
+    "{{team}}: {{staffing}}"
   ],
   "te": [
     "App",
@@ -813,7 +891,8 @@
     "SHA1 Hash",
     "Server",
     "Test",
-    "Timeout"
+    "Timeout",
+    "{{team}}: {{staffing}}"
   ],
   "th": [
     "App",
@@ -828,11 +907,13 @@
     "Server",
     "Session Handler",
     "Test",
-    "Timeout"
+    "Timeout",
+    "{{team}}: {{staffing}}"
   ],
   "uk": [
     "Azure",
-    "SHA1 Hash"
+    "SHA1 Hash",
+    "{{team}}: {{staffing}}"
   ],
   "de": [
     "AM / PM",
@@ -847,7 +928,12 @@
     "in",
     "Code",
     "Offline",
-    "Content Security Policy"
+    "Content Security Policy",
+    "Team",
+    "Teams",
+    "Theme",
+    "Themes",
+    "{{team}}: {{staffing}}"
   ],
   "hr": [
     "-----------------------------------------------------------------------------------------------------------------------------------------------",
@@ -916,20 +1002,26 @@
     "Venezuela",
     "am / pm",
     "manifest.",
-    "s"
+    "s",
+    "Min",
+    "SMTP test"
   ],
   "am": [
     "HTML URL",
     "SHA1 Hash"
   ],
   "ar": [
-    "SHA1 Hash"
+    "SHA1 Hash",
+    "{{team}}: {{staffing}}"
   ],
   "he": [
-    "SHA1 Hash"
+    "SHA1 Hash",
+    "{{team}}: {{staffing}}"
   ],
   "sk": [
     "SHA1 Hash",
-    "Offline"
+    "Offline",
+    "Max",
+    "Min"
   ]
 }

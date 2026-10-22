@@ -81,6 +81,8 @@ class FamilyService
      *                          all absent; Nominatim cannot resolve a street alone
      *   'no_result'          — Nominatim returned no usable coordinates (address
      *                          exists but could not be matched, or API was unreachable)
+     *   'unavailable'        — no geocoding provider could answer (timeout, rate limit,
+     *                          5xx); the family stays retryable
      *   'error'              — an unexpected exception was thrown
      *
      * @param Family $family
@@ -114,13 +116,21 @@ class FamilyService
 
             $this->logger->debug('geocodeFamilyWithReason: geocoding family ' . $family->getId());
 
-            $coords = GeoUtils::getLatLong($street, $city, $state, $zip, $country);
+            $outcome = GeoUtils::lookup($street, $city, $state, $zip, $country);
+            if ($outcome->isUnavailable()) {
+                $this->logger->warning(
+                    'geocodeFamilyWithReason: geocoding unavailable for family ' . $family->getId()
+                );
+                return ['success' => false, 'reason' => 'unavailable'];
+            }
+
+            $coords = $outcome->result?->toLatLong() ?? ['Latitude' => 0.0, 'Longitude' => 0.0];
             $lat    = (float) $coords['Latitude'];
             $lng    = (float) $coords['Longitude'];
 
             if ($lat === 0.0 && $lng === 0.0) {
                 $this->logger->warning(
-                    'geocodeFamilyWithReason: no result from Nominatim for family ' . $family->getId()
+                    'geocodeFamilyWithReason: no result from any geocoding provider for family ' . $family->getId()
                 );
                 return ['success' => false, 'reason' => 'no_result'];
             }
@@ -219,7 +229,7 @@ class FamilyService
 
         // Remaining = families that still need geocoding after this run:
         // those not included in this batch (overflow) PLUS those that failed
-        // during the batch (Nominatim returned no result for them).
+        // during the batch (no geocoding provider returned a result for them).
         $remaining = max(0, $total - $geocoded);
 
         $this->logger->info('geocodeAllMissingFamilies: batch complete', [

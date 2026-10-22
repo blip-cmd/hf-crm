@@ -37,13 +37,6 @@ describe("Cart mailing labels (#9873)", () => {
      * Direct form login, as in confirm-reports.spec.js: a fresh PHP session
      * uncontaminated by earlier specs, and the cart lives in that session.
      */
-    const freshAdminLogin = () => {
-        cy.clearCookies();
-        cy.visit("/session/begin");
-        cy.get("input[name=User]").type(Cypress.env("admin.username"));
-        cy.get("input[name=Password]").type(Cypress.env("admin.password") + "{enter}");
-        cy.url().should("not.include", "/session/begin");
-    };
 
     const emptyCart = () => {
         cy.request({
@@ -55,7 +48,7 @@ describe("Cart mailing labels (#9873)", () => {
     };
 
     before(() => {
-        freshAdminLogin();
+        cy.freshAdminFormLogin();
 
         cy.visit("/FamilyEditor.php");
         cy.contains("Family Info");
@@ -87,7 +80,7 @@ describe("Cart mailing labels (#9873)", () => {
     });
 
     beforeEach(() => {
-        freshAdminLogin();
+        cy.freshAdminFormLogin();
         emptyCart();
         cy.request({
             method: "POST",
@@ -103,18 +96,18 @@ describe("Cart mailing labels (#9873)", () => {
     it("offers a Labels button that opens the Generate Labels form", () => {
         cy.get("#cartLabels").should("be.visible").click();
 
-        cy.get("#cartLabelsModal").should("be.visible");
-        cy.get("#cartLabelsForm").should("have.attr", "action").and("include", "Reports/PDFLabel.php");
+        cy.get("#labelsModal").should("be.visible");
+        cy.get("#labelsForm").should("have.attr", "action").and("include", "Reports/PDFLabel.php");
 
         // Every parameter the report reads has a control.
-        cy.get('#cartLabelsForm input[name="groupbymode"]:checked').should("have.value", "indiv");
-        cy.get("#cartLabelsForm select[name=labeltype] option").should("have.length.greaterThan", 0);
-        cy.get("#cartLabelsForm select[name=labelfont] option").should("have.length.greaterThan", 0);
-        cy.get("#cartLabelsForm select[name=labelfontsize] option").should("have.length.greaterThan", 0);
-        cy.get("#cartLabelsForm input[name=startrow]").should("have.value", "1");
-        cy.get("#cartLabelsForm input[name=startcol]").should("have.value", "1");
-        cy.get("#cartLabelsForm input[name=onlyfull]").should("be.checked");
-        cy.get("#cartLabelsForm select[name=filetype] option").should("have.length", 2);
+        cy.get('#labelsForm input[name="groupbymode"]:checked').should("have.value", "indiv");
+        cy.get("#labelsForm select[name=labeltype] option").should("have.length.greaterThan", 0);
+        cy.get("#labelsForm select[name=labelfont] option").should("have.length.greaterThan", 0);
+        cy.get("#labelsForm select[name=labelfontsize] option").should("have.length.greaterThan", 0);
+        cy.get("#labelsForm input[name=startrow]").should("have.value", "1");
+        cy.get("#labelsForm input[name=startcol]").should("have.value", "1");
+        cy.get("#labelsForm input[name=onlyfull]").should("be.checked");
+        cy.get("#labelsForm select[name=filetype] option").should("have.length", 2);
 
         // Quiet presort is only meaningful when presorting.
         cy.get("#bulkmailquiet").should("be.disabled");

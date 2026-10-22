@@ -30,10 +30,13 @@ $sPageSubtitle = gettext('Generate financial statements and giving reports');
 if ($sReportType) {
     $sPageTitle .= ': ' . gettext($sReportType);
 }
-$aBreadcrumbs = PageHeader::breadcrumbs([
-    [gettext('Finance'), '/finance/'],
-    [gettext('Reports')],
-]);
+$reportCrumbs = [
+    [gettext('Financial Reports'), '/finance/reports'],
+];
+if ($sReportType !== '') {
+    $reportCrumbs[] = [gettext($sReportType)];
+}
+$aBreadcrumbs = PageHeader::breadcrumbs($reportCrumbs);
 require_once __DIR__ . '/Include/Header.php';
 // Preserve submitted dates/datetype for both selection and filters views
 $sDateStart = '';
@@ -276,7 +279,7 @@ if ($sReportType === '') {
       <div class="mb-3">
         <label class="form-label" for="minimum"><?= gettext('Minimum Total Amount') ?>:</label>
         <small class="text-secondary d-block mb-1"><?= gettext('0 - No Minimum') ?></small>
-        <input class="form-control" style="width:120px" name="minimum" id="minimum" type="text" value="0">
+        <input class="form-control field-w-120" name="minimum" id="minimum" type="text" value="0">
       </div>
     <?php endif; ?>
 
@@ -366,7 +369,7 @@ if ($sReportType === '') {
     <?php if ($sReportType === 'Voting Members') : ?>
       <div class="mb-3">
         <label class="form-label" for="RequireDonationYears"><?= gettext('Voting members must have made a donation within this many years (0 to not require a donation)') ?>:</label>
-        <input class="form-control" style="width:120px" name="RequireDonationYears" id="RequireDonationYears" type="text" value="0">
+        <input class="form-control field-w-120" name="RequireDonationYears" id="RequireDonationYears" type="text" value="0">
       </div>
     <?php endif; ?>
 

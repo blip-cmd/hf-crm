@@ -534,6 +534,8 @@ window.CRM.dashboard = {
    * Load event counters once on page load (birthdays, anniversaries, events today)
    */
   loadEventCounters: () => {
+    const birthdays = document.getElementById("BirthdateNumber");
+    if (!birthdays) return; // Calendar menu not present for this user (Events module off)
     // Pass the browser's local date so the counter matches the calendar's "today" cell.
     // FullCalendar highlights today using the browser local date, not the server timezone.
     const today = new Date().toLocaleDateString("en-CA"); // yields YYYY-MM-DD
@@ -542,7 +544,7 @@ window.CRM.dashboard = {
       path: "calendar/events-counters?date=" + today,
       suppressErrorDialog: true,
     }).done((data) => {
-      document.getElementById("BirthdateNumber").innerText = data.Birthdays;
+      birthdays.innerText = data.Birthdays;
       document.getElementById("AnniversaryNumber").innerText = data.Anniversaries;
       document.getElementById("EventsNumber").innerText = data.Events;
     });
@@ -561,6 +563,31 @@ window.CRM.dashboard = {
       suppressErrorDialog: true,
     }).done((data) => {
       el.innerText = data.count;
+    });
+  },
+
+  /**
+   * Show the number of self-registrations awaiting review on the People menu badge
+   * and on the home dashboard alert.
+   */
+  loadSelfRegisterPendingCount: () => {
+    const badge = document.getElementById("selfRegisterPending");
+    const alert = document.getElementById("selfRegisterDashboardAlert");
+    if (!badge && !alert) return;
+    window.CRM.APIRequest({
+      method: "GET",
+      path: "persons/self-register/count",
+      suppressErrorDialog: true,
+    }).done((data) => {
+      if (badge) {
+        badge.innerText = data.count;
+        badge.classList.toggle("d-none", !data.count);
+      }
+      if (alert) {
+        document.getElementById("selfRegisterDashboardCount").innerText = data.count;
+        alert.classList.toggle("d-none", !data.count);
+        alert.classList.toggle("d-flex", Boolean(data.count));
+      }
     });
   },
 
@@ -732,18 +759,29 @@ window.CRM.dashboard = {
 
   /**
    * Render a standard person action dropdown menu.
-   * Standard order: View → Edit → [View Family] → [divider] → Cart → [divider] → Delete
+   * Standard order: View → Edit → [View Family] → [divider] → Cart → [divider → extra items] → [divider → Delete]
    * @param {number} personId
    * @param {string} personName - Used in delete confirmation
    * @param {Object} [options]
    * @param {boolean} [options.inCart=false] - Whether person is already in cart
    * @param {number} [options.familyId] - When set, adds a "View Family" item after Edit
+   * @param {CRMActionMenuItem[]} [options.extraItems] - Page-specific items added after Cart
+   * @param {boolean} [options.omitDelete=false] - Leave out Delete, for lists that manage a relationship rather than the person
    * @returns {string} HTML string
    */
   window.CRM.renderPersonActionMenu = (personId, personName, options) => {
     options = options || {};
     const root = window.CRM.root;
     return window.CRM.buildActionMenu([
+      options.needsReview &&
+        canEditRecords() && {
+          type: "button",
+          className: "approve-review",
+          icon: "fa-solid fa-check",
+          label: i18next.t("Approve"),
+          data: { "entity-type": "person", "entity-id": personId },
+        },
+      options.needsReview && canEditRecords() && { type: "divider" },
       {
         type: "link",
         href: `${root}/people/view/${personId}`,
@@ -764,8 +802,9 @@ window.CRM.dashboard = {
       },
       { type: "divider" },
       cartItem(personId, "person", options.inCart || false),
-      { type: "divider" },
-      {
+      ...(options.extraItems?.length ? [{ type: "divider" }, ...options.extraItems] : []),
+      !options.omitDelete && { type: "divider" },
+      !options.omitDelete && {
         type: "button",
         danger: true,
         className: "delete-person",
@@ -790,6 +829,15 @@ window.CRM.dashboard = {
     options = options || {};
     const root = window.CRM.root;
     return window.CRM.buildActionMenu([
+      options.needsReview &&
+        canEditRecords() && {
+          type: "button",
+          className: "approve-review",
+          icon: "fa-solid fa-check",
+          label: i18next.t("Approve"),
+          data: { "entity-type": "family", "entity-id": familyId },
+        },
+      options.needsReview && canEditRecords() && { type: "divider" },
       {
         type: "link",
         href: `${root}/people/family/${familyId}`,

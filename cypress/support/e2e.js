@@ -17,8 +17,11 @@
 require("cy-verify-downloads").addCustomCommand();
 
 // Import commands.js using ES2015 syntax:
+import "./test-env";
 import "./ui-commands";
 import "./api-commands";
+import "./personas";
+import "./church-time-zone";
 
 // Alternatively you can use CommonJS syntax:
 // require('./commands')
@@ -194,7 +197,7 @@ before(function () {
     rowGuard.baseline = null;
     rowGuard.allowances = {};
 
-    if (!Cypress.env("rowCountGuard")) {
+    if (!Cypress.expose("rowCountGuard")) {
         return;
     }
 

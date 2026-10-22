@@ -1,6 +1,10 @@
 /// <reference types="cypress" />
 
 describe("API Private User Settings", () => {
+    before(() => {
+        cy.rememberTestEnv(["admin.api.key"]);
+    });
+
     it("Set / GET Current User ui.style", () => {
         const json = { value: "dark" };
         cy.makePrivateUserAPICall(
@@ -15,7 +19,7 @@ describe("API Private User Settings", () => {
             url: "/api/user/3/setting/ui.style",
             headers: {
                 "content-type": "application/json",
-                "x-api-key": Cypress.env("admin.api.key"),
+                "x-api-key": Cypress.testEnv("admin.api.key"),
             },
         }).then((resp) => {
             expect(resp.status).to.eq(200);
@@ -45,7 +49,7 @@ describe("API Private User Settings", () => {
             url: "/api/user/3/setting/ui.theme.primary",
             headers: {
                 "content-type": "application/json",
-                "x-api-key": Cypress.env("admin.api.key"),
+                "x-api-key": Cypress.testEnv("admin.api.key"),
             },
         }).then((resp) => {
             expect(resp.status).to.eq(200);
@@ -75,7 +79,7 @@ describe("API Private User Settings", () => {
             url: "/api/user/3/setting/ui.table.size",
             headers: {
                 "content-type": "application/json",
-                "x-api-key": Cypress.env("admin.api.key"),
+                "x-api-key": Cypress.testEnv("admin.api.key"),
             },
         }).then((resp) => {
             expect(resp.status).to.eq(200);
@@ -89,6 +93,18 @@ describe("API Private User Settings", () => {
             { value: "10" },
             200,
         );
+    });
+
+    it("Accepts an empty value to clear ui.locale", () => {
+        cy.makePrivateUserAPICall("POST", "/api/user/3/setting/ui.locale", { value: "" }, 200);
+    });
+
+    it("Rejects invalid setting names and values", () => {
+        cy.makePrivateUserAPICall("POST", "/api/user/3/setting/ui.table.size", { value: "10;alert(1)" }, 400);
+        cy.makePrivateUserAPICall("POST", "/api/user/3/setting/ui.locale", { value: "</script>" }, 400);
+        cy.makePrivateUserAPICall("POST", "/api/user/3/setting/bad name!", { value: "x" }, 400);
+        cy.makePrivateUserAPICall("POST", "/api/user/3/setting/ui.style", { value: "x".repeat(51) }, 400);
+        cy.makePrivateUserAPICall("POST", "/api/user/3/setting/ui.style", { value: ["a"] }, 400);
     });
 
     it("Admin Set / GET Other User Settings", () => {
@@ -105,7 +121,7 @@ describe("API Private User Settings", () => {
             url: "/api/user/3/setting/ui.style",
             headers: {
                 "content-type": "application/json",
-                "x-api-key": Cypress.env("admin.api.key"),
+                "x-api-key": Cypress.testEnv("admin.api.key"),
             },
         }).then((resp) => {
             expect(resp.status).to.eq(200);

@@ -22,6 +22,7 @@ use ChurchCRM\dto\SystemConfig;
 use ChurchCRM\dto\SystemURLs;
 use ChurchCRM\Utils\CSRFUtils;
 use ChurchCRM\Utils\InputUtils;
+use ChurchCRM\Utils\AddressDefaults;
 
 require SystemURLs::getDocumentRoot() . '/Include/Header.php';
 
@@ -91,7 +92,7 @@ $rootPath       = SystemURLs::getRootPath();
                     <label for="assignRoleToAll" class="form-label mb-0 text-secondary small">
                         <?= gettext('Assign role to all') ?>:
                     </label>
-                    <select id="assignRoleToAll" class="form-select form-select-sm" style="width:auto">
+                    <select id="assignRoleToAll" class="form-select form-select-sm w-auto">
                         <option value="">— <?= gettext('pick') ?> —</option>
                         <?php foreach ($familyRoles as $role): ?>
                         <option value="<?= $role->getOptionId() ?>">
@@ -105,9 +106,9 @@ $rootPath       = SystemURLs::getRootPath();
                 <table class="table table-vcenter card-table">
                     <thead>
                         <tr>
-                            <th style="width:52px"></th>
+                            <th class="cart-col-photo"></th>
                             <th><?= gettext('Name') ?></th>
-                            <th style="width:220px"><?= gettext('Family Role') ?></th>
+                            <th class="cart-col-role"><?= gettext('Family Role') ?></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -270,7 +271,7 @@ $rootPath       = SystemURLs::getRootPath();
                             <div id="stateOptionDiv">
                                 <select id="State" name="State" class="form-select"
                                     data-user-selected="<?= InputUtils::escapeAttribute($formValues['State'] ?? '') ?>"
-                                    data-system-default="<?= InputUtils::escapeAttribute(SystemConfig::getValue('sDefaultState')) ?>">
+                                    data-system-default="<?= InputUtils::escapeAttribute(AddressDefaults::state()) ?>">
                                 </select>
                             </div>
                             <div id="stateInputDiv" class="d-none">
@@ -286,7 +287,7 @@ $rootPath       = SystemURLs::getRootPath();
                             <label for="Country" class="form-label"><?= gettext('Country') ?></label>
                             <select id="Country" name="Country" class="form-select"
                                 data-user-selected="<?= InputUtils::escapeAttribute($formValues['Country'] ?? '') ?>"
-                                data-system-default="<?= InputUtils::escapeAttribute(SystemConfig::getValue('sDefaultCountry')) ?>">
+                                data-system-default="<?= InputUtils::escapeAttribute(AddressDefaults::country()) ?>">
                             </select>
                         </div>
                     </div>

@@ -63,6 +63,11 @@ class   SystemConfig
         ];
     }
 
+    private static function getGradePromotionMonthChoices(): array
+    {
+        return ['Choices' => array_merge([gettext('Off') . ':0'], self::getMonthChoices()['Choices'])];
+    }
+
     private static function getMapZoomChoices(): array
     {
         return [
@@ -128,6 +133,23 @@ class   SystemConfig
         ];
     }
 
+    /**
+     * The V1/V2 Volunteer Management rollout states (#9704).
+     *
+     * An explicit version choice rather than a boolean, so the transition
+     * state ("both") is representable while V1 data is migrated (#9702).
+     */
+    public static function getVolunteerVersionChoices(): array
+    {
+        return [
+            'Choices' => [
+                gettext('V1 — legacy Volunteer Opportunities') . ':v1',
+                gettext('V2 — Volunteer Management') . ':v2',
+                gettext('Both — V1 and V2 side by side (transition)') . ':both',
+            ],
+        ];
+    }
+
     private static function buildConfigs(): array
     {
         return [
@@ -137,7 +159,6 @@ class   SystemConfig
             'sDirRoleSpouse'                       => new ConfigItem('sDirRoleSpouse', 'choice', '2', gettext('These are the family role numbers designated as spouse'), '', json_encode(SystemConfig::getFamilyRoleChoices())),
             'sDirRoleChild'                        => new ConfigItem('sDirRoleChild', 'choice', '3', gettext('These are the family role numbers designated as child'), '', json_encode(SystemConfig::getFamilyRoleChoices())),
             'iSessionTimeout'                      => new ConfigItem('iSessionTimeout', 'number', '3600', gettext("Session timeout length in seconds\nSet to zero to disable session timeouts.")),
-            'aFinanceQueries'                      => new ConfigItem('aFinanceQueries', 'text', '28,30', gettext('Comma-separated query IDs that require finance permissions to view')),
             'iMinPasswordLength'                   => new ConfigItem('iMinPasswordLength', 'number', '8', gettext('Minimum length a user may set their password to')),
             'iMinPasswordChange'                   => new ConfigItem('iMinPasswordChange', 'number', '4', gettext("Minimum amount that a new password must differ from the old one (# of characters changed)\nSet to zero to disable this feature")),
             'aDisallowedPasswords'                 => new ConfigItem('aDisallowedPasswords', 'text', 'password,god,jesus,church,christian', gettext('A comma-separated list of disallowed (too obvious) passwords.')),
@@ -164,9 +185,12 @@ class   SystemConfig
             'bHideFamilyNewsletter'                => new ConfigItem('bHideFamilyNewsletter', 'boolean', '0', gettext('Set true to disable management of newsletter subscriptions in the Family Editor.')),
             'bHideWeddingDate'                     => new ConfigItem('bHideWeddingDate', 'boolean', '0', gettext('Set true to disable entering Wedding Date in Family Editor.  Set false to enable entering Wedding Date in Family Editor.')),
             'bHideLatLon'                          => new ConfigItem('bHideLatLon', 'boolean', '0', gettext('When enabled, hides the latitude/longitude fields in the Family Editor. Geocoding still runs in the background.')),
+            'sGeocoderProviders'                   => new ConfigItem('sGeocoderProviders', 'text', 'Nominatim', gettext('Geocoding services to try, in the order you pick them. Nominatim (OpenStreetMap) works worldwide; US Census (US Census Bureau) covers United States addresses only. Pick US Census as well to use it. If none is picked, Nominatim is used.')),
             'bUseDonationEnvelopes'                => new ConfigItem('bUseDonationEnvelopes', 'boolean', '0', gettext('Enable the use of numbered donation envelopes for tracking contributions')),
             'iChecksPerDepositForm'                => new ConfigItem('iChecksPerDepositForm', 'number', '14', gettext('How many checks to print per deposit slip page')),
             'bUseScannedChecks'                    => new ConfigItem('bUseScannedChecks', 'boolean', '0', gettext('Allow scanned check images to be attached to deposit records')),
+            'bRequireCheckNumber'                  => new ConfigItem('bRequireCheckNumber', 'boolean', '1', gettext("Require a check number when recording check payments on deposit entries.\nNote: disabling this also disables duplicate check-number detection — the same physical check may be entered more than once.")),
+
             'sDistanceUnit'                        => new ConfigItem('sDistanceUnit', 'choice', 'miles', gettext('Unit used to measure distance, miles or km.'), '', '{"Choices":["' . gettext('miles') . '","' . gettext('kilometers') . '"]}'),
             'sTimeZone'                            => new ConfigItem('sTimeZone', 'choice', 'America/New_York', gettext('Time zone'), 'https://www.php.net/manual/en/timezones.php', json_encode(['Choices' => timezone_identifiers_list()])),
             'bForceUppercaseZip'                   => new ConfigItem('bForceUppercaseZip', 'boolean', '0', gettext('Make user-entered zip/postcodes UPPERCASE when saving to the database.')),
@@ -228,6 +252,7 @@ class   SystemConfig
             'iPersonInitialStyle'                  => new ConfigItem('iPersonInitialStyle', 'choice', '0', gettext('Person initials style'), '', json_encode(SystemConfig::getInitialStyleChoices())),
             'bDisplayBillCounts'                   => new ConfigItem('bDisplayBillCounts', 'boolean', '1', gettext('Show a breakdown of bill denominations on the deposit slip report')),
             'sKioskVisibilityTimestamp'            => new ConfigItem('sKioskVisibilityTimestamp', 'text', '', gettext('KioskVisibilityTimestamp')),
+            'iKioskGuestClassification'            => new ConfigItem('iKioskGuestClassification', 'choice', '3', gettext('Classification given to walk-in guests registered on a kiosk')),
             'bEnableLostPassword'                  => new ConfigItem('bEnableLostPassword', 'boolean', '1', gettext('Show/Hide Lost Password Link on the login screen')),
             'sChurchWebSite'                       => new ConfigItem('sChurchWebSite', 'text', '', ''),
             // Church social media accounts. Like the other church-identity
@@ -239,6 +264,24 @@ class   SystemConfig
             'sChurchYouTube'                       => new ConfigItem('sChurchYouTube', 'text', '', ''),
             'sChurchFacebook'                      => new ConfigItem('sChurchFacebook', 'text', '', ''),
             'sChurchInstagram'                     => new ConfigItem('sChurchInstagram', 'text', '', ''),
+            // Member Portal (#9863, #9864). Deliberately declared without a
+            // System Settings category so they never appear on
+            // src/SystemSettings.php: the portal's settings live on their own
+            // admin page, Admin → Member Portal (design P9, §4).
+            'sMemberPortalTheme'                   => new ConfigItem('sMemberPortalTheme', 'text', 'default', gettext('Folder name of the Member Portal theme to use, from Include/themes/. "default" is the system theme that ships with ChurchCRM.')),
+            'bPortalDeveloperMode'                 => new ConfigItem('bPortalDeveloperMode', 'boolean', '0', gettext('Turn off the Member Portal template cache and print the name of each template in an HTML comment. For theme designers; leave off in normal use.')),
+            'bPortalShowCalendar'                  => new ConfigItem('bPortalShowCalendar', 'boolean', '1', gettext('Show the church calendar in the Member Portal.')),
+            'bPortalShowVolunteer'                 => new ConfigItem('bPortalShowVolunteer', 'boolean', '1', gettext('Show volunteering and team pages in the Member Portal.')),
+            'bPortalAllowBirthdayEdit'             => new ConfigItem('bPortalAllowBirthdayEdit', 'boolean', '0', gettext('Let members change their own and their family members\' birthdays in the Member Portal.')),
+            // The calendars the Member Portal shows, as a JSON list of
+            // {"type":"calendar"|"system","id":<int>} entries — church and
+            // ministry calendars by `calendars.calendar_id`, system calendars
+            // (Birthdays, Anniversaries, …) by their virtual id. Empty means
+            // nothing is shared with members, which is what an upgraded
+            // installation gets; Install.sql seeds the one church calendar a new
+            // install starts with. Read and written through
+            // ChurchCRM\Portal\PortalCalendarService, never by hand.
+            'aPortalCalendars'                     => new ConfigItem('aPortalCalendars', 'json', '[]', gettext('Calendars the Member Portal shows to members, chosen on Admin -> Member Portal -> Calendars.')),
             'sChurchLogoURL'                       => new ConfigItem('sChurchLogoURL', 'text', '', gettext('Fallback logo URL for email templates, used only when no church logo has been uploaded on the Church Information page. The application\'s own pages ignore this setting and always use the uploaded logo or the default ChurchCRM logo. Must be an absolute http(s) URL. For best rendering across email clients, use a wide banner image at roughly a 3.5:1 aspect ratio (for example 350×100 px), PNG or JPG, served over HTTPS. Leave blank or enter an invalid value to fall back to the default ChurchCRM logo.')),
             'bEnableExternalCalendarAPI'           => new ConfigItem('bEnableExternalCalendarAPI', 'boolean', '0', gettext('Allow unauthenticated reads of events from the external calendar API')),
             'sCalendarEmbedOrigins'                => new ConfigItem('sCalendarEmbedOrigins', 'text', '*', gettext('Space-separated list of origins allowed to embed the public external calendar page in an <iframe> (CSP frame-ancestors). Default "*" allows any origin. Restrict to specific origins for tighter security, e.g. "https://mysite.org https://embed.example.com".')),
@@ -269,9 +312,28 @@ class   SystemConfig
             'bEnabledFinance'                      => new ConfigItem('bEnabledFinance', 'boolean', '1', gettext('Enable Finance menu')),
             'bEnabledEvents'                       => new ConfigItem('bEnabledEvents', 'boolean', '1', gettext('Show or hide the Events section in the main navigation menu')),
             'bEnabledFundraiser'                   => new ConfigItem('bEnabledFundraiser', 'boolean', '1', gettext('Enable Fundraiser menu.')),
+            // Volunteer Management v2 (#9704, #9710). Deliberately declared without a
+            // category (2026-09-18): their one home is Admin → Ministry Settings.
+            'sVolunteerVersion'                    => new ConfigItem('sVolunteerVersion', 'choice', 'v2', gettext('Which Volunteer Management experience is active. V1 is the legacy Volunteer Opportunities feature; V2 is the new scheduling and assignment workflow. "Both" shows each side by side during migration.'), '', json_encode(self::getVolunteerVersionChoices())),
+            'iVolunteerReminderLeadHours'          => new ConfigItem('iVolunteerReminderLeadHours', 'number', '48', gettext('How many hours before a volunteer occurrence the reminder email is sent. Set to 0 to send no reminders at all. Delivery depends on background jobs running; see the Volunteer documentation for the recommended cron setup.')),
+            'iVolunteerGapAlertLeadHours'          => new ConfigItem('iVolunteerGapAlertLeadHours', 'number', '48', gettext('How many hours before a volunteer occurrence its coordinators are told about positions still unfilled. Set to 0 to send no such alerts; reminders are not affected.')),
+            'sVolunteerGapAlertBatchTime'          => new ConfigItem('sVolunteerGapAlertBatchTime', 'text', '07:00', gettext('The time of day (HH:MM, in the church\'s time zone) the daily email listing unfilled volunteer positions is sent to coordinators.')),
+            'sLastVolunteerGapAlertBatchDate'      => new ConfigItem('sLastVolunteerGapAlertBatchDate', 'text', '', gettext('Internal: last date the daily email listing unfilled volunteer positions was sent (YYYY-MM-DD). Do not edit manually.')),
+            'iVolunteerSchedulingHorizonWeeks'     => new ConfigItem('iVolunteerSchedulingHorizonWeeks', 'number', '8', gettext('How many weeks ahead volunteer occurrences are created for the events each schedule follows, from 1 to 52. A daily background job keeps every schedule filled up to this point.')),
+            'iVolunteerDefaultEventTypeId'         => new ConfigItem('iVolunteerDefaultEventTypeId', 'number', '', gettext('The event type a ministry\'s new events start with. When empty, or when the type was deleted, the type named "Other" is used if there is one.')),
+            'sLastVolunteerTopUpRunDate'           => new ConfigItem('sLastVolunteerTopUpRunDate', 'text', '', gettext('Internal: last date the volunteer schedules were topped up to the scheduling horizon (YYYY-MM-DD). Do not edit manually.')),
+            'sLastVolunteerTopUpResult'            => new ConfigItem('sLastVolunteerTopUpResult', 'text', '', gettext('Internal: when the volunteer schedules were last topped up and how many occurrences that created. Do not edit manually.')),
             'bEnabledEmail'                        => new ConfigItem('bEnabledEmail', 'boolean', '1', gettext('Enable email sending from ChurchCRM. Required for password reset, notifications, and email links.')),
             'bEnableBirthdayEmails'                => new ConfigItem('bEnableBirthdayEmails', 'boolean', '0', gettext('Automatically send a birthday greeting email to people on their birthday')),
             'sLastBirthdayEmailRunDate'            => new ConfigItem('sLastBirthdayEmailRunDate', 'text', '', gettext('Internal: last date birthday emails were sent (YYYY-MM-DD). Do not edit manually.')),
+            // School grades (#10189). The promotion date's home is Admin → People Settings.
+            'iGradePromotionMonth'                 => new ConfigItem('iGradePromotionMonth', 'choice', '0', gettext('The month in which everyone with a grade moves up one grade. Off turns automatic promotion off.'), '', json_encode(self::getGradePromotionMonthChoices())),
+            'iGradePromotionDay'                   => new ConfigItem('iGradePromotionDay', 'number', '1', gettext('The day of that month on which grades are promoted. A day past the end of the month means its last day.')),
+            'iGradeListId'                         => new ConfigItem('iGradeListId', 'number', '6', gettext('Internal: the list that holds the grade names. Do not edit manually.')),
+            'sGradePreset'                         => new ConfigItem('sGradePreset', 'text', 'us', gettext('Internal: the country whose grade names were last applied to the grade list. Do not edit manually.')),
+            'sGradePromotionSetDate'               => new ConfigItem('sGradePromotionSetDate', 'text', '', gettext('Internal: the day the grade promotion date was last changed (YYYY-MM-DD). Do not edit manually.')),
+            'sLastGradePromotionAt'                => new ConfigItem('sLastGradePromotionAt', 'text', '', gettext('Internal: date and time of the last grade promotion. Do not edit manually.')),
+            'sLastGradePromotionResult'            => new ConfigItem('sLastGradePromotionResult', 'text', '', gettext('Internal: how the last grade promotion ran and how many people it moved. Do not edit manually.')),
             'sLastTimerJobsRunDateTime'            => new ConfigItem('sLastTimerJobsRunDateTime', 'text', '', gettext('Internal: last date and time the background timer jobs completed (YYYY-MM-DD HH:MM:SS). Do not edit manually.')),
             'iTimerJobsStaleHours'                 => new ConfigItem('iTimerJobsStaleHours', 'number', '26', gettext('Warn on the admin dashboard when the background timer jobs have not run for this many hours. 26 allows for a daily cron plus some drift. Set to 0 to disable the warning.')),
             'iTimerJobsMinIntervalMinutes'         => new ConfigItem('iTimerJobsMinIntervalMinutes', 'number', '15', gettext('Minimum number of minutes between background timer-job runs triggered by a page load. Stops a busy Sunday morning from running the jobs once per page view. Does not apply to the command-line runner. Set to 0 to run on every page load.')),

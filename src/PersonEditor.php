@@ -4,13 +4,17 @@ require_once __DIR__ . '/Include/Config.php';
 require_once __DIR__ . '/Include/PageInit.php';
 
 use ChurchCRM\Authentication\AuthenticationManager;
+use ChurchCRM\data\Countries;
+use ChurchCRM\data\States;
 use ChurchCRM\dto\Photo;
 use ChurchCRM\dto\SystemConfig;
 use ChurchCRM\dto\SystemURLs;
 use ChurchCRM\model\ChurchCRM\Family;
+use ChurchCRM\model\ChurchCRM\Note;
 use ChurchCRM\model\ChurchCRM\Person;
 use ChurchCRM\model\ChurchCRM\PersonCustom;
 use ChurchCRM\model\ChurchCRM\PersonQuery;
+use ChurchCRM\Service\GradeService;
 use ChurchCRM\Service\UserService;
 use ChurchCRM\Utils\CustomFieldUtils;
 use ChurchCRM\Utils\DateTimeUtils;
@@ -18,6 +22,7 @@ use ChurchCRM\Utils\InputUtils;
 use ChurchCRM\Utils\MiscUtils;
 use ChurchCRM\Utils\RedirectUtils;
 use ChurchCRM\view\PageHeader;
+use ChurchCRM\Utils\AddressDefaults;
 
 $sPageTitle = gettext('Person Editor');
 $sPageSubtitle = gettext('Add or edit individual person records');
@@ -109,10 +114,10 @@ $sSuffix = '';
 $iGender = 0;
 $sAddress1 = '';
 $sAddress2 = '';
-$sCity = SystemConfig::getValue('sDefaultCity');
-$sState = SystemConfig::getValue('sDefaultState');
-$sZip = SystemConfig::getValue('sDefaultZip');
-$sCountry = SystemConfig::getValue('sDefaultCountry');
+$sCity = AddressDefaults::city();
+$sState = AddressDefaults::state();
+$sZip = AddressDefaults::zip();
+$sCountry = AddressDefaults::country();
 $sHomePhone = '';
 $sWorkPhone = '';
 $sCellPhone = '';
@@ -130,6 +135,7 @@ $dFriendDate = date('Y-m-d');
 $bIsDeceased = false;
 $dDateDeceased = '';
 $iClassification = 0;
+$iGrade = null;
 $iViewAgeFlag = 0;
 $sPhoneCountry = '';
 
@@ -157,6 +163,10 @@ $bHomeBound = false;
 $aCustomData = [];
 
 //Is this the second pass?
+$accountPerson = $iPersonID > 0 ? PersonQuery::create()->findPk($iPersonID) : null;
+$emailAccountHolder = $accountPerson !== null && $accountPerson->isUser();
+$emailLocked = $emailAccountHolder && !AuthenticationManager::getCurrentUser()->isAdmin();
+
 if (isset($_POST['PersonSubmit']) || isset($_POST['PersonSubmitAndAdd'])) {
     //Get all the variables from the request object and assign them locally
     $sTitle = InputUtils::legacyFilterInput($_POST['Title']);
@@ -209,7 +219,7 @@ if (isset($_POST['PersonSubmit']) || isset($_POST['PersonSubmitAndAdd'])) {
     $sHomePhone = InputUtils::legacyFilterInput($_POST['HomePhone']);
     $sWorkPhone = InputUtils::legacyFilterInput($_POST['WorkPhone']);
     $sCellPhone = InputUtils::legacyFilterInput($_POST['CellPhone']);
-    $sEmail = InputUtils::legacyFilterInput($_POST['Email']);
+    $sEmail = $emailLocked ? (string) $accountPerson->getEmail() : InputUtils::legacyFilterInput($_POST['Email']);
     $sWorkEmail = InputUtils::legacyFilterInput($_POST['WorkEmail']);
     $iBirthMonth = InputUtils::legacyFilterInput($_POST['BirthMonth'], 'int');
     $iBirthDay = InputUtils::legacyFilterInput($_POST['BirthDay'], 'int');
@@ -220,6 +230,7 @@ if (isset($_POST['PersonSubmit']) || isset($_POST['PersonSubmitAndAdd'])) {
     $bIsDeceased = isset($_POST['IsDeceased']);
     $dDateDeceased = InputUtils::filterDate($_POST['DateDeceased'] ?? '');
     $iClassification = InputUtils::legacyFilterInput($_POST['Classification'], 'int');
+    $iGrade = GradeService::resolve($_POST['Grade'] ?? null);
     $iEnvelope = 0;
     if (array_key_exists('EnvID', $_POST)) {
         $iEnvelope = InputUtils::legacyFilterInput($_POST['EnvID'], 'int');
@@ -378,11 +389,13 @@ if (isset($_POST['PersonSubmit']) || isset($_POST['PersonSubmitAndAdd'])) {
         }
 
         $person = new Person();
+        $oldEmail = '';
 
         // If a person already exists, update the preexisting record.
         $personAlreadyExist = $iPersonID > 0;
         if ($personAlreadyExist) {
             $person = PersonQuery::create()->findOneById($iPersonID);
+            $oldEmail = (string) $person->getEmail();
             $person
                 ->setDateLastEdited(date('YmdHis'))
                 ->setEditedBy(AuthenticationManager::getCurrentUser()->getId());
@@ -402,9 +415,9 @@ if (isset($_POST['PersonSubmit']) || isset($_POST['PersonSubmitAndAdd'])) {
             ->setAddress1($sAddress1)
             ->setAddress2($sAddress2)
             ->setCity($sCity)
-            ->setState($sState)
+            ->setState(States::keepStoredIfSame($sCountry, $person->getState(), $sState))
             ->setZip($sZip)
-            ->setCountry($sCountry)
+            ->setCountry(Countries::keepStoredIfSame($person->getCountry(), $sCountry))
             ->setHomePhone($sHomePhone)
             ->setWorkPhone($sWorkPhone)
             ->setCellPhone($sCellPhone)
@@ -416,6 +429,7 @@ if (isset($_POST['PersonSubmit']) || isset($_POST['PersonSubmitAndAdd'])) {
             ->setFamId($iFamily)
             ->setFmrId($iFamilyRole)
             ->setClsId($iClassification)
+            ->setGradeId($iGrade)
             ->setFlags($per_Flags)
             ->setFacebook($sFacebook)
             ->setTwitter($sTwitter)
@@ -445,6 +459,19 @@ if (isset($_POST['PersonSubmit']) || isset($_POST['PersonSubmitAndAdd'])) {
 
         $person->save();
         $person->reload();
+
+        if ($emailAccountHolder && $oldEmail !== (string) $sEmail) {
+            $note = new Note();
+            $note->setPerId($iPersonID);
+            $note->setType('edit');
+            $note->setEntered(AuthenticationManager::getCurrentUser()->getId());
+            $note->setText(sprintf(
+                gettext('Email changed by an administrator from %1$s to %2$s'),
+                InputUtils::escapeHTML($oldEmail),
+                InputUtils::escapeHTML((string) $sEmail)
+            ));
+            $note->save();
+        }
 
         if (!$personAlreadyExist) {
             $iPersonID = $person->getId();
@@ -536,6 +563,7 @@ if (isset($_POST['PersonSubmit']) || isset($_POST['PersonSubmitAndAdd'])) {
         $bIsDeceased = !empty($per_DateDeceased);
         $dDateDeceased = $per_DateDeceased ?? '';
         $iClassification = (int) $per_cls_ID;
+        $iGrade = GradeService::resolve($per_grd_ID);
         $iViewAgeFlag = (int) $per_Flags;
 
         $sFacebook = $per_Facebook;
@@ -589,6 +617,8 @@ $rsFamilies = RunQuery($sSQL);
 //Get Family Roles for the drop-down
 $sSQL = 'SELECT * FROM list_lst WHERE lst_ID = 2 ORDER BY lst_OptionSequence';
 $rsFamilyRoles = RunQuery($sSQL);
+
+$sCountry = Countries::toISO($sCountry);
 
 $aBreadcrumbs = PageHeader::breadcrumbs([
     [gettext('People'), '/people/dashboard'],
@@ -749,6 +779,15 @@ require_once __DIR__ . '/Include/Header.php';
                         } ?>
                     </select>
                 </div>
+                <div class="mb-3 col-12 col-sm-6 col-md-3">
+                    <label for="Grade"><?= gettext('Grade') ?>:</label>
+                    <select name="Grade" id="Grade" class="form-select">
+                        <option value=""><?= gettext('Unassigned') ?></option>
+                        <?php foreach (GradeService::names() as $gradeId => $gradeName) { ?>
+                            <option value="<?= (int) $gradeId ?>"<?= $iGrade === $gradeId ? ' selected' : '' ?>><?= InputUtils::escapeHTML($gradeName) ?></option>
+                        <?php } ?>
+                    </select>
+                </div>
             </div>
         </div>
     </div>
@@ -817,8 +856,7 @@ require_once __DIR__ . '/Include/Header.php';
                         <?= gettext('Zip Code') ?>:
                         <?= $bFamilyZip ? '</span>' : '' ?>
                     </label>
-                    <input type="text" name="Zip" id="Zip" class="form-control"
-                           <?= SystemConfig::getBooleanValue('bForceUppercaseZip') ? 'style="text-transform:uppercase"' : '' ?>
+                    <input type="text" name="Zip" id="Zip" class="form-control<?= SystemConfig::getBooleanValue('bForceUppercaseZip') ? ' text-uppercase' : '' ?>"
                            value="<?= InputUtils::escapeAttribute(stripslashes($sZip)) ?>"
                            maxlength="10">
                 </div>
@@ -834,14 +872,19 @@ require_once __DIR__ . '/Include/Header.php';
             </div>
         </div>
     </div>
-    <?php } else { // Hidden fields when address is hidden ?>
+    <?php } else { // Hidden fields when address is hidden
+        $sHiddenCity = $isNewPerson ? '' : $sCity;
+        $sHiddenState = $isNewPerson ? '' : $sState;
+        $sHiddenZip = $isNewPerson ? '' : $sZip;
+        $sHiddenCountry = $isNewPerson ? '' : $sCountry;
+    ?>
         <input type="hidden" name="Address1" value="<?= InputUtils::escapeAttribute(stripslashes($sAddress1)) ?>">
         <input type="hidden" name="Address2" value="<?= InputUtils::escapeAttribute(stripslashes($sAddress2)) ?>">
-        <input type="hidden" name="City" value="<?= InputUtils::escapeAttribute(stripslashes($sCity)) ?>">
-        <input type="hidden" name="State" value="<?= InputUtils::escapeAttribute(stripslashes($sState)) ?>">
-        <input type="hidden" name="StateTextbox" value="<?= InputUtils::escapeAttribute(stripslashes($sState)) ?>">
-        <input type="hidden" name="Zip" value="<?= InputUtils::escapeAttribute(stripslashes($sZip)) ?>">
-        <input type="hidden" name="Country" value="<?= InputUtils::escapeAttribute(stripslashes($sCountry)) ?>">
+        <input type="hidden" name="City" value="<?= InputUtils::escapeAttribute(stripslashes($sHiddenCity)) ?>">
+        <input type="hidden" name="State" value="<?= InputUtils::escapeAttribute(stripslashes($sHiddenState)) ?>">
+        <input type="hidden" name="StateTextbox" value="<?= InputUtils::escapeAttribute(stripslashes($sHiddenState)) ?>">
+        <input type="hidden" name="Zip" value="<?= InputUtils::escapeAttribute(stripslashes($sHiddenZip)) ?>">
+        <input type="hidden" name="Country" value="<?= InputUtils::escapeAttribute(stripslashes($sHiddenCountry)) ?>">
     <?php } ?>
 
     <!-- Card 3: Contact Information -->
@@ -937,8 +980,11 @@ require_once __DIR__ . '/Include/Header.php';
                             <span class="input-group-text"><i class="fa-solid fa-at"></i></span>
                             <input type="email" name="Email" id="Email"
                                    value="<?= InputUtils::escapeAttribute(stripslashes($sEmail)) ?>"
-                                   maxlength="100" class="form-control">
+                                   maxlength="100" class="form-control"<?= $emailLocked ? ' readonly' : '' ?>>
                         </div>
+                        <?php if ($emailLocked) { ?>
+                            <span class="text-secondary small"><?= gettext('Only an administrator can change the email of a person with a user account.') ?></span>
+                        <?php } ?>
                         <?php if ($sEmailError) { ?>
                             <span class="text-danger small"><?= $sEmailError ?></span>
                         <?php } ?>

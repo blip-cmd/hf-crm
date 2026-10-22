@@ -8,7 +8,9 @@ import { pdfText } from "../../../support/pdf-text";
  * NewsLetterLabels.php and ConfirmLabels.php build every label from
  * Family::getMailingAddressLines() — the flagged second address when a family has
  * one, the primary address otherwise — and order the run by the ZIP that is
- * actually printed rather than by the primary ZIP. Every letter that goes through
+ * actually printed rather than by the primary ZIP. PDFLabel.php, behind the
+ * cart's Generate Labels and every People Report's Print Labels, does the same
+ * for a person without an address of their own (#10405). Every letter that goes through
  * ChurchInfoReport::startLetterPage() is addressed the same way.
  *
  * The PDFs are fetched with cy.request() (cy.visit() only accepts text/html) and
@@ -22,16 +24,9 @@ describe("Mailing address on mailed reports (#9743)", () => {
         "labeltype=Tractor&labelfont=Helvetica&labelfontsize=default&recipientnamingmethod=familyname";
 
     /**
-     * Direct form login, as in confirm-reports.spec.js: these pages need the
-     * MenuOptions role flag and a PHP session uncontaminated by earlier tests.
+     * Direct form login, as in confirm-reports.spec.js: a fresh PHP session
+     * uncontaminated by earlier tests.
      */
-    const freshAdminLogin = () => {
-        cy.clearCookies();
-        cy.visit("/session/begin");
-        cy.get("input[name=User]").type(Cypress.env("admin.username"));
-        cy.get("input[name=Password]").type(Cypress.env("admin.password") + "{enter}");
-        cy.url().should("not.include", "/session/begin");
-    };
 
     /**
      * Creates a family whose flagged second address is in a different ZIP.
@@ -39,7 +34,7 @@ describe("Mailing address on mailed reports (#9743)", () => {
      * and `members` (first names) when the family has to appear in the directory,
      * which lists people, not families.
      */
-    const createFamilyWithMailingAddress = (familyName, { secondCity = "Othertown", members = [] } = {}) => {
+    const createFamilyWithMailingAddress = (familyName, { secondCity = "Othertown", members = [], birthMonth = null } = {}) => {
         cy.visit("/FamilyEditor.php");
         cy.contains("Family Info");
         cy.get("#FamilyName").type(familyName);
@@ -49,6 +44,10 @@ describe("Mailing address on mailed reports (#9743)", () => {
             // member is a Member (1) rather than Unassigned (0).
             cy.get(`input[name="FirstName${index + 1}"]`).type(firstName);
             cy.get(`select[name="Classification${index + 1}"]`).select("1", { force: true });
+            if (birthMonth !== null) {
+                cy.get(`select[name="BirthMonth${index + 1}"]`).select(birthMonth, { force: true });
+                cy.get(`select[name="BirthDay${index + 1}"]`).select("15", { force: true });
+            }
         });
         cy.get('input[name="Address1"]').type("742 Evergreen Terrace");
         cy.get('input[name="City"]').clear().type("Springfield");
@@ -92,8 +91,34 @@ describe("Mailing address on mailed reports (#9743)", () => {
         expect(lines).to.not.include("742 Evergreen Terrace");
     };
 
+    /** The rows of Reports/PDFLabel.php's CSV output, header dropped. */
+    const fetchLabelRows = (query) =>
+        cy
+            .request(
+                `/Reports/PDFLabel.php?${query}&labeltype=5160&labelfont=Helvetica&labelfontsize=10&startrow=1&startcol=1&filetype=CSV`,
+            )
+            .then((response) => {
+                expect(response.status, "no server error").to.equal(200);
+                return String(response.body).trim().split(/\r?\n/).slice(1);
+            });
+
+    const expectMailingAddressRow = (rows, familyName) => {
+        const row = rows.find((line) => line.includes(familyName));
+        expect(row, `a label for ${familyName}`).to.not.equal(undefined);
+        expect(row).to.include("PO Box 1204").and.include("Othertown").and.include("62998");
+        expect(row).to.not.include("742 Evergreen Terrace");
+    };
+
+    const cartRequest = (method, body) =>
+        cy.request({
+            method,
+            url: "/api/cart/",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(body),
+        });
+
     beforeEach(() => {
-        freshAdminLogin();
+        cy.freshAdminFormLogin();
         cy.visit("/LettersAndLabels.php");
     });
 
@@ -121,6 +146,25 @@ describe("Mailing address on mailed reports (#9743)", () => {
         fetchPdfLines(`/Reports/ConfirmLabels.php?${labelQuery}`).then((lines) => {
             expectLabelLines(lines, familyName);
         });
+    });
+
+    it("prints the second address on labels generated from the cart (#10405)", () => {
+        const familyName = "MailCart" + Cypress._.random(0, 1e6);
+        createFamilyWithMailingAddress(familyName, { members: ["Carta"] }).then((familyId) => {
+            cartRequest("DELETE", {});
+            cartRequest("POST", { Family: familyId });
+            fetchLabelRows("groupbymode=indiv").then((rows) => expectMailingAddressRow(rows, familyName));
+            fetchLabelRows("groupbymode=fam").then((rows) => expectMailingAddressRow(rows, familyName));
+            cartRequest("DELETE", {});
+        });
+    });
+
+    it("prints the second address on People Report labels (#10405)", () => {
+        const familyName = "MailReport" + Cypress._.random(0, 1e6);
+        createFamilyWithMailingAddress(familyName, { members: ["Bday"], birthMonth: "11" });
+        fetchLabelRows("report=birthdays&month=11&groupbymode=indiv").then((rows) =>
+            expectMailingAddressRow(rows, familyName),
+        );
     });
 
     it("addresses the confirmation letter to the second address and lists it on the data sheet", () => {
@@ -211,7 +255,7 @@ describe("Mailing address on mailed reports (#9743)", () => {
      * default, prints the flagged second address under a "Mailing Address:" label.
      *
      * Mocha runs a nested suite after its parent's own tests, so these start from
-     * the parent's freshAdminLogin() and are unaffected by the API-key calls above.
+     * the parent's cy.freshAdminFormLogin() and are unaffected by the API-key calls above.
      * Families created here land in the same createdFamilyIds list, so the shared
      * `after` hook still returns family_fam to the row count it started with.
      */

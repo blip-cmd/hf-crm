@@ -31,10 +31,14 @@ function viewAccessDenied(Request $request, Response $response, array $args): Re
         'EditRecords',
         'DeleteRecords',
         'AddRecords',
-        'MenuOptions',
         'Notes',
         'AddEvent',
         'Authentication',
+        // Volunteer Management v2 (#9704). The role middlewares that emit these
+        // arrive with #9706; listing them now keeps the access-denied page from
+        // silently blanking the role name when they do.
+        'ManageMinistries',
+        'VolunteerCoordinator',
     ];
 
     $queryParams = $request->getQueryParams();
@@ -111,6 +115,7 @@ function viewDashboard(Request $request, Response $response, array $args): Respo
         'dashboardCounts'                 => $dashboardCounts,
         'sundaySchoolEnabled'             => SystemConfig::getBooleanValue('bEnabledSundaySchool'),
         'depositEnabled'                  => AuthenticationManager::getCurrentUser()->isFinanceEnabled(),
+        'canReviewSelfRegistrations'      => AuthenticationManager::getCurrentUser()->isEditRecordsEnabled(),
         'eventsEnabled'                   => SystemConfig::getBooleanValue('bEnabledEvents'),
         'genderDataCheckCount'            => $genderDataCheckCount,
         'roleDataCheckCount'              => $roleDataCheckCount,

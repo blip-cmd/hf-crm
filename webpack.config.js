@@ -1,8 +1,20 @@
 const path = require('path');
 const fs = require('fs');
+const webpack = require('webpack');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 const isProduction = process.env.NODE_ENV === 'production';
+
+// DataTables language files used to be copied by Grunt into locale/vendor.
+// The skin bundle no longer runs Grunt, and the table requests these by URL.
+const dtI18nSrc = path.resolve(__dirname, 'node_modules/datatables.net-plugins/i18n');
+const dtI18nDest = path.resolve(__dirname, 'src/locale/vendor/datatables');
+fs.mkdirSync(dtI18nDest, { recursive: true });
+for (const file of fs.readdirSync(dtI18nSrc)) {
+  if (file.endsWith('.json')) {
+    fs.copyFileSync(path.join(dtI18nSrc, file), path.join(dtI18nDest, file));
+  }
+}
 
 // Plugin to fix unquoted URLs in CSS (especially fonts)
 class FixCssUrlQuotesPlugin {
@@ -73,6 +85,7 @@ module.exports = {
     'calendar-event-editor': './webpack/calendar-event-editor.js',
     'two-factor-enrollment': './webpack/two-factor-enrollment.js',
     churchcrm: './webpack/skin-main',
+    theme: './webpack/theme.js',
     'churchcrm-rtl': './webpack/skin-rtl',
     'photo-uploader': './webpack/photo-uploader-entry',
     'root-dashboard': './webpack/root-dashboard',
@@ -85,19 +98,32 @@ module.exports = {
     restore: './webpack/restore',
     'csv-import': './webpack/csv-import',
     'admin-dashboard': './webpack/admin-dashboard',
+    // Admin → Member Portal (#9864): theme picker, portal settings, statistics.
+    'admin-member-portal': './webpack/admin-member-portal.ts',
     'get-started': './webpack/get-started',
     'church-info': './webpack/church-info',
+    'email-settings': './webpack/email-settings',
     localization: './webpack/localization',
     'system-settings-panel': './webpack/system-settings-panel',
     'kiosk-registration-closed': './webpack/kiosk-registration-closed',
     kiosk: './webpack/kiosk',
+    'kiosk-settings': './webpack/kiosk-settings',
+    'people-settings': './webpack/people-settings',
+    'admin-grade-names': './webpack/admin-grade-names',
     'people-list': './webpack/people/person-list',
     'people-family-list': './webpack/people/family-list',
     'people-family-view': './webpack/people/family-view',
     'people-person-view': './webpack/people/person-view',
     'people-map-view': './webpack/people/map-view',
     'people-map-neighbors': './webpack/people/map-neighbors',
+    'people-self-register': './webpack/people/self-register',
+    'people-labels-modal': './webpack/people/labels-modal',
+    'email-history-modal': './webpack/people/email-history-modal',
+    'email-delete-queue': './webpack/people/email-delete-queue',
+    'email-log-table': './webpack/people/email-log-table',
     'error': './webpack/error',
+    'feature-toggles': './webpack/feature-toggles',
+    'groups-group-view': './webpack/groups/group-view',
     'groups-sundayschool-dashboard': './webpack/groups-sundayschool-dashboard',
     'groups-sundayschool-class-view': './webpack/groups-sundayschool-class-view',
     'repeat-event-editor': './webpack/repeat-event-editor',
@@ -108,25 +134,41 @@ module.exports = {
     'event-editor': './webpack/event-editor',
     'event-types-list': './webpack/event-types-list',
     'event-cart-to-event': './webpack/event-cart-to-event',
+    'ministries-dashboard': './webpack/ministries/dashboard',
+    'ministries-ministry': './webpack/ministries/ministry',
+    'ministries-team-view': './webpack/ministries/team-view',
+    'ministries-occurrence': './webpack/ministries/occurrence',
+    'ministries-settings': './webpack/ministries/settings',
+    // The core event view's Volunteers card, worded like every V2 screen (D34).
+    'ministries-event-staffing': './webpack/ministries/event-staffing',
+    'portal-volunteer-schedule': './webpack/portal/volunteer-schedule',
+    'portal-volunteer-opportunities': './webpack/portal/volunteer-opportunities',
     'email-composer': './webpack/common/email-composer',
+    // Member Portal: its own CSS/JS bundle, never part of the RTL-flipped core
+    // bundle, so a church theme is not flipped twice (design §3.5).
+    portal: './webpack/portal/portal.ts',
+    // Page-specific portal bundles, loaded by the templates that need them
+    // (design §5.2 / #9865) rather than by every portal page.
+    'portal-profile': './webpack/portal/portal-profile.ts',
+    'portal-family': './webpack/portal/portal-family.ts',
+    // Member Portal calendar (#9866): FullCalendar for /portal/calendar. Its own
+    // entry so the tiny `portal` bundle every page loads stays tiny.
+    'portal-calendar': './webpack/portal/portal-calendar.ts',
+    // My Teams (#9868): the team page's four tabs, drawn by the shared ministries
+    // components. The occurrence page reuses `ministries-occurrence` unchanged.
+    'portal-teams': './webpack/portal/teams.ts',
     'telemetry': './webpack/telemetry',
     'debug': './webpack/debug',
+    'finance-deposit-editor': './webpack/finance-deposit-editor',
+    'finance-deposit-search': './webpack/finance-deposit-search',
   },
   output: {
     path: path.resolve('./src/skin/v2'),
     filename: '[name].min.js',
     publicPath: 'auto',
   },
-  externals: {
-    // Leaflet is loaded as a global from skin/external/leaflet/leaflet.js (Grunt-copied).
-    // Mapping it here lets webpack entries import 'leaflet' without bundling it.
-    leaflet: 'L',
-  },
   resolve: {
     extensions: ['.ts', '.tsx', '.js'],
-    alias: {
-      jquery: path.resolve(__dirname, 'node_modules/jquery'),
-    },
   },
   cache: {
     type: 'filesystem',
@@ -175,6 +217,10 @@ module.exports = {
     new MiniCssExtractPlugin({
       filename: '[name].min.css',
       ignoreOrder: false,
+    }),
+    new webpack.ProvidePlugin({
+      $: path.resolve(__dirname, 'webpack/jquery-shared.js'),
+      jQuery: path.resolve(__dirname, 'webpack/jquery-shared.js'),
     }),
     new FixCssUrlQuotesPlugin(),
   ],

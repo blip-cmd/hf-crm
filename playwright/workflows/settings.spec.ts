@@ -15,6 +15,7 @@ test.describe('Settings', () => {
       title: 'User Permissions',
       category: 'Admin & Settings',
       purpose: 'Show user/permission management — self-hosted control story',
+      usedIn: ['docs', 'website'],
     });
   });
 
@@ -22,7 +23,7 @@ test.describe('Settings', () => {
     // Route: src/admin/routes/people.php ("/admin/people"), admin-only. Shows
     // the People hub: list/editor shortcuts plus auto-saving settings panels.
     await page.goto('/admin/people');
-    for (const section of ['#peoplePeople', '#peopleFamilies', '#peopleNewMembers']) {
+    for (const section of ['#peopleNewMembers', '#peopleFamilies', '#peoplePeople', '#peopleMap']) {
       await expect(page.locator(`${section} .settings-panel-fields`)).toBeEnabled({ timeout: 15000 });
     }
     await settle(page, 600);
@@ -32,6 +33,7 @@ test.describe('Settings', () => {
       title: 'People Settings',
       category: 'Admin & Settings',
       purpose: 'Show the People settings hub — list shortcuts and auto-saving settings in one place',
+      usedIn: ['docs'],
     });
   });
 
@@ -63,6 +65,7 @@ test.describe('Settings', () => {
       title: 'Plugin Management',
       category: 'Admin & Settings',
       purpose: 'Show the plugin management admin page — core and community plugins',
+      usedIn: ['docs', 'website'],
     });
   });
 });

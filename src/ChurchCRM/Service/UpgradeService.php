@@ -100,7 +100,6 @@ class UpgradeService
                         }
                         $version->setUpdateEnd(new \DateTimeImmutable());
                         $version->save();
-                        sleep(2);
 
                         // increment the number of scripts executed.
                         // If no scripts run, then there is no supported upgrade path defined in the JSON file
@@ -124,8 +123,6 @@ class UpgradeService
             if ($upgradeScriptsExecuted === 0) {
                 $logger->warning('No upgrade path for ' . VersionUtils::getDBVersion() . ' to ' . $installed_version);
             }
-            // always rebuild the views
-            SQLUtils::sqlImport(SystemURLs::getDocumentRoot() . '/mysql/upgrade/rebuild_views.sql', $connection);
 
             // Mark session to avoid immediate redirect loop while bootstrapper re-reads DB version.
             // Also clear update-notification session variables so the notification disappears
