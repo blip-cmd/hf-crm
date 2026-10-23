@@ -166,11 +166,7 @@ function initializeFamilyView() {
                 "</a>"
               );
             }
-            return (
-              '<span class="badge bg-secondary-lt text-secondary">' +
-              i18next.t("Entire Family") +
-              "</span>"
-            );
+            return '<span class="badge bg-secondary-lt text-secondary">' + i18next.t("Entire Family") + "</span>";
           },
         },
         { title: i18next.t("Date"), type: "date", data: "Date" },
