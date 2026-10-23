@@ -228,28 +228,11 @@
       "type": "checkboxes",
       "required": false,
       "help": "Filter which types of holidays to show. Leave all unselected to show every holiday.",
-      "options": [
-        "official",
-        "observance",
-        "bank",
-        "seasonal",
-        "religious"
-      ],
-      "optionLabels": [
-        "Official Holidays",
-        "Observances",
-        "Bank Holidays",
-        "Seasonal",
-        "Religious"
-      ],
-      "default": [
-        "official",
-        "religious"
-      ]
+      "options": ["official", "observance", "bank", "seasonal", "religious"],
+      "optionLabels": ["Official Holidays", "Observances", "Bank Holidays", "Seasonal", "Religious"],
+      "default": ["official", "religious"]
     }
   ],
   "menuItems": [],
-  "hooks": [
-    "systemcalendars.register"
-  ]
+  "hooks": ["systemcalendars.register"]
 }
