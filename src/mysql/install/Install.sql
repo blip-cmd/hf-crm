@@ -1015,14 +1015,21 @@ CREATE TABLE `pledge_denominations_pdem` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
+-- Table structure for table `person_pledge_map`
+--
+CREATE TABLE IF NOT EXISTS `person_pledge_map` (
+  `ppm_plg_id` mediumint(9) NOT NULL,
+  `ppm_per_id` mediumint(9) NOT NULL,
+  PRIMARY KEY (`ppm_plg_id`),
+  KEY `idx_person` (`ppm_per_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 -- Volunteer Management v2 (#9705) - mirrors the volunteer section of src/mysql/upgrade/7.8.0.sql
 -- Ordered so that every foreign-key target already exists.
 --
-
 --
 -- Table structure for table `volunteer_ministry_vmin`
 --
-
 CREATE TABLE `volunteer_ministry_vmin` (
   `vmin_ID`               int(11)               NOT NULL AUTO_INCREMENT,
   `vmin_Name`             varchar(100)          NOT NULL,
@@ -1044,7 +1051,6 @@ CREATE TABLE `volunteer_ministry_vmin` (
 --
 -- Table structure for table `volunteer_team_vtem`
 --
-
 CREATE TABLE `volunteer_team_vtem` (
   `vtem_ID`          int(11)             NOT NULL AUTO_INCREMENT,
   `vtem_vmin_ID`     int(11)             NOT NULL,
@@ -1066,7 +1072,6 @@ CREATE TABLE `volunteer_team_vtem` (
 --
 -- Table structure for table `volunteer_position_vpos`
 --
-
 CREATE TABLE `volunteer_position_vpos` (
   `vpos_ID`          int(11)             NOT NULL AUTO_INCREMENT,
   `vpos_vmin_ID`     int(11)             NOT NULL,
@@ -1090,7 +1095,6 @@ CREATE TABLE `volunteer_position_vpos` (
 --
 -- Table structure for table `volunteer_qualification_vqal`
 --
-
 CREATE TABLE `volunteer_qualification_vqal` (
   `vqal_ID`               int(11)               NOT NULL AUTO_INCREMENT,
   `vqal_per_ID`           mediumint(9) unsigned NOT NULL,
@@ -1115,7 +1119,6 @@ CREATE TABLE `volunteer_qualification_vqal` (
 --
 -- Table structure for table `volunteer_schedule_vsch`
 --
-
 CREATE TABLE `volunteer_schedule_vsch` (
   `vsch_ID`                int(11)                                        NOT NULL AUTO_INCREMENT,
   `vsch_vmin_ID`           int(11)                                        NOT NULL,
@@ -1154,7 +1157,6 @@ CREATE TABLE `volunteer_schedule_vsch` (
 --
 -- Table structure for table `volunteer_occurrence_vocc`
 --
-
 CREATE TABLE `volunteer_occurrence_vocc` (
   `vocc_ID`             int(11)                          NOT NULL AUTO_INCREMENT,
   `vocc_vsch_ID`        int(11)                          NOT NULL,
@@ -1169,8 +1171,6 @@ CREATE TABLE `volunteer_occurrence_vocc` (
   KEY `vocc_event_idx` (`vocc_event_id`),
   CONSTRAINT `fk_vocc_schedule` FOREIGN KEY (`vocc_vsch_ID`)
       REFERENCES `volunteer_schedule_vsch` (`vsch_ID`) ON DELETE CASCADE,
-  -- Nullable only so a deleted event leaves the service history behind (D20),
-  -- VolunteerScheduleService sets it on every insert.
   CONSTRAINT `fk_vocc_event` FOREIGN KEY (`vocc_event_id`)
       REFERENCES `events_event` (`event_id`) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -1178,7 +1178,6 @@ CREATE TABLE `volunteer_occurrence_vocc` (
 --
 -- Table structure for table `volunteer_requirement_vreq`
 --
-
 CREATE TABLE `volunteer_requirement_vreq` (
   `vreq_ID`       int(11)      NOT NULL AUTO_INCREMENT,
   `vreq_vsch_ID`  int(11)               DEFAULT NULL,
@@ -1197,17 +1196,13 @@ CREATE TABLE `volunteer_requirement_vreq` (
       REFERENCES `volunteer_occurrence_vocc` (`vocc_ID`) ON DELETE CASCADE,
   CONSTRAINT `fk_vreq_position` FOREIGN KEY (`vreq_vpos_ID`)
       REFERENCES `volunteer_position_vpos` (`vpos_ID`) ON DELETE CASCADE,
-  -- Exactly one parent: a template requirement belongs to a schedule, an
-  -- override to an occurrence, never both and never neither. Enforced on
-  -- MariaDB 10.2.1+ / MySQL 8.0.16+; parsed and ignored by MySQL 5.7.
-  CONSTRAINT `vreq_one_parent_chk`
+  CONSTRAINT `vreq_one_parent_chk` 
       CHECK ((`vreq_vsch_ID` IS NULL) <> (`vreq_vocc_ID` IS NULL))
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Table structure for table `volunteer_requirement_default_vrdf`
 --
-
 CREATE TABLE `volunteer_requirement_default_vrdf` (
   `vrdf_ID`           int(11)               NOT NULL AUTO_INCREMENT,
   `vrdf_vreq_ID`      int(11)               NOT NULL,
@@ -1230,7 +1225,6 @@ CREATE TABLE `volunteer_requirement_default_vrdf` (
 --
 -- Table structure for table `volunteer_assignment_vasg`
 --
-
 CREATE TABLE `volunteer_assignment_vasg` (
   `vasg_ID`                int(11)               NOT NULL AUTO_INCREMENT,
   `vasg_vocc_ID`           int(11)               NOT NULL,
@@ -1271,7 +1265,6 @@ CREATE TABLE `volunteer_assignment_vasg` (
 --
 -- Table structure for table `volunteer_response_vrsp`
 --
-
 CREATE TABLE `volunteer_response_vrsp` (
   `vrsp_ID`           int(11)               NOT NULL AUTO_INCREMENT,
   `vrsp_vasg_ID`      int(11)               NOT NULL,
@@ -1293,7 +1286,6 @@ CREATE TABLE `volunteer_response_vrsp` (
 --
 -- Table structure for table `volunteer_swap_vswp`
 --
-
 CREATE TABLE `volunteer_swap_vswp` (
   `vswp_ID`               int(11)               NOT NULL AUTO_INCREMENT,
   `vswp_vasg_ID`          int(11)               NOT NULL,
@@ -1322,7 +1314,6 @@ CREATE TABLE `volunteer_swap_vswp` (
 --
 -- Table structure for table `volunteer_notification_vntf`
 --
-
 CREATE TABLE `volunteer_notification_vntf` (
   `vntf_ID`              int(11)               NOT NULL AUTO_INCREMENT,
   `vntf_Type`            enum('assignment','reminder','decline_alert','gap_alert','signup_confirm','swap_proposed','swap_resolved','help_offer','pool_add')
@@ -1361,7 +1352,6 @@ CREATE TABLE `volunteer_notification_vntf` (
 --
 -- Table structure for table `volunteer_scope_vscp`
 --
-
 CREATE TABLE `volunteer_scope_vscp` (
   `vscp_ID`               int(11)                 NOT NULL AUTO_INCREMENT,
   `vscp_per_ID`           mediumint(9) unsigned   NOT NULL,
@@ -1387,8 +1377,8 @@ CREATE TABLE `volunteer_scope_vscp` (
 -- created hundreds of lines before volunteer_ministry_vmin exists. ON DELETE SET NULL so
 -- deleting a ministry never deletes church events (design §2.16).
 --
-ALTER TABLE `events_event`
-    ADD CONSTRAINT `events_event_FK_ministry` FOREIGN KEY (`event_ministry_id`)
+ALTER TABLE `events_event` 
+    ADD CONSTRAINT `events_event_FK_ministry` FOREIGN KEY (`event_ministry_id`) 
     REFERENCES `volunteer_ministry_vmin` (`vmin_ID`) ON DELETE SET NULL;
 
 --
@@ -1399,8 +1389,8 @@ ALTER TABLE `events_event`
 -- can never remove a church group; the ministry-deletion path removes the pool group
 -- explicitly instead (design D19).
 --
-ALTER TABLE `group_grp`
-    ADD CONSTRAINT `group_grp_FK_ministry` FOREIGN KEY (`grp_ministry_id`)
+ALTER TABLE `group_grp` 
+    ADD CONSTRAINT `group_grp_FK_ministry` FOREIGN KEY (`grp_ministry_id`) 
     REFERENCES `volunteer_ministry_vmin` (`vmin_ID`) ON DELETE SET NULL;
 
 --
@@ -1411,15 +1401,14 @@ ALTER TABLE `group_grp`
 -- a church calendar; the ministry-deletion path removes the ministry's own calendar explicitly
 -- instead (design §5.3).
 --
-ALTER TABLE `calendars`
-    ADD CONSTRAINT `calendars_ministry_fk` FOREIGN KEY (`ministry_id`)
+ALTER TABLE `calendars` 
+    ADD CONSTRAINT `calendars_ministry_fk` FOREIGN KEY (`ministry_id`) 
     REFERENCES `volunteer_ministry_vmin` (`vmin_ID`) ON DELETE SET NULL;
 
 --
 -- Table structure for table `volunteer_calendar_vcal`
 -- Volunteer v2 (D25): church calendars opened to a ministry. int(11) to match calendars.calendar_id.
 --
-
 CREATE TABLE `volunteer_calendar_vcal` (
   `vcal_calendar_id` int(11) NOT NULL,
   `vcal_vmin_ID`     int(11) NOT NULL,
@@ -1429,30 +1418,6 @@ CREATE TABLE `volunteer_calendar_vcal` (
       REFERENCES `calendars` (`calendar_id`) ON DELETE CASCADE,
   CONSTRAINT `fk_vcal_ministry` FOREIGN KEY (`vcal_vmin_ID`)
       REFERENCES `volunteer_ministry_vmin` (`vmin_ID`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
-CREATE TABLE `email_log_eml` (
-  `eml_ID`        int(10) unsigned      NOT NULL AUTO_INCREMENT,
-  `eml_per_ID`    mediumint(8) unsigned DEFAULT NULL,
-  `eml_fam_ID`    mediumint(8) unsigned DEFAULT NULL,
-  `eml_usr_ID`    mediumint(9) unsigned DEFAULT NULL,
-  `eml_Address`   varchar(255)          NOT NULL,
-  `eml_Kind`      varchar(50)           NOT NULL,
-  `eml_Subject`   varchar(255)          NOT NULL DEFAULT '',
-  `eml_Body`      longtext              DEFAULT NULL,
-  `eml_Status`    varchar(20)           NOT NULL,
-  `eml_Error`     text                  DEFAULT NULL,
-  `eml_MessageID` varchar(255)          DEFAULT NULL,
-  `eml_DateSent`  datetime              NOT NULL,
-  `eml_Batch`       varchar(32)         DEFAULT NULL,
-  `eml_Attempts`    tinyint(3) unsigned NOT NULL DEFAULT 0,
-  `eml_NextAttempt` datetime            DEFAULT NULL,
-  PRIMARY KEY (`eml_ID`),
-  KEY `idx_eml_per_ID`   (`eml_per_ID`),
-  KEY `idx_eml_fam_ID`   (`eml_fam_ID`),
-  KEY `idx_eml_DateSent` (`eml_DateSent`),
-  KEY `idx_eml_Status`   (`eml_Status`),
-  KEY `idx_eml_Batch`    (`eml_Batch`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 update version_ver set ver_update_end = now();

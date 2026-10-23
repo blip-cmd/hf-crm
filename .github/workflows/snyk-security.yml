@@ -1,0 +1,118 @@
+# Snyk Security Scanning
+#
+# Runs Snyk Code (SAST) for PHP and JS/TS source, and Snyk Open Source (SCA)
+# for npm and Composer dependency vulnerabilities.
+#
+# Requires SNYK_TOKEN repository secret.
+# See: https://docs.snyk.io/integrations/ci-cd-integrations/github-actions-integration
+
+name: "Security: Snyk"
+
+on:
+  push:
+    branches: [master, develop]
+    paths-ignore:
+      - "**/*.md"
+      - "docs/**"
+      - "LICENSE"
+      - ".gitignore"
+  pull_request:
+    branches: [master, develop]
+    paths-ignore:
+      - "**/*.md"
+      - "docs/**"
+      - "LICENSE"
+      - ".gitignore"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  security-events: write
+
+jobs:
+  snyk-code:
+    name: Snyk Code (SAST)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    if: ${{ github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository }}
+    continue-on-error: true
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Run Snyk Code scan
+        uses: snyk/actions/node@b98d498629f1c368650224d6d212bf7dfa89e4bf # master 2024-10
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          command: code test
+          args: --sarif-file-output=snyk-code.sarif --severity-threshold=medium
+
+      - name: Upload Snyk Code SARIF
+        if: always() && hashFiles('snyk-code.sarif') != ''
+        uses: github/codeql-action/upload-sarif@v4
+        with:
+          sarif_file: snyk-code.sarif
+          category: snyk-code
+
+  snyk-open-source:
+    name: Snyk Open Source (SCA)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    if: ${{ github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository }}
+    continue-on-error: true
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Setup Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Install npm dependencies
+        run: npm ci
+
+      - name: Run Snyk SCA scan (npm)
+        uses: snyk/actions/node@b98d498629f1c368650224d6d212bf7dfa89e4bf # master 2024-10
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          command: test
+          args: --sarif-file-output=snyk-sca-npm.sarif --severity-threshold=high
+
+      - name: Upload Snyk SCA SARIF (npm)
+        if: always() && hashFiles('snyk-sca-npm.sarif') != ''
+        uses: github/codeql-action/upload-sarif@v4
+        with:
+          sarif_file: snyk-sca-npm.sarif
+          category: snyk-sca-npm
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@cf4cade2721270509d5b1c766ab3549210a39a2a # v2.34.1
+        with:
+          php-version: "8.4"
+          tools: composer:v2
+
+      - name: Install Composer dependencies
+        run: composer install --no-interaction --prefer-dist --no-progress
+        working-directory: src
+
+      - name: Run Snyk SCA scan (Composer)
+        uses: snyk/actions/php@b98d498629f1c368650224d6d212bf7dfa89e4bf # master 2024-10
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          command: test
+          args: --file=src/composer.json --sarif-file-output=snyk-sca-composer.sarif --severity-threshold=high
+
+      - name: Upload Snyk SCA SARIF (Composer)
+        if: always() && hashFiles('snyk-sca-composer.sarif') != ''
+        uses: github/codeql-action/upload-sarif@v4
+        with:
+          sarif_file: snyk-sca-composer.sarif
+          category: snyk-sca-composer

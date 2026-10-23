@@ -1,0 +1,67 @@
+-- Table structure for table `pledge_denominations_pdem`
+--
+CREATE TABLE `pledge_denominations_pdem` (
+  `pdem_id`                   mediumint(9) unsigned NOT NULL AUTO_INCREMENT,
+  `pdem_plg_GroupKey`         varchar(64)           NOT NULL,
+  `plg_depID`                 mediumint(9) unsigned DEFAULT NULL,
+  `pdem_denominationID`       mediumint(9) unsigned NOT NULL DEFAULT '0',
+  `pdem_denominationQuantity` int(11)               DEFAULT NULL,
+  PRIMARY KEY (`pdem_id`),
+  KEY `pdem_groupkey_idx`           (`pdem_plg_GroupKey`),
+  KEY `pdem_deposit_denom_idx`      (`plg_depID`, `pdem_denominationID`),
+  UNIQUE KEY `pdem_groupkey_denom_uidx` (`pdem_plg_GroupKey`, `pdem_denominationID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Table structure for table `person_pledge_map`
+--
+CREATE TABLE IF NOT EXISTS `person_pledge_map` (
+  `ppm_plg_id` mediumint(9) NOT NULL,
+  `ppm_per_id` mediumint(9) NOT NULL,
+  PRIMARY KEY (`ppm_plg_id`),
+  KEY `idx_person` (`ppm_per_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- Volunteer Management v2 (#9705) - mirrors the volunteer section of src/mysql/upgrade/7.8.0.sql
+-- Ordered so that every foreign-key target already exists.
+--
+--
+-- Table structure for table `volunteer_ministry_vmin`
+--
+CREATE TABLE `volunteer_ministry_vmin` (
+  `vmin_ID`               int(11)               NOT NULL AUTO_INCREMENT,
+  `vmin_Name`             varchar(100)          NOT NULL,
+  `vmin_Description`      varchar(255)                   DEFAULT NULL,
+  `vmin_Active`           tinyint(1) unsigned   NOT NULL DEFAULT 1,
+  `vmin_CreatedDate`      datetime              NOT NULL,
+  `vmin_CreatedBy_per_ID` mediumint(9) unsigned          DEFAULT NULL,
+  `vmin_HelpWanted`       tinyint(1)            NOT NULL DEFAULT 0,
+  `vmin_HelpWantedText`   text                           DEFAULT NULL,
+  `vmin_SundaySchool`     tinyint(1) unsigned   NOT NULL DEFAULT 0,
+  PRIMARY KEY (`vmin_ID`),
+  UNIQUE KEY `vmin_name_uidx`  (`vmin_Name`),
+  KEY `vmin_active_idx`        (`vmin_Active`),
+  KEY `vmin_created_by_idx`    (`vmin_CreatedBy_per_ID`),
+  CONSTRAINT `fk_vmin_created_by` FOREIGN KEY (`vmin_CreatedBy_per_ID`)
+      REFERENCES `person_per` (`per_ID`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Table structure for table `volunteer_team_vtem`
+--
+CREATE TABLE `volunteer_team` (
+  `vtem_ID`          int(11)             NOT NULL AUTO_INCREMENT,
+  `vtem_vmin_ID`     int(11)             NOT NULL,
+  `vtem_Name`        varchar(100)        NOT NULL,
+  `vtem_Description` varchar(255)                 DEFAULT NULL,
+  `vtem_Active`      tinyint(1) unsigned NOT NULL DEFAULT 1,
+  -- D23: the Sunday School class this team staffs; qualifications write its Teacher role.
+  `vtem_grp_ID`      mediumint(8) unsigned          DEFAULT NULL,
+  PRIMARY KEY (`vtem_ID`),
+  UNIQUE KEY `vtem_ministry_name_uidx` (`vtem_vmin_ID`, `vtem_Name`),
+  UNIQUE KEY `vtem_class_group_uidx`   (`vtem_grp_ID`),
+  KEY `vtem_ministry_idx`              (`vtem_vmin_ID`),
+  CONSTRAINT `fk_vtem_ministry` FOREIGN KEY (`vtem_vmin_ID`)
+      REFERENCES `volunteer_ministry_vmin` (`vmin_ID`) ON DELETE CASCADE,
+  CONSTRAINT `fk_vtem_class_group` FOREIGN KEY (`vtem_grp_ID`)
+      REFERENCES `group_grp` (`grp_ID`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

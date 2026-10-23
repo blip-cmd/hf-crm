@@ -4,7 +4,6 @@ use ChurchCRM\dto\ChurchMetaData;
 use ChurchCRM\dto\SystemConfig;
 use ChurchCRM\dto\SystemURLs;
 use ChurchCRM\Utils\InputUtils;
-use ChurchCRM\view\ChurchLogo;
 
 $sPageTitle = gettext('Login');
 $sBodyClass = 'page-auth page-login';
@@ -27,12 +26,11 @@ $contactWebsite = ChurchMetaData::getChurchWebSite();
 <div class="login-container">
   <div class="login-card">
 
-    <!-- Card header: logo + church name -->
+    <!-- Card header: logo and tagline -->
     <div class="login-card-header">
       <div class="login-header-logo">
-        <?= ChurchLogo::img() ?>
+        <img src="<?= SystemURLs::getRootPath() ?>/Images/churchcrm-logo-ink-blue.svg" alt="<?= InputUtils::escapeAttribute(ChurchMetaData::getChurchName() ?: 'ChurchCRM') ?>" />
       </div>
-      <h2 class="login-header-church-name"><?= InputUtils::escapeHTML(ChurchMetaData::getChurchName()) ?></h2>
       <p class="login-header-tagline"><?= gettext('Community Management Platform') ?></p>
     </div>
 
@@ -41,7 +39,7 @@ $contactWebsite = ChurchMetaData::getChurchWebSite();
 
       <?php if ($hasSelfReg): ?>
         <!--
-          Segmented pill control — visible only when self-registration is enabled.
+          Segmented pill control: visible only when self-registration is enabled.
           "Register" opens the registration page in a new tab.
         -->
         <div class="login-tab-control" role="tablist" aria-label="<?= gettext('Account options') ?>">
@@ -68,7 +66,7 @@ $contactWebsite = ChurchMetaData::getChurchWebSite();
           </a>
         </div>
       <?php else: ?>
-        <!-- No pill when self-registration is disabled — plain form title -->
+        <!-- No pill when self-registration is disabled: plain form title -->
         <div class="login-form-title">
           <h1>
             <i class="fa-solid fa-right-to-bracket" aria-hidden="true"></i>
@@ -124,7 +122,7 @@ $contactWebsite = ChurchMetaData::getChurchWebSite();
       </form>
 
       <?php if (!$hasSelfReg && ($contactPhone || $contactEmail || $contactWebsite)): ?>
-        <!-- Compact church contact links — only when self-reg is off -->
+        <!-- Compact church contact links: only when self-reg is off -->
         <div class="login-contact-footer">
           <?php if ($contactPhone): ?>
             <a href="tel:<?= htmlspecialchars($contactPhone) ?>">

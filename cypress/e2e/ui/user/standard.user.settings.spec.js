@@ -117,6 +117,15 @@ describe("Standard User Settings Page", () => {
 
         // English (US) base locale must be present
         cy.get("#user-locale-setting option[value='en_US']").should("exist");
+        // English (UK) locale must be present
+        cy.get("#user-locale-setting option[value='en_GB']").should("exist");
+    });
+
+    it("Does not display language flag in top navbar", () => {
+        cy.visit("/v2/user/3");
+        cy.get(".navbar-nav a[href*='#tab-localization']").should("not.exist");
+        cy.get(".navbar-nav i[class*='fi-']").should("not.exist");
+        cy.get('#settingsNav a[href="#tab-localization"]').should("be.visible");
     });
 
     it("Navigates to API Access tab and shows API key", () => {

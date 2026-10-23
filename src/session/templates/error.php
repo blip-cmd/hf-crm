@@ -3,7 +3,6 @@
 use ChurchCRM\dto\SystemURLs;
 use ChurchCRM\dto\ChurchMetaData;
 use ChurchCRM\Utils\InputUtils;
-use ChurchCRM\view\ChurchLogo;
 
 $sPageTitle = gettext("Password Reset Error");
 $sBodyClass = 'page-auth page-login';
@@ -13,12 +12,11 @@ require(SystemURLs::getDocumentRoot() ."/Include/HeaderNotLoggedIn.php");
 <div class="login-container">
   <div class="login-wrapper">
     <div class="login-form-section">
-      <!-- Header with Logo and Church Name -->
+      <!-- Header with Logo and Tagline -->
       <div class="login-form-header">
         <div class="login-header-logo">
-          <?= ChurchLogo::img() ?>
+          <img src="<?= SystemURLs::getRootPath() ?>/Images/churchcrm-logo-ink-blue.svg" alt="<?= InputUtils::escapeAttribute(ChurchMetaData::getChurchName() ?: 'ChurchCRM') ?>" />
         </div>
-        <h2 class="login-header-church-name"><?= InputUtils::escapeHTML(ChurchMetaData::getChurchName()) ?></h2>
         <p class="login-header-tagline"><?= gettext('Account Recovery') ?></p>
       </div>
 
