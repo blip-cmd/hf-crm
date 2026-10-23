@@ -101,11 +101,7 @@
   },
   "pre-7.8.0": {
     "versions": ["7.7.0", "7.7.1"],
-<<<<<<< HEAD
     "scripts": ["/mysql/upgrade/7.8.0-family-second-address.sql", "/mysql/upgrade/7.8.0-fund-category.sql", "/mysql/upgrade/custom_person_pledge_map.sql"],
-=======
-    "scripts": ["/mysql/upgrade/7.8.0.sql"],
->>>>>>> affac8e7c6ea67bab874a53e0059fef6532ada21
     "dbVersion": "7.8.0"
   },
   "pre-7.8.1": {
