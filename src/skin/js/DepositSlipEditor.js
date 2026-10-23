@@ -212,7 +212,7 @@ function initDepositSlipEditor() {
   function format(d) {
     // `d` is the original data object for the row
     return (
-      '<table cellpadding="5" cellspacing="0" style="padding-left:50px;">' +
+      '<table cellpadding="5" cellspacing="0" class="ps-10">' +
       "<tr>" +
       "<td>" +
       i18next.t("Date") +
