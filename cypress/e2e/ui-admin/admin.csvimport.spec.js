@@ -15,23 +15,9 @@ describe(
         // because it only restores the client cookie, not the server-side PHP
         // session. Bypass cy.session() entirely with a direct form login:
         // clearCookies → POST /session/begin → verify we landed past login.
-        const freshAdminLogin = () => {
-            const username = Cypress.env("admin.username");
-            const password = Cypress.env("admin.password");
-            cy.clearCookies();
-            // Match setupLoginSession's canonical path: /login resolves to the
-            // session/begin form but goes through the front-controller, which
-            // is the path the app's session cookie gets minted on.
-            cy.visit("/login");
-            cy.get("input[name=User]", { timeout: 10000 })
-                .should("be.visible")
-                .type(username);
-            cy.get("input[name=Password]").type(`${password}{enter}`);
-            cy.url().should("not.include", "/session/begin");
-        };
 
         beforeEach(() => {
-            freshAdminLogin();
+            cy.freshAdminFormLogin({ path: "/login", visible: true, timeout: 10000 });
         });
 
         // The importer creates real people and families, and nothing used to
@@ -46,6 +32,7 @@ describe(
             "BareYrTest",
             "CountryTest",
             "ClsRoleTest",
+            "GradeImportTest",
         ];
 
         after(() => {
@@ -397,6 +384,31 @@ describe(
                         expect(person.FmrId, `FmrId for person ${personId}`).to.be.greaterThan(0);
                     });
                 });
+            });
+        });
+
+        it("Verify CSV Import maps a Grade column by grade name (#10189)", () => {
+            cy.visit("admin/import/csv");
+            cy.get("#csvFile").selectFile("cypress/fixtures/test_import_grade.csv", { force: true });
+            cy.get("#csv-import-form").submit();
+            cy.get("#mapping-card").should("be.visible");
+            cy.get('#mapping-tbody select.mapping-select[data-header="Grade"]').should("have.value", "Grade");
+            cy.get("#execute-import").click();
+            cy.get("#summary-card").should("be.visible");
+
+            const grades = {};
+            cy.makePrivateAdminAPICall("GET", "/api/persons/search/GradeImportTest", null, 200).then((resp) => {
+                resp.body
+                    .filter((hit) => hit.objid)
+                    .forEach((hit) => {
+                        cy.makePrivateAdminAPICall("GET", `/api/person/${hit.objid}`, null, 200).then(({ body }) => {
+                            grades[body.FirstName] = body.GradeId;
+                        });
+                    });
+            });
+            cy.then(() => {
+                expect(grades.Gary).to.eq(8);
+                expect(grades.Gwen).to.be.null;
             });
         });
 

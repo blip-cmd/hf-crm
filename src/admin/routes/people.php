@@ -1,8 +1,11 @@
 <?php
 
 use ChurchCRM\dto\SystemConfig;
+use ChurchCRM\Service\Geocoding\GeocoderChain;
 use ChurchCRM\dto\SystemURLs;
+use ChurchCRM\model\ChurchCRM\Person;
 use ChurchCRM\model\ChurchCRM\PersonQuery;
+use ChurchCRM\Service\GradePromotionService;
 use ChurchCRM\view\PageHeader;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
@@ -12,14 +15,21 @@ $app->get('/people', function (Request $request, Response $response): Response {
     $renderer = new PhpRenderer(__DIR__ . '/../views/');
 
     $sectionDefinitions = [
-        'peoplePeople' => [gettext('People'), 'fa-solid fa-user', [
-            'iPersonNameStyle', 'iPersonInitialStyle', 'bHidePersonAddress', 'bHideFriendDate', 'bHideDeceasedFromDirectory',
+        'peopleNewMembers' => [gettext('New Members & Greeting'), 'fa-solid fa-user-plus', [
+            'bEnableSelfRegistration', 'sNewPersonNotificationRecipientIDs', 'IncludeDataInNewPersonNotifications', 'sGreeterCustomMsg1', 'sGreeterCustomMsg2',
+            'sDefaultCountry', 'sDefaultState', 'sDefaultCity', 'sDefaultZip',
         ]],
         'peopleFamilies' => [gettext('Families'), 'fa-solid fa-people-roof', [
             'sDirRoleHead', 'sDirRoleSpouse', 'sDirRoleChild', 'bHideWeddingDate', 'bHideFamilyNewsletter', 'bForceUppercaseZip',
         ]],
-        'peopleNewMembers' => [gettext('New Members & Greeting'), 'fa-solid fa-user-plus', [
-            'bEnableSelfRegistration', 'sNewPersonNotificationRecipientIDs', 'IncludeDataInNewPersonNotifications', 'sGreeterCustomMsg1', 'sGreeterCustomMsg2',
+        'peoplePeople' => [gettext('People'), 'fa-solid fa-user', [
+            'iPersonNameStyle', 'iPersonInitialStyle', 'bHidePersonAddress', 'bHideFriendDate', 'bHideDeceasedFromDirectory',
+        ]],
+        'peopleGrades' => [gettext('Grade Promotion'), 'fa-solid fa-graduation-cap', [
+            'iGradePromotionMonth', 'iGradePromotionDay',
+        ]],
+        'peopleMap' => [gettext('Map Settings'), 'fa-solid fa-map', [
+            'iMapZoom', 'bHideLatLon', 'sGeocoderProviders',
         ]],
     ];
 
@@ -39,6 +49,15 @@ $app->get('/people', function (Request $request, Response $response): Response {
         'IncludeDataInNewPersonNotifications'  => gettext('Include Details in Notifications'),
         'sGreeterCustomMsg1'                   => gettext('Greeter Message 1'),
         'sGreeterCustomMsg2'                   => gettext('Greeter Message 2'),
+        'sDefaultCountry'                      => gettext('Default Country'),
+        'sDefaultState'                        => gettext('Default State'),
+        'sDefaultCity'                         => gettext('Default City'),
+        'sDefaultZip'                          => gettext('Default Zip'),
+        'iMapZoom'                             => gettext('Default Map View'),
+        'bHideLatLon'                          => gettext('Hide Latitude/Longitude'),
+        'sGeocoderProviders'                   => gettext('Geocoding services'),
+        'iGradePromotionMonth'                 => gettext('Promotion Month'),
+        'iGradePromotionDay'                   => gettext('Promotion Day'),
     ];
 
     $sections = [];
@@ -49,8 +68,27 @@ $app->get('/people', function (Request $request, Response $response): Response {
                 unset($setting['tooltip']);
             }
 
+            if ($setting['name'] === 'sDefaultCountry') {
+                $setting['type'] = 'country';
+                unset($setting['choices']);
+                $setting['tooltip'] = gettext('Used for new records and for geocoding when a record has no country.');
+            }
+
+            if ($setting['name'] === 'sDefaultState') {
+                $setting['type'] = 'state';
+                $setting['country'] = 'sDefaultCountry';
+                unset($setting['tooltip']);
+            }
+
             if (in_array($setting['name'], ['sGreeterCustomMsg1', 'sGreeterCustomMsg2'], true)) {
                 $setting['type'] = 'textarea';
+            }
+            if ($setting['name'] === GeocoderChain::CONFIG_KEY) {
+                $setting['type'] = 'multiselect';
+                $setting['choices'] = array_map(
+                    static fn (string $name): array => ['value' => $name, 'label' => $name],
+                    GeocoderChain::availableProviderNames(),
+                );
             }
             if ($setting['name'] === 'sNewPersonNotificationRecipientIDs') {
                 $ids = array_filter(explode(',', SystemConfig::getValue($setting['name'])), 'is_numeric');
@@ -64,6 +102,24 @@ $app->get('/people', function (Request $request, Response $response): Response {
             return $setting;
         }, SystemConfig::getSettingsConfig($keys));
 
+        if ($id === 'peopleNewMembers') {
+            $withHeading = [];
+            foreach ($settings as $setting) {
+                if ($setting['name'] === 'sDefaultCountry') {
+                    $withHeading[] = [
+                        'name' => 'newRecordDefaultsHeading',
+                        'type' => 'heading',
+                        'label' => gettext('New Record Defaults'),
+                        'buttonId' => 'copy-church-address',
+                        'buttonLabel' => gettext('Copy from Church Info'),
+                        'buttonIcon' => 'fa-solid fa-church',
+                    ];
+                }
+                $withHeading[] = $setting;
+            }
+            $settings = $withHeading;
+        }
+
         $sections[] = ['id' => $id, 'title' => $title, 'icon' => $icon, 'settings' => $settings];
     }
 
@@ -75,10 +131,12 @@ $app->get('/people', function (Request $request, Response $response): Response {
             [gettext('People Settings')],
         ]),
         'sections'      => $sections,
+        'gradePromotion' => gradePromotionSummary(),
         'listLinks'     => [
             [gettext('Person Classifications'), '/admin/system/options?mode=classes', 'fa-tags'],
             [gettext('Person Properties'), '/PropertyList.php?Type=p', 'fa-person-half-dress'],
             [gettext('Person Custom Fields'), '/PersonCustomFieldsEditor.php', 'fa-sliders'],
+            [gettext('Grades'), '/admin/system/options?mode=grades', 'fa-graduation-cap'],
             [gettext('Family Roles'), '/admin/system/options?mode=famroles', 'fa-people-roof'],
             [gettext('Family Properties'), '/PropertyList.php?Type=f', 'fa-people-roof'],
             [gettext('Family Custom Fields'), '/FamilyCustomFieldsEditor.php', 'fa-sliders'],
@@ -88,3 +146,29 @@ $app->get('/people', function (Request $request, Response $response): Response {
 
     return $renderer->render($response, 'people.php', $pageArgs);
 });
+
+/**
+ * @return array{lastAt: string, lastRun: ?string, promotedThisYear: bool, lastBy: ?string, lastResult: ?array, nextDateText: string, preview: array{moved: int, finished: int}}
+ */
+function gradePromotionSummary(): array
+{
+    $status = GradePromotionService::status();
+    $result = $status['lastResult'];
+    $lastBy = null;
+    if ($result !== null) {
+        $userId = (int) ($result['userId'] ?? 0);
+        $lastBy = $userId === Person::SCHEDULED_TASK
+            ? gettext('Scheduled Task')
+            : (PersonQuery::create()->findPk($userId)?->getFullName() ?? gettext('Unknown'));
+    }
+
+    return [
+        'lastAt' => $status['lastAt'],
+        'lastRun' => $status['lastRunText'],
+        'promotedThisYear' => $status['promotedThisYear'],
+        'lastBy' => $lastBy,
+        'lastResult' => $result,
+        'nextDateText' => $status['nextDateText'],
+        'preview' => $status['preview'],
+    ];
+}

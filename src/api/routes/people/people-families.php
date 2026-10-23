@@ -1,5 +1,7 @@
 <?php
 
+use ChurchCRM\Authentication\AuthenticationManager;
+use ChurchCRM\dto\SystemConfig;
 use ChurchCRM\model\ChurchCRM\FamilyQuery;
 use ChurchCRM\model\ChurchCRM\Map\FamilyTableMap;
 use ChurchCRM\model\ChurchCRM\Map\TokenTableMap;
@@ -115,7 +117,7 @@ $app->group('/families', function (RouteCollectorProxy $group): void {
     /**
      * @OA\Get(
      *     path="/families/search/{query}",
-     *     summary="Search families by name (max 15 results)",
+     *     summary="Search families by name, or by envelope number for finance users (max 15 results)",
      *     tags={"Families"},
      *     security={{"ApiKeyAuth":{}}},
      *     @OA\Parameter(name="query", in="path", required=true, @OA\Schema(type="string")),
@@ -127,12 +129,19 @@ $app->group('/families', function (RouteCollectorProxy $group): void {
     $group->get('/search/{query}', function (Request $request, Response $response, array $args): Response {
         $query = $args['query'];
         $results = [];
-        $q = FamilyQuery::create()
-            ->filterByName("%$query%", Criteria::LIKE)
-            ->limit(15)
-            ->find();
-        foreach ($q as $family) {
-            $results[] = $family->toSearchArray();
+        $q = FamilyQuery::create()->filterByName("%$query%", Criteria::LIKE);
+        $byEnvelope = ctype_digit($query)
+            && SystemConfig::getBooleanValue('bUseDonationEnvelopes')
+            && AuthenticationManager::getCurrentUser()->isFinanceEnabled();
+        if ($byEnvelope) {
+            $q->_or()->filterByEnvelope((int) $query);
+        }
+        foreach ($q->limit(15)->find() as $family) {
+            $row = $family->toSearchArray();
+            if ($byEnvelope && $family->getEnvelope()) {
+                $row['displayName'] .= ' (' . gettext('Envelope') . ' #' . $family->getEnvelope() . ')';
+            }
+            $results[] = $row;
         }
 
         return SlimUtils::renderJSON($response, ['Families' => $results]);
@@ -141,10 +150,10 @@ $app->group('/families', function (RouteCollectorProxy $group): void {
     /**
      * @OA\Get(
      *     path="/families/self-register",
-     *     summary="Get the last 100 self-registered families",
+     *     summary="Get self-registered families still awaiting review",
      *     tags={"Families"},
      *     security={{"ApiKeyAuth":{}}},
-     *     @OA\Response(response=200, description="Self-registered families ordered by date entered descending",
+     *     @OA\Response(response=200, description="Self-registered families awaiting review, ordered by date entered descending",
      *         @OA\JsonContent(@OA\Property(property="families", type="array", @OA\Items(type="object")))
      *     )
      * )
@@ -152,11 +161,43 @@ $app->group('/families', function (RouteCollectorProxy $group): void {
     $group->get('/self-register', function (Request $request, Response $response, array $args): Response {
         $families = FamilyQuery::create()
             ->filterByEnteredBy(Person::SELF_REGISTER)
+            ->filterByNeedsReview(true)
             ->orderByDateEntered(Criteria::DESC)
-            ->limit(100)
             ->find();
 
-        return SlimUtils::renderJSON($response, ['families' => $families->toArray()]);
+        $rows = $families->toArray();
+        $memberNames = [];
+        $memberEmails = [];
+        $memberPhones = [];
+        if ($rows) {
+            $members = PersonQuery::create()
+                ->filterByFamId(array_column($rows, 'Id'), Criteria::IN)
+                ->orderByFamId()
+                ->orderByFmrId()
+                ->find();
+            foreach ($members as $member) {
+                $famId = $member->getFamId();
+                $memberNames[$famId][] = $member->getFirstName();
+                foreach ([$member->getEmail(), $member->getWorkEmail()] as $email) {
+                    if ($email) {
+                        $memberEmails[$famId][$email] = $email;
+                    }
+                }
+                foreach ([$member->getCellPhone(), $member->getHomePhone(), $member->getWorkPhone()] as $phone) {
+                    if ($phone) {
+                        $memberPhones[$famId][$phone] = $phone;
+                    }
+                }
+            }
+        }
+        foreach ($rows as &$row) {
+            $row['Members'] = $memberNames[$row['Id']] ?? [];
+            $row['MemberEmails'] = array_values($memberEmails[$row['Id']] ?? []);
+            $row['MemberPhones'] = array_values($memberPhones[$row['Id']] ?? []);
+        }
+        unset($row);
+
+        return SlimUtils::renderJSON($response, ['families' => $rows]);
     });
 
     /**

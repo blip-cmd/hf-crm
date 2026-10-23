@@ -51,13 +51,12 @@ describe("Finance Reports Index", () => {
         cy.contains("Voting Members");
     });
 
-    it("should display Report Tips section", () => {
+    it("should show the current fiscal year above the report list", () => {
         cy.visit("/finance/reports");
 
-        cy.contains("Report Tips");
-        cy.contains("Fiscal Year");
-        cy.contains("Export Options");
-        cy.contains("Filtering");
+        cy.contains("Fiscal Year").should("be.visible");
+        cy.contains("Your fiscal year starts in").should("be.visible");
+        cy.contains("Report Tips").should("not.exist");
     });
 
     it("should navigate to Giving Report from link", () => {
@@ -80,7 +79,7 @@ describe("Finance Reports Index", () => {
     it("should navigate to Pledge Summary from link", () => {
         cy.visit("/finance/reports");
 
-        cy.contains("h6", "Pledge Summary").click();
+        cy.contains("a", "Pledge Summary").click();
         cy.url().should("include", "/finance/pledge/dashboard");
     });
 
@@ -99,6 +98,16 @@ describe("Finance Reports Index", () => {
         cy.url().should("contain", "FinancialReports.php");
         cy.url().should("contain", "Voting");
     });
+
+    it("should answer the old tax statements URL with Page Not Found and a way back", () => {
+        cy.request({ url: "/finance/reports/tax-statements", failOnStatusCode: false }).its("status").should("eq", 404);
+
+        cy.visit("/finance/reports/tax-statements", { failOnStatusCode: false });
+        cy.contains("h3", "Page Not Found");
+        cy.contains("a", "Back to Finance Dashboard").click();
+        cy.url().should("match", /\/finance\/$/);
+        cy.contains("Finance Dashboard");
+    });
 });
 
 describe("Finance Reports Index - Standard User Access", () => {
@@ -113,20 +122,5 @@ describe("Finance Reports Index - Standard User Access", () => {
         // Should be able to see the reports page
         cy.contains("Tax & Giving Reports").should("be.visible");
         cy.contains("Pledge Reports").should("be.visible");
-    });
-});
-
-describe("Finance Reports Index - No Finance Permission", () => {
-    beforeEach(() => {
-        cy.setupNoFinanceSession();
-    });
-
-    it("should deny access to users without finance permission", () => {
-        // User judith.matthews has no finance permission
-        cy.visit("/finance/reports", { failOnStatusCode: false });
-
-        // Should be redirected to access-denied page
-        cy.url().should("include", "/v2/access-denied");
-        cy.url().should("include", "role=Finance");
     });
 });

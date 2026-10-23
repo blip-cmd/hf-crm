@@ -30,23 +30,32 @@ CREATE TABLE `calendars` (
   `accesstoken` varchar(99) DEFAULT NULL,
   `foregroundColor` varchar(6) DEFAULT NULL,
   `backgroundColor` varchar(6) DEFAULT NULL,
-  PRIMARY KEY (`calendar_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=93 DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+  `ministry_id` int(11) DEFAULT NULL,
+  PRIMARY KEY (`calendar_id`),
+  KEY `calendars_ministry_idx` (`ministry_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=95 DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `calendars`
 --
+-- Calendar 6, "Youth Ministry", used to carry `ministry_id = 1` even though this seed
+-- contains no `volunteer_ministry_vmin` rows at all. That was harmless while the column
+-- had no foreign key; #9869 adds one, and the seed loads with FOREIGN_KEY_CHECKS=0, so
+-- the dangling value survived the load and was then silently nulled the first time a
+-- spec created and deleted a ministry that happened to take id 1. The column is NULL
+-- here now and `standard.calendar.spec.js` builds its own ministry + calendar pair.
+--
 
 LOCK TABLES `calendars` WRITE;
 /*!40000 ALTER TABLE `calendars` DISABLE KEYS */;
 SET autocommit=0;
-INSERT INTO `calendars` VALUES (1,'Public Calendar',NULL,'FFFFFF','00AA00'),(2,'Private Calendar',NULL,'FFFFFF','0000AA'),(3,'C',NULL,'FA8072','212F3D'),(4,'Ca',NULL,'FA8072','212F3D'),(5,'Ca',NULL,'FA8072','212F3D');
+INSERT INTO `calendars` VALUES (1,'Public Calendar',NULL,'FFFFFF','00AA00',NULL),(2,'Private Calendar',NULL,'FFFFFF','0000AA',NULL),(3,'C',NULL,'FA8072','212F3D',NULL),(4,'Ca',NULL,'FA8072','212F3D',NULL),(5,'Ca',NULL,'FA8072','212F3D',NULL),(6,'Youth Ministry',NULL,'FFFFFF','795548',NULL);
 /*!40000 ALTER TABLE `calendars` ENABLE KEYS */;
 UNLOCK TABLES;
 COMMIT;
 
--- Dumped table `calendars` with 5 row(s)
+-- Dumped table `calendars` with 6 row(s)
 --
 
 --
@@ -99,7 +108,7 @@ CREATE TABLE `config_cfg` (
 LOCK TABLES `config_cfg` WRITE;
 /*!40000 ALTER TABLE `config_cfg` DISABLE KEYS */;
 SET autocommit=0;
-INSERT INTO `config_cfg` VALUES ('aFinanceQueries','28,30,31,32'),('bAllowPrereleaseUpgrade',''),('bEnableExternalCalendarAPI',''),('bEnableNonDeductible',''),('bEnableSelfRegistration','1'),('bForceUppercaseZip',''),('bHideFamilyNewsletter',''),('bHideFriendDate',''),('bHideLatLon',''),('bHideWeddingDate',''),('bPHPMailerAutoTLS',''),('bRequire2FA',''),('bSearchIncludeFamilyCustomProperties',''),('bSendUserDeletedEmail',''),('bSMTPAuth','0'),('bUseDonationEnvelopes',''),('bUseScannedChecks',''),('iChurchLatitude','39.1111974'),('iChurchLongitude','-94.5838009'),('IncludeDataInNewPersonNotifications',''),('plugin.external-backup.enabled','0'),('plugin.holidays.categories','official,religious'),('plugin.holidays.countries','USA'),('plugin.holidays.enabled','1'),('sChurchAddress','123 Main St'),('sChurchChkAcctNum','111111111'),('sChurchCity','Kansas City'),('sChurchCountry','United States'),('sChurchEmail','demo@churchcrm.io'),('sChurchName','Main St. Cathedral'),('sChurchPhone','555 123 4234'),('sChurchState','MO'),('sChurchZip','64106'),('sConfirmSigner','Elder Joe Smith'),('sDefaultCity','Kansas City'),('sDefaultCountry','United States'),('sDefaultState','MO'),('sDirectoryDisclaimer1','Every effort was made to insure the accuracy of this directory.  If there are any errors or omissions, please contact the church office.This directory is for the use of the people of'),('sLogLevel','100'),('sPHPMailerSMTPSecure',''),('sPledgeSummary2','as of'),('sReminderSigner','Elder Joe Smith'),('sSMTPHost','mailserver:1025'),('sSMTPPass',''),('sSMTPUser',''),('sTaxSigner','Elder Joe Smith'),('sTimeZone','America/Detroit'),('sTwoFASecretKey','ChangeThisToASecureRandomStringBeforeUse');
+INSERT INTO `config_cfg` VALUES ('bAllowPrereleaseUpgrade',''),('bEnableExternalCalendarAPI',''),('bEnableNonDeductible',''),('bEnableSelfRegistration','1'),('bForceUppercaseZip',''),('bHideFamilyNewsletter',''),('bHideFriendDate',''),('bHideLatLon',''),('bHideWeddingDate',''),('bPHPMailerAutoTLS',''),('bRequire2FA',''),('bSearchIncludeFamilyCustomProperties',''),('bSendUserDeletedEmail',''),('bSMTPAuth','0'),('bUseDonationEnvelopes',''),('bUseScannedChecks',''),('iChurchLatitude','39.1111974'),('iChurchLongitude','-94.5838009'),('IncludeDataInNewPersonNotifications',''),('plugin.external-backup.enabled','0'),('plugin.holidays.categories','official,religious'),('plugin.holidays.countries','USA'),('plugin.holidays.enabled','1'),('sChurchAddress','123 Main St'),('sChurchChkAcctNum','111111111'),('sChurchCity','Kansas City'),('sChurchCountry','United States'),('sChurchEmail','demo@churchcrm.io'),('sChurchName','Main St. Cathedral'),('sChurchPhone','555 123 4234'),('sChurchState','MO'),('sChurchZip','64106'),('sConfirmSigner','Elder Joe Smith'),('sDefaultCity','Kansas City'),('sDefaultCountry','United States'),('sDefaultState','MO'),('sDirectoryDisclaimer1','Every effort was made to insure the accuracy of this directory.  If there are any errors or omissions, please contact the church office.This directory is for the use of the people of'),('sLogLevel','100'),('sPHPMailerSMTPSecure',''),('sPledgeSummary2','as of'),('sReminderSigner','Elder Joe Smith'),('sSMTPHost','mailserver:1025'),('sSMTPPass',''),('sSMTPUser',''),('sTaxSigner','Elder Joe Smith'),('sTimeZone','America/Detroit'),('sTwoFASecretKey','ChangeThisToASecureRandomStringBeforeUse'),('sVolunteerVersion','v1');
 /*!40000 ALTER TABLE `config_cfg` ENABLE KEYS */;
 UNLOCK TABLES;
 COMMIT;
@@ -296,9 +305,11 @@ CREATE TABLE `events_event` (
   `inactive` int(1) NOT NULL DEFAULT 0,
   `location_id` int(11) DEFAULT NULL,
   `secondary_contact_person_id` int(11) DEFAULT NULL,
+  `event_ministry_id` int(11) DEFAULT NULL,
   `primary_contact_person_id` int(11) DEFAULT NULL,
   `event_url` text DEFAULT NULL,
-  PRIMARY KEY (`event_id`)
+  PRIMARY KEY (`event_id`),
+  KEY `event_ministry_idx` (`event_ministry_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -309,7 +320,7 @@ CREATE TABLE `events_event` (
 LOCK TABLES `events_event` WRITE;
 /*!40000 ALTER TABLE `events_event` DISABLE KEYS */;
 SET autocommit=0;
-INSERT INTO `events_event` VALUES (1,2,'Sunday School Class Changes','This is when the students move to new classes','','2016-11-20 12:30:00','2016-11-20 13:30:00',0,NULL,NULL,NULL,NULL),(2,1,'Christmas Service','christmas service','','2016-12-24 22:30:00','2016-12-25 01:30:00',0,NULL,NULL,NULL,NULL),(3,2,'Summer Camp','Summer Camp','','2017-06-06 09:30:00','2017-06-11 09:30:00',0,NULL,2,1,NULL);
+INSERT INTO `events_event` VALUES (1,2,'Sunday School Class Changes','This is when the students move to new classes','','2016-11-20 12:30:00','2016-11-20 13:30:00',0,NULL,NULL,NULL,NULL,NULL),(2,1,'Christmas Service','christmas service','','2016-12-24 22:30:00','2016-12-25 01:30:00',0,NULL,NULL,NULL,NULL,NULL),(3,2,'Summer Camp','Summer Camp','','2017-06-06 09:30:00','2017-06-11 09:30:00',0,NULL,2,NULL,1,NULL);
 /*!40000 ALTER TABLE `events_event` ENABLE KEYS */;
 UNLOCK TABLES;
 COMMIT;
@@ -408,12 +419,12 @@ CREATE TABLE `event_types` (
 LOCK TABLES `event_types` WRITE;
 /*!40000 ALTER TABLE `event_types` DISABLE KEYS */;
 SET autocommit=0;
-INSERT INTO `event_types` VALUES (1,'Church Service','10:30:00','weekly','Sunday','','2016-01-01',1,NULL),(2,'Sunday School','09:30:00','weekly','Sunday','','2016-01-01',1,NULL);
+INSERT INTO `event_types` VALUES (1,'Church Service','10:30:00','weekly','Sunday','','2016-01-01',1,NULL),(2,'Sunday School','09:30:00','weekly','Sunday','','2016-01-01',1,NULL),(3,'Other','00:00:00','none','Sunday','','2016-01-01',1,NULL);
 /*!40000 ALTER TABLE `event_types` ENABLE KEYS */;
 UNLOCK TABLES;
 COMMIT;
 
--- Dumped table `event_types` with 2 row(s)
+-- Dumped table `event_types` with 3 row(s)
 --
 
 --
@@ -517,6 +528,7 @@ CREATE TABLE `family_fam` (
   `fam_Latitude` double DEFAULT NULL,
   `fam_Longitude` double DEFAULT NULL,
   `fam_Envelope` mediumint(9) NOT NULL DEFAULT 0,
+  `fam_NeedsReview` tinyint(1) unsigned NOT NULL DEFAULT 0,
   PRIMARY KEY (`fam_ID`)
 ) ENGINE=InnoDB AUTO_INCREMENT=46 DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -528,7 +540,7 @@ CREATE TABLE `family_fam` (
 LOCK TABLES `family_fam` WRITE;
 /*!40000 ALTER TABLE `family_fam` DISABLE KEYS */;
 SET autocommit=0;
-INSERT INTO `family_fam` (`fam_ID`, `fam_Name`, `fam_Address1`, `fam_Address2`, `fam_City`, `fam_State`, `fam_Zip`, `fam_Country`, `fam_HomePhone`, `fam_Email`, `fam_WeddingDate`, `fam_DateEntered`, `fam_DateLastEdited`, `fam_EnteredBy`, `fam_EditedBy`, `fam_scanCheck`, `fam_scanCredit`, `fam_SendNewsLetter`, `fam_DateDeactivated`, `fam_Latitude`, `fam_Longitude`, `fam_Envelope`) VALUES (1,'Campbell','3259 Daisy Dr','','Denton','AR','','United States','(728) 139-0768','',NULL,'2009-12-25 07:19:06','2016-11-19 15:50:57',1,1,NULL,NULL,'FALSE',NULL,33.174318,-97.0673599,0),(2,'Hart','4878 Valley View Ln','','Grand Rapids','ND','','United States','(042) 989-4488','',NULL,'2009-04-13 01:17:12','2016-11-19 15:53:10',1,1,NULL,NULL,'FALSE',NULL,47.9132828,-97.0864844,0),(3,'Lewis','2379 Northaven Rd','','Detroit','WV','','United States','(609) 441-0871','','2010-02-10','2007-11-19 10:08:41','2017-04-15 17:21:40',1,1,NULL,NULL,'FALSE',NULL,NULL,NULL,0),(4,'Ray','4212 Parker Rd','','Chesapeake','WI','','US','(220) 345-1335','',NULL,'2003-10-14 16:05:17','2021-04-25 21:36:43',1,1,NULL,NULL,'FALSE','2017-04-15',36.7001267,-76.2568083,0),(5,'Smith','5572 Robinson Rd','','Santa Clarita','KY','','United States','(886) 863-1106','','2016-09-12','2007-09-14 23:32:06','2017-04-15 17:22:04',1,1,NULL,NULL,'FALSE',NULL,NULL,NULL,0),(6,'Dixon','6730 Mockingbird Hill','','Roanoke','IL','','United States','(449) 349-7865','',NULL,'2013-07-25 20:18:03','2016-11-19 15:52:44',1,1,NULL,NULL,'FALSE',NULL,37.316406,-79.8874658,0),(7,'Stewart','7045 Wycliff Ave','','Gainesville','SD','','United States','(813) 837-2427','',NULL,'2011-08-17 04:00:29','2016-11-19 15:56:55',1,1,NULL,NULL,'FALSE',NULL,0,0,0),(9,'Diaz','1158 Harrison Ct','','Hialeah','IA','','United States','(613) 399-6088','',NULL,'2013-04-20 15:01:05','2016-11-19 15:52:17',1,1,NULL,NULL,'FALSE',NULL,33.4447804,-112.0542146,0),(10,'Gordon','1255 Brown Terrace','','Louisville','MI','','United States','(215) 006-0420','','2011-07-13','2004-09-09 18:40:30','2019-09-11 23:04:11',1,1,NULL,NULL,'FALSE',NULL,NULL,NULL,0),(11,'Newman','5427 Stevens Creek Blvd','','Orlando','MN','','United States','(792) 676-7007','',NULL,'2006-10-11 03:51:16','2016-11-19 15:54:22',1,1,NULL,NULL,'FALSE',NULL,46.729553,-94.6858998,0),(12,'Olson','1272 Shady Ln Dr','','Toledo','NE','','United States','(698) 235-3995','',NULL,'2014-08-31 04:21:43','2016-11-19 15:54:30',1,1,NULL,NULL,'FALSE',NULL,41.6932406,-83.5833554,0),(13,'Beck','6381 Valwood Pkwy','','Buffalo','ME','','United States','(237) 926-6342','','2010-07-22','2007-02-01 16:50:26','2016-11-19 15:49:36',1,1,NULL,NULL,'FALSE',NULL,46.8269852,-68.4858767,0),(14,'Berry','1931 Edwards Rd','','Riverside','PA','','United States','(174) 272-0341','',NULL,'2013-10-15 09:25:25','2016-11-19 15:49:57',1,1,NULL,NULL,'FALSE',NULL,40.0537096,-74.94436,0),(16,'Larson','3866 Edwards Rd','','Inglewood','CO','','United States','(663) 858-8880','',NULL,'2016-03-01 14:19:32','2016-11-19 15:53:48',1,1,NULL,NULL,'FALSE',NULL,29.3912942,-98.5103497,0),(17,'Cooper','1782 Daisy Dr','','Oxnard','GA','','United States','(718) 878-3276','',NULL,'2014-09-26 00:09:54','2016-11-19 15:51:35',1,1,NULL,NULL,'FALSE',NULL,34.2769999,-119.1552968,0),(18,'Riley','1403 Avondale Ave','','Scottsdale','ID','','United States','(055) 343-0760','','2010-12-22','2002-04-09 05:31:36','2016-11-19 16:43:48',1,1,NULL,NULL,'FALSE',NULL,33.4351234,-112.3063973,0),(19,'Kennedy','9481 Wycliff Ave','','Long Beach','KY','','United States','(306) 408-4342','',NULL,'2014-11-23 09:17:25','2016-11-19 15:53:40',1,1,NULL,NULL,'FALSE',NULL,37.8393332,-84.2700179,0),(20,'Black','4307 Avondale Ave','','Shiloh','CT','','United States','(828) 463-5829','',NULL,'2014-05-10 06:07:19','2016-11-19 15:50:25',1,1,NULL,NULL,'FALSE',NULL,33.4250486,-112.3982715,0),(21,'Smith','123 Main St.','','Seattle','WA','98121','US','(206) 555-5555','',NULL,'2017-04-15 17:19:26','2021-04-25 09:45:44',-1,1,NULL,NULL,'FALSE',NULL,NULL,NULL,0),(23,'Turner','4590 Maple Ave',NULL,'Austin','TX','78701','US','(512) 555-0148','turner.family@example.com',NULL,'2021-04-25 10:50:11',NULL,-1,0,NULL,NULL,'FALSE',NULL,NULL,NULL,0),(42,'Master','123 Main St.',NULL,'Kansas City','MO','98001','US','',NULL,NULL,'2021-04-25 21:52:35','2025-01-01 00:00:00',-1,0,NULL,NULL,'FALSE',NULL,NULL,NULL,0);
+INSERT INTO `family_fam` (`fam_ID`, `fam_Name`, `fam_Address1`, `fam_Address2`, `fam_City`, `fam_State`, `fam_Zip`, `fam_Country`, `fam_HomePhone`, `fam_Email`, `fam_WeddingDate`, `fam_DateEntered`, `fam_DateLastEdited`, `fam_EnteredBy`, `fam_EditedBy`, `fam_scanCheck`, `fam_scanCredit`, `fam_SendNewsLetter`, `fam_DateDeactivated`, `fam_Latitude`, `fam_Longitude`, `fam_Envelope`, `fam_NeedsReview`) VALUES (1,'Campbell','3259 Daisy Dr','','Denton','AR','','United States','(728) 139-0768','',NULL,'2009-12-25 07:19:06','2016-11-19 15:50:57',1,1,NULL,NULL,'FALSE',NULL,33.174318,-97.0673599,0,0),(2,'Hart','4878 Valley View Ln','','Grand Rapids','ND','','United States','(042) 989-4488','',NULL,'2009-04-13 01:17:12','2016-11-19 15:53:10',1,1,NULL,NULL,'FALSE',NULL,47.9132828,-97.0864844,0,0),(3,'Lewis','2379 Northaven Rd','','Detroit','WV','','United States','(609) 441-0871','','2010-02-10','2007-11-19 10:08:41','2017-04-15 17:21:40',1,1,NULL,NULL,'FALSE',NULL,NULL,NULL,0,0),(4,'Ray','4212 Parker Rd','','Chesapeake','WI','','US','(220) 345-1335','',NULL,'2003-10-14 16:05:17','2021-04-25 21:36:43',1,1,NULL,NULL,'FALSE','2017-04-15',36.7001267,-76.2568083,0,0),(5,'Smith','5572 Robinson Rd','','Santa Clarita','KY','','United States','(886) 863-1106','','2016-09-12','2007-09-14 23:32:06','2017-04-15 17:22:04',1,1,NULL,NULL,'FALSE',NULL,NULL,NULL,0,0),(6,'Dixon','6730 Mockingbird Hill','','Roanoke','IL','','United States','(449) 349-7865','',NULL,'2013-07-25 20:18:03','2016-11-19 15:52:44',1,1,NULL,NULL,'FALSE',NULL,37.316406,-79.8874658,0,0),(7,'Stewart','7045 Wycliff Ave','','Gainesville','SD','','United States','(813) 837-2427','',NULL,'2011-08-17 04:00:29','2016-11-19 15:56:55',1,1,NULL,NULL,'FALSE',NULL,0,0,0,0),(9,'Diaz','1158 Harrison Ct','','Hialeah','IA','','United States','(613) 399-6088','',NULL,'2013-04-20 15:01:05','2016-11-19 15:52:17',1,1,NULL,NULL,'FALSE',NULL,33.4447804,-112.0542146,0,0),(10,'Gordon','1255 Brown Terrace','','Louisville','MI','','United States','(215) 006-0420','','2011-07-13','2004-09-09 18:40:30','2019-09-11 23:04:11',1,1,NULL,NULL,'FALSE',NULL,NULL,NULL,0,0),(11,'Newman','5427 Stevens Creek Blvd','','Orlando','MN','','United States','(792) 676-7007','',NULL,'2006-10-11 03:51:16','2016-11-19 15:54:22',1,1,NULL,NULL,'FALSE',NULL,46.729553,-94.6858998,0,0),(12,'Olson','1272 Shady Ln Dr','','Toledo','NE','','United States','(698) 235-3995','',NULL,'2014-08-31 04:21:43','2016-11-19 15:54:30',1,1,NULL,NULL,'FALSE',NULL,41.6932406,-83.5833554,0,0),(13,'Beck','6381 Valwood Pkwy','','Buffalo','ME','','United States','(237) 926-6342','','2010-07-22','2007-02-01 16:50:26','2016-11-19 15:49:36',1,1,NULL,NULL,'FALSE',NULL,46.8269852,-68.4858767,0,0),(14,'Berry','1931 Edwards Rd','','Riverside','PA','','United States','(174) 272-0341','',NULL,'2013-10-15 09:25:25','2016-11-19 15:49:57',1,1,NULL,NULL,'FALSE',NULL,40.0537096,-74.94436,0,0),(16,'Larson','3866 Edwards Rd','','Inglewood','CO','','United States','(663) 858-8880','',NULL,'2016-03-01 14:19:32','2016-11-19 15:53:48',1,1,NULL,NULL,'FALSE',NULL,29.3912942,-98.5103497,0,0),(17,'Cooper','1782 Daisy Dr','','Oxnard','GA','','United States','(718) 878-3276','',NULL,'2014-09-26 00:09:54','2016-11-19 15:51:35',1,1,NULL,NULL,'FALSE',NULL,34.2769999,-119.1552968,0,0),(18,'Riley','1403 Avondale Ave','','Scottsdale','ID','','United States','(055) 343-0760','','2010-12-22','2002-04-09 05:31:36','2016-11-19 16:43:48',1,1,NULL,NULL,'FALSE',NULL,33.4351234,-112.3063973,0,0),(19,'Kennedy','9481 Wycliff Ave','','Long Beach','KY','','United States','(306) 408-4342','',NULL,'2014-11-23 09:17:25','2016-11-19 15:53:40',1,1,NULL,NULL,'FALSE',NULL,37.8393332,-84.2700179,0,0),(20,'Black','4307 Avondale Ave','','Shiloh','CT','','United States','(828) 463-5829','',NULL,'2014-05-10 06:07:19','2016-11-19 15:50:25',1,1,NULL,NULL,'FALSE',NULL,33.4250486,-112.3982715,0,0),(21,'Smith','123 Main St.','','Seattle','WA','98121','US','(206) 555-5555','',NULL,'2017-04-15 17:19:26','2021-04-25 09:45:44',-1,1,NULL,NULL,'FALSE',NULL,NULL,NULL,0,1),(23,'Turner','4590 Maple Ave',NULL,'Austin','TX','78701','US','(512) 555-0148','turner.family@example.com',NULL,'2021-04-25 10:50:11',NULL,-1,0,NULL,NULL,'FALSE',NULL,NULL,NULL,0,1),(42,'Master','123 Main St.',NULL,'Kansas City','MO','98001','US','',NULL,NULL,'2021-04-25 21:52:35','2025-01-01 00:00:00',-1,0,NULL,NULL,'FALSE',NULL,NULL,NULL,0,1);
 /*!40000 ALTER TABLE `family_fam` ENABLE KEYS */;
 UNLOCK TABLES;
 COMMIT;
@@ -1038,7 +1050,9 @@ CREATE TABLE `group_grp` (
   `grp_hasSpecialProps` tinyint(1) NOT NULL DEFAULT 0,
   `grp_active` tinyint(1) NOT NULL DEFAULT 1,
   `grp_include_email_export` tinyint(1) NOT NULL DEFAULT 1,
-  PRIMARY KEY (`grp_ID`)
+  `grp_ministry_id` int(11) DEFAULT NULL,
+  PRIMARY KEY (`grp_ID`),
+  KEY `grp_ministry_idx` (`grp_ministry_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=25 DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -1049,7 +1063,7 @@ CREATE TABLE `group_grp` (
 LOCK TABLES `group_grp` WRITE;
 /*!40000 ALTER TABLE `group_grp` DISABLE KEYS */;
 SET autocommit=0;
-INSERT INTO `group_grp` VALUES (1,4,13,2,'Angels class',NULL,0,1,1),(2,4,14,2,'Class 1-3',NULL,0,1,1),(3,4,15,2,'Class 4-5',NULL,0,1,1),(4,4,16,2,'Class 6-7',NULL,0,1,1),(5,4,17,2,'High School Class',NULL,0,1,1),(6,4,18,2,'Youth Meeting',NULL,0,1,1),(7,0,19,1,'Boys Scouts',NULL,0,1,1),(8,0,20,1,'Girl Scouts',NULL,0,0,0),(9,0,21,1,'Church Board',NULL,0,1,0),(10,1,22,1,'Worship Service','',0,1,1),(11,0,23,1,'Clergy',NULL,0,1,1),(12,0,26,1,'New Test Group',NULL,0,1,1),(13,0,27,1,'New Test Group',NULL,0,1,1),(14,0,28,1,'New Test Group',NULL,0,1,1),(15,0,29,1,'New Test Group',NULL,0,1,1),(16,0,30,1,'New Test Group',NULL,0,1,1),(17,0,31,1,'New Test Group',NULL,0,1,1),(18,0,32,1,'New Test Group',NULL,0,1,1),(19,0,33,1,'New Test Group',NULL,0,1,1),(20,0,34,1,'New Test Group',NULL,0,1,1),(21,0,35,1,'New Test Group',NULL,0,1,1),(22,0,36,1,'New Test Group',NULL,0,1,1),(23,0,37,1,'sdfsdfsdf',NULL,1,1,1);
+INSERT INTO `group_grp` VALUES (1,4,13,2,'Angels class',NULL,0,1,1,NULL),(2,4,14,2,'Class 1-3',NULL,0,1,1,NULL),(3,4,15,2,'Class 4-5',NULL,0,1,1,NULL),(4,4,16,2,'Class 6-7',NULL,0,1,1,NULL),(5,4,17,2,'High School Class',NULL,0,1,1,NULL),(6,4,18,2,'Youth Meeting',NULL,0,1,1,NULL),(7,0,19,1,'Boys Scouts',NULL,0,1,1,NULL),(8,0,20,1,'Girl Scouts',NULL,0,0,0,NULL),(9,0,21,1,'Church Board',NULL,0,1,0,NULL),(10,1,22,1,'Worship Service','',0,1,1,NULL),(11,0,23,1,'Clergy',NULL,0,1,1,NULL),(12,0,26,1,'New Test Group',NULL,0,1,1,NULL),(13,0,27,1,'New Test Group',NULL,0,1,1,NULL),(14,0,28,1,'New Test Group',NULL,0,1,1,NULL),(15,0,29,1,'New Test Group',NULL,0,1,1,NULL),(16,0,30,1,'New Test Group',NULL,0,1,1,NULL),(17,0,31,1,'New Test Group',NULL,0,1,1,NULL),(18,0,32,1,'New Test Group',NULL,0,1,1,NULL),(19,0,33,1,'New Test Group',NULL,0,1,1,NULL),(20,0,34,1,'New Test Group',NULL,0,1,1,NULL),(21,0,35,1,'New Test Group',NULL,0,1,1,NULL),(22,0,36,1,'New Test Group',NULL,0,1,1,NULL),(23,0,37,1,'sdfsdfsdf',NULL,1,1,1,NULL);
 /*!40000 ALTER TABLE `group_grp` ENABLE KEYS */;
 UNLOCK TABLES;
 COMMIT;
@@ -1145,7 +1159,7 @@ CREATE TABLE `list_lst` (
 LOCK TABLES `list_lst` WRITE;
 /*!40000 ALTER TABLE `list_lst` DISABLE KEYS */;
 SET autocommit=0;
-INSERT INTO `list_lst` VALUES (1,1,1,'Member'),(1,2,2,'Regular Attender'),(1,3,3,'Guest'),(1,5,4,'Non-Attender'),(1,4,5,'Non-Attender (staff)'),(2,1,1,'Head of Household'),(2,2,2,'Spouse'),(2,3,3,'Child'),(2,4,4,'Other Relative'),(2,5,5,'Non Relative'),(3,1,1,'Ministry'),(3,2,2,'Team'),(3,3,3,'Bible Study'),(3,4,4,'Sunday School Class'),(4,1,1,'True / False'),(4,2,2,'Date'),(4,3,3,'Text Field (50 char)'),(4,4,4,'Text Field (100 char)'),(4,5,5,'Text Field (Long)'),(4,6,6,'Year'),(4,7,7,'Season'),(4,8,8,'Number'),(4,9,9,'Person from Group'),(4,10,10,'Money'),(4,11,11,'Phone Number'),(4,12,12,'Custom Drop-Down List'),(5,1,1,'bAll'),(5,2,2,'bAdmin'),(5,3,3,'bAddRecords'),(5,4,4,'bEditRecords'),(5,5,5,'bDeleteRecords'),(5,7,7,'bManageGroups'),(5,8,8,'bFinance'),(5,9,9,'bNotes'),(10,1,1,'Teacher'),(10,2,2,'Student'),(11,1,1,'Member'),(12,1,1,'Teacher'),(12,2,2,'Student'),(13,1,1,'Teacher'),(13,2,2,'Student'),(14,1,1,'Teacher'),(14,2,2,'Student'),(15,1,1,'Teacher'),(15,2,2,'Student'),(16,1,1,'Teacher'),(16,2,2,'Student'),(17,1,1,'Teacher'),(17,2,2,'Student'),(18,1,1,'Teacher'),(18,2,2,'Student'),(19,1,1,'Member'),(20,1,1,'Member'),(21,1,1,'Member'),(3,5,5,'Scouts'),(22,1,1,'Member'),(23,1,1,'Member'),(24,1,1,'Default Option'),(24,2,2,'My Custom Item 1'),(24,3,3,'My Custom Item 2'),(25,1,1,'Default Option'),(26,1,1,'Member'),(27,1,1,'Member'),(28,1,1,'Member'),(29,1,1,'Member'),(30,1,1,'Member'),(31,1,1,'Member'),(32,1,1,'Member'),(33,1,1,'Member'),(34,1,1,'Member'),(35,1,1,'Member'),(36,1,1,'Member'),(37,1,2,'Member'),(37,2,1,'sdfsdf');
+INSERT INTO `list_lst` VALUES (1,1,1,'Member'),(1,2,2,'Regular Attender'),(1,3,3,'Guest'),(1,5,4,'Non-Attender'),(1,4,5,'Non-Attender (staff)'),(2,1,1,'Head of Household'),(2,2,2,'Spouse'),(2,3,3,'Child'),(2,4,4,'Other Relative'),(2,5,5,'Non Relative'),(3,1,1,'Ministry'),(3,2,2,'Team'),(3,3,3,'Bible Study'),(3,4,4,'Sunday School Class'),(4,1,1,'True / False'),(4,2,2,'Date'),(4,3,3,'Text Field (50 char)'),(4,4,4,'Text Field (100 char)'),(4,5,5,'Text Field (Long)'),(4,6,6,'Year'),(4,7,7,'Season'),(4,8,8,'Number'),(4,9,9,'Person from Group'),(4,10,10,'Money'),(4,11,11,'Phone Number'),(4,12,12,'Custom Drop-Down List'),(5,1,1,'bAll'),(5,2,2,'bAdmin'),(5,3,3,'bAddRecords'),(5,4,4,'bEditRecords'),(5,5,5,'bDeleteRecords'),(5,7,7,'bManageGroups'),(5,8,8,'bFinance'),(5,9,9,'bNotes'),(10,1,1,'Teacher'),(10,2,2,'Student'),(11,1,1,'Member'),(12,1,1,'Teacher'),(12,2,2,'Student'),(13,1,1,'Teacher'),(13,2,2,'Student'),(14,1,1,'Teacher'),(14,2,2,'Student'),(15,1,1,'Teacher'),(15,2,2,'Student'),(16,1,1,'Teacher'),(16,2,2,'Student'),(17,1,1,'Teacher'),(17,2,2,'Student'),(18,1,1,'Teacher'),(18,2,2,'Student'),(19,1,1,'Member'),(20,1,1,'Member'),(21,1,1,'Member'),(3,5,5,'Scouts'),(22,1,1,'Member'),(23,1,1,'Member'),(24,1,1,'Default Option'),(24,2,2,'My Custom Item 1'),(24,3,3,'My Custom Item 2'),(25,1,1,'Default Option'),(26,1,1,'Member'),(27,1,1,'Member'),(28,1,1,'Member'),(29,1,1,'Member'),(30,1,1,'Member'),(31,1,1,'Member'),(32,1,1,'Member'),(33,1,1,'Member'),(34,1,1,'Member'),(35,1,1,'Member'),(36,1,1,'Member'),(37,1,2,'Member'),(37,2,1,'sdfsdf'),(6,4,1,'Pre-K'),(6,5,2,'Kindergarten'),(6,6,3,'1st'),(6,7,4,'2nd'),(6,8,5,'3rd'),(6,9,6,'4th'),(6,10,7,'5th'),(6,11,8,'6th'),(6,12,9,'7th'),(6,13,10,'8th'),(6,14,11,'9th'),(6,15,12,'10th'),(6,16,13,'11th'),(6,17,14,'12th');
 /*!40000 ALTER TABLE `list_lst` ENABLE KEYS */;
 UNLOCK TABLES;
 COMMIT;
@@ -1490,10 +1504,13 @@ CREATE TABLE `person_per` (
   `per_Twitter` varchar(50) DEFAULT NULL,
   `per_LinkedIn` varchar(50) DEFAULT NULL,
   `per_DateDeactivated` date DEFAULT NULL,
+  `per_NeedsReview` tinyint(1) unsigned NOT NULL DEFAULT 0,
+  `per_grd_ID` mediumint(8) unsigned DEFAULT NULL,
   PRIMARY KEY (`per_ID`),
   INDEX `idx_per_fam_ID` (`per_fam_ID`),
   INDEX `idx_per_cls_ID` (`per_cls_ID`),
-  INDEX `idx_per_fmr_ID` (`per_fmr_ID`)
+  INDEX `idx_per_fmr_ID` (`per_fmr_ID`),
+  INDEX `idx_per_grd_ID` (`per_grd_ID`)
 ) ENGINE=InnoDB AUTO_INCREMENT=230 DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -1504,30 +1521,30 @@ CREATE TABLE `person_per` (
 LOCK TABLES `person_per` WRITE;
 /*!40000 ALTER TABLE `person_per` DISABLE KEYS */;
 SET autocommit=0;
-INSERT INTO `person_per` VALUES (1,NULL,'Church',NULL,'Admin',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,0,0,0,NULL,NULL,0,0,0,0,NULL,NULL,'2004-08-25 18:00:00',1,0,NULL,0,NULL,NULL,NULL,NULL),(2,'Mr','Mathew','','Campbell','','3259 Daisy Dr','','Denton','AR','','USA','(728)-139-0768','','(003)-025-4087','mathew.campbell@example.com',NULL,6,15,1970,NULL,NULL,1,1,1,1,NULL,NULL,'2009-12-25 07:19:06',1,0,NULL,0,NULL,NULL,NULL,NULL),(3,'Mr','Tony','','Campbell','','9889 Lone Wolf Trail','','Worcester','ME','','USA','(221) 294-5282','','(820) 203-5704','tony.wade@example.com','',3,3,1945,NULL,NULL,1,0,2,0,0,'2016-11-19 16:07:39','2006-05-18 08:07:27',1,1,NULL,0,NULL,NULL,NULL,NULL),(4,'Mr','Darren','','Campbell','','8142 Locust Rd','','Tucson','WV','','USA','(336) 819-5290','','(800) 502-3720','darren.freeman@example.com','',7,23,1910,NULL,NULL,1,4,5,1,0,'2016-11-19 15:39:19','2016-04-03 09:13:02',1,1,NULL,0,NULL,NULL,NULL,NULL),(5,'Mr','Albert','','Campbell','','2560 Edwards Rd','','Garland','MT','','USA','(389) 860-7800','','(591) 749-3007','albert.garcia@example.com','',9,9,2013,NULL,NULL,1,3,1,1,0,'2016-11-19 15:39:30','2003-06-23 04:32:34',1,1,NULL,0,NULL,NULL,NULL,NULL),(6,'Mrs','Constance','','Hart','','4878 Valley View Ln','','Grand Rapids','ND','','USA','(042)-989-4488','','(385)-141-5437','constance.hart@example.com',NULL,7,8,1966,NULL,NULL,2,1,1,2,NULL,NULL,'2009-04-13 01:17:12',1,0,NULL,0,NULL,NULL,NULL,NULL),(7,'Mr','Marion','','Hart','','9211 Railroad St','','Rockford','ME','','USA','(178)-657-2640','','(167)-162-6079','marion.sutton@example.com',NULL,11,11,1960,NULL,NULL,1,2,1,2,NULL,NULL,'2006-08-18 00:45:56',1,0,NULL,0,NULL,NULL,NULL,NULL),(8,'Ms','Herminia','','Hart','','9302 Mcclellan Rd','','Anna','AR','','USA','(628) 153-9939','','(568) 461-7599','herminia.bennett@example.com','',11,1,2016,NULL,NULL,2,3,1,2,0,'2016-11-19 15:42:20','2004-11-25 05:24:25',1,1,NULL,0,NULL,NULL,NULL,NULL),(9,'Mrs','Jean','','Hart','','1952 E Sandy Lake Rd','','Grand Prairie','VA','','USA','(079) 999-6246','','(604) 581-1182','jean.williams@example.com','',6,7,2015,NULL,NULL,2,3,1,2,0,'2016-11-19 15:42:14','2009-08-19 12:28:31',1,1,NULL,0,NULL,NULL,NULL,NULL),(10,'Mr','Tom','','Hart','','3822 Ranchview Dr','','Yakima','MT','','USA','(527) 157-1824','','(295) 083-9014','tom.gardner@example.com','',6,29,2014,NULL,NULL,1,3,1,2,0,'2016-11-19 15:42:10','2003-02-22 08:03:31',1,1,NULL,0,NULL,NULL,NULL,NULL),(11,'Miss','Isabella','','Hart','','1062 W Campbell Ave','','Orange','AZ','','USA','(812) 239-4176','','(370) 444-2204','isabella.murphy@example.com','',11,1,2013,NULL,NULL,2,3,1,2,0,'2016-11-19 15:42:07','2011-12-29 16:42:21',1,1,NULL,0,NULL,NULL,NULL,NULL),(12,'Miss','Hannah','','Hart','','8339 W Campbell Ave','','Cincinnati','MA','','USA','(807) 426-5975','','(438) 063-5382','hannah.dean@example.com','',11,10,2012,NULL,NULL,2,3,1,2,0,'2016-11-19 15:42:04','2014-10-07 16:03:06',1,1,NULL,0,NULL,NULL,NULL,NULL),(13,'Mr','Ivan','','Hart','','9113 Wheeler Ridge Dr','','Glendale','FL','','USA','(087) 032-9002','','(722) 034-5627','ivan.hayes@example.com','',2,8,2010,NULL,NULL,1,3,1,2,0,'2016-11-19 15:42:01','2013-02-28 09:48:03',1,1,NULL,0,NULL,NULL,NULL,NULL),(14,'Mr','Nathan','','Lewis','','2379 Northaven Rd','','Detroit','WV','','USA','(609)-441-0871','','(289)-209-6037','nathan.lewis@example.com',NULL,9,5,1947,NULL,NULL,1,1,1,3,NULL,NULL,'2007-11-19 10:08:41',1,0,NULL,0,NULL,NULL,NULL,NULL),(15,'Miss','Vivan','','Lewis','','4179 Nowlin Rd','','Burkburnett','CO','','USA','(705)-700-7379','','(673)-131-2063','vivan.stone@example.com',NULL,1,7,1953,NULL,NULL,2,2,2,3,NULL,NULL,'2009-12-31 07:48:03',1,0,NULL,0,NULL,NULL,NULL,NULL),(16,'Miss','Alicia','','Lewis','','9671 Crockett St','','Antioch','AK','','USA','(207)-652-5270','','(101)-986-5384','alicia.wood@example.com',NULL,5,8,2001,NULL,NULL,2,3,2,3,NULL,NULL,'2011-05-22 19:11:16',1,0,NULL,0,NULL,NULL,NULL,NULL),(17,'Mr','Edwin','','Lewis','','8088 Westheimer Rd','','New Haven','OK','','USA','(282)-503-9925','','(564)-714-4633','edwin.adams@example.com',NULL,4,3,1960,NULL,NULL,1,4,5,3,NULL,NULL,'2003-09-03 15:13:09',1,0,NULL,0,NULL,NULL,NULL,NULL),(18,'Miss','Kathryn','','Ray','','4212 Parker Rd','','Chesapeake','WI','','USA','(220)-345-1335','','(698)-371-0398','kathryn.ray@example.com',NULL,1,1,1961,NULL,NULL,2,1,1,4,NULL,NULL,'2003-10-14 16:05:17',1,0,NULL,0,NULL,NULL,NULL,NULL),(19,'Ms','Laurie','','Ray','','8886 Edwards Rd','','Burkburnett','OK','','USA','(729) 498-1504','','(325) 373-6885','laurie.spencer@example.com','',4,0,1945,NULL,'2019-04-12',2,2,1,4,0,'2021-04-25 21:36:05','2008-05-09 05:12:00',1,1,NULL,0,'','','',NULL),(20,'Mr','Ruben','','Ray','','4029 Marsh Ln','','Laredo','PA','','USA','(025)-226-8939','','(860)-989-5496','ruben.robertson@example.com',NULL,7,31,1947,NULL,NULL,1,4,2,4,NULL,NULL,'2011-02-18 08:54:47',1,0,NULL,0,NULL,NULL,NULL,NULL),(21,'Mr','Anthony','','Ray','','1384 Mockingbird Hill','','Hartford','TX','','USA','(338)-134-5037','','(824)-719-7975','anthony.romero@example.com',NULL,8,11,2001,NULL,NULL,1,3,2,4,NULL,NULL,'2009-08-31 21:41:59',1,0,NULL,0,NULL,NULL,NULL,NULL),(22,'Ms','Tiffany','','Ray','','5628 College St','','Houston','WI','','USA','(345)-423-2511','','(290)-521-0022','tiffany.mitchelle@example.com',NULL,9,11,2003,NULL,NULL,2,3,2,4,NULL,NULL,'2007-06-22 01:54:41',1,0,NULL,0,NULL,NULL,NULL,NULL),(23,'Miss','Leah','','Ray','','3962 Preston Rd','','Seattle','IN','','USA','(062)-298-8987','','(460)-918-7940','leah.romero@example.com',NULL,2,28,2008,NULL,NULL,2,3,2,4,NULL,NULL,'2009-08-13 03:54:14',1,0,NULL,0,NULL,NULL,NULL,NULL),(24,'Mr','Clyde','','Ray','','6667 Elgin St','','Flint','ID','','USA','(033)-156-6960','','(880)-267-2598','clyde.prescott@example.com',NULL,8,11,2007,NULL,NULL,1,3,2,4,NULL,NULL,'2016-03-23 12:51:45',1,0,NULL,0,NULL,NULL,NULL,NULL),(25,'Mrs','Peyton','','Ray','','2168 Daisy Dr','','Ontario','CT','','USA','(872)-942-4541','','(575)-806-0327','peyton.caldwell@example.com',NULL,12,18,2005,NULL,NULL,2,3,2,4,NULL,NULL,'2007-08-08 06:34:24',1,0,NULL,0,NULL,NULL,NULL,NULL),(26,'Mr','Paul','','Smith','','5572 Robinson Rd','','Santa Clarita','KY','','USA','(886)-863-1106','','(619)-224-1159','paul.robertson@example.com',NULL,11,21,1983,NULL,NULL,1,1,1,5,NULL,NULL,'2007-09-14 23:32:06',1,0,NULL,0,NULL,NULL,NULL,NULL),(27,'Mr','Isaac','','Murry','','4358 W Pecan St','','Columbus','IN','','USA','(094) 366-3908','','(776) 335-5061','isaac.medina@example.com','',7,18,1967,NULL,NULL,1,0,0,0,0,'2016-11-19 15:43:47','2004-09-21 04:59:36',1,1,NULL,0,NULL,NULL,NULL,NULL),(28,'Mr','Rafael','','Dixon','','6730 Mockingbird Hill','','Roanoke','IL','','USA','(449)-349-7865','','(868)-958-9892','rafael.dixon@example.com',NULL,12,4,1990,NULL,NULL,1,1,2,6,NULL,NULL,'2013-07-25 20:18:03',1,0,NULL,0,NULL,NULL,NULL,NULL),(29,'Mr','Flenn','','Dixon','','1240 Preston Rd','','Cary','MS','','USA','(003) 336-4322','','(053) 745-5201','flenn.watts@example.com','',10,28,1959,NULL,NULL,1,0,0,0,0,'2016-11-19 15:40:58','2004-03-04 00:12:40',1,1,NULL,0,NULL,NULL,NULL,NULL),(30,'Miss','Kenzi','','Dixon','','8077 Mcclellan Rd','','Lancaster','PA','','USA','(644) 129-3577','','(930) 426-1283','kenzi.fields@example.com','',4,30,2012,NULL,NULL,2,3,2,6,0,'2016-11-19 15:41:11','2014-09-29 01:36:32',1,1,NULL,0,NULL,NULL,NULL,NULL),(31,'Miss','Paula','','Dixon','','5240 Brown Terrace','','Orange','TN','','USA','(306) 612-2729','','(669) 399-3249','paula.rice@example.com','',9,10,1973,NULL,NULL,2,0,0,0,0,'2016-11-19 15:40:40','2007-04-14 04:13:25',1,1,NULL,0,NULL,NULL,NULL,NULL),(32,'Mr','Chad','','Dixon','','3902 Robinson Rd','','Fort Worth','AZ','','USA','(933) 231-0313','','(525) 406-0888','chad.fuller@example.com','',2,20,1992,NULL,NULL,1,0,0,0,0,'2016-11-19 15:41:02','2010-07-15 12:40:49',1,1,NULL,0,NULL,NULL,NULL,NULL),(33,'Ms','Riley','','Dixon','','2739 E Sandy Lake Rd','','Frederick','AZ','','USA','(601) 891-3110','','(283) 918-7088','riley.reed@example.com','',9,23,1961,NULL,NULL,2,0,0,0,0,'2016-11-19 15:40:43','2006-07-25 23:21:13',1,1,NULL,0,NULL,NULL,NULL,NULL),(34,'Mr','Alvin','','Stewart','','7045 Wycliff Ave','','Gainesville','SD','','USA','(813)-837-2427','','(919)-556-7534','alvin.stewart@example.com',NULL,12,16,1974,NULL,NULL,1,1,1,7,NULL,NULL,'2011-08-17 04:00:29',1,0,NULL,0,NULL,NULL,NULL,NULL),(35,'Mr','Shane','','Stewart','','9986 Blossom Hill Rd','','Hayward','KY','','USA','(988) 219-6753','','(271) 473-8298','tony.wade@example.com','',1,16,1951,NULL,NULL,1,0,0,0,0,'2018-01-01 19:25:55','2007-12-26 21:13:22',1,1,NULL,0,NULL,'','',NULL),(36,'Miss','Kathryn',NULL,'Robertson',NULL,'7218 E Pecan St',NULL,'Gilbert','NE',NULL,'USA','(109)-946-0677',NULL,'(493)-248-4574','kathryn.robertson@example.com',NULL,1,14,1977,NULL,NULL,2,1,0,0,NULL,NULL,'2015-02-07 16:23:42',1,0,NULL,0,NULL,NULL,NULL,NULL),(37,'Mr','Wayne',NULL,'Robertson',NULL,'5100 Bollinger Rd',NULL,'Bridgeport','WV',NULL,'USA','(584)-942-4752',NULL,'(947)-378-9079','wayne.jacobs@example.com',NULL,3,10,1982,NULL,NULL,1,2,0,0,NULL,NULL,'2005-03-04 15:19:32',1,0,NULL,0,NULL,NULL,NULL,NULL),(38,'Miss','Mae',NULL,'Robertson',NULL,'5205 Saddle Dr',NULL,'Fort Wayne','PA',NULL,'USA','(572)-934-2319',NULL,'(625)-704-9068','mae.robinson@example.com',NULL,8,19,1979,NULL,NULL,2,3,0,0,NULL,NULL,'2008-10-02 23:33:21',1,0,NULL,0,NULL,NULL,NULL,NULL),(39,'Mr','Soham',NULL,'Robertson',NULL,'3619 Daisy Dr',NULL,'San Jose','AL',NULL,'USA','(789)-386-8063',NULL,'(314)-889-8596','soham.vargas@example.com',NULL,10,3,1961,NULL,NULL,1,3,0,0,NULL,NULL,'2003-04-01 17:32:42',1,0,NULL,0,NULL,NULL,NULL,NULL),(40,'Mr','Austin',NULL,'Robertson',NULL,'5722 Adams St',NULL,'Rochester','NJ',NULL,'USA','(728)-300-2942',NULL,'(359)-620-0341','austin.chapman@example.com',NULL,7,13,1977,NULL,NULL,1,3,0,0,NULL,NULL,'2015-05-27 00:37:53',1,0,NULL,0,NULL,NULL,NULL,NULL),(41,'Mrs','Stella',NULL,'Robertson',NULL,'5862 Brown Terrace',NULL,'Centennial','AK',NULL,'USA','(751)-040-3371',NULL,'(979)-231-1273','stella.steward@example.com',NULL,2,15,1956,NULL,NULL,2,3,0,0,NULL,NULL,'2003-12-11 09:28:32',1,0,NULL,0,NULL,NULL,NULL,NULL),(42,'Mr','Clinton',NULL,'Robertson',NULL,'1916 Lone Wolf Trail',NULL,'Glendale','OR',NULL,'USA','(253)-317-5937',NULL,'(954)-007-6834','clinton.black@example.com',NULL,10,20,1969,NULL,NULL,1,3,0,0,NULL,NULL,'2012-03-22 08:26:55',1,0,NULL,0,NULL,NULL,NULL,NULL),(43,'Ms','Natalie','','Diaz','','1158 Harrison Ct','','Hialeah','IA','','USA','(613)-399-6088','','(129)-829-3141','natalie.diaz@example.com',NULL,5,26,1970,NULL,NULL,2,1,3,9,NULL,NULL,'2013-04-20 15:01:05',1,0,NULL,0,NULL,NULL,NULL,NULL),(44,'Mrs','Rhonda','','Diaz','','7320 Cackson St','','Murrieta','NH','','USA','(169)-598-1721','','(839)-859-9851','rhonda.mcdonalid@example.com',NULL,4,4,1973,NULL,NULL,2,2,3,9,NULL,NULL,'2012-02-09 10:41:53',1,0,NULL,0,NULL,NULL,NULL,NULL),(48,'Mr','Kurt','','Diaz','','5324 Adams St','','Richardson','WI','','USA','(284)-936-1476','','(220)-137-4630','kurt.hernandez@example.com',NULL,6,20,2005,NULL,NULL,1,3,3,9,NULL,NULL,'2010-01-07 01:55:34',1,0,NULL,0,NULL,NULL,NULL,NULL),(49,'Ms','Lorraine','','Diaz','','4771 Crockett St','','Las Cruces','MA','','USA','(344)-896-8256','','(825)-077-7472','lorraine.craig@example.com',NULL,7,26,2007,NULL,NULL,2,3,3,9,NULL,NULL,'2004-06-21 14:40:43',1,0,NULL,0,NULL,NULL,NULL,NULL),(50,'Mrs','Sherri','','Gordon','','1255 Brown Terrace','','Louisville','MI','','USA','(215) 006-0420','','(730) 313-8457','sherri.gordon@example.com','',12,18,1972,NULL,NULL,2,1,2,10,0,'2019-09-11 23:09:35','2004-09-09 18:40:30',1,1,NULL,0,NULL,'','',NULL),(51,'Ms','Rebecca','','Gordon','','6049 Lone Wolf Trail','','Fayetteville','VA','','USA','(808) 292-7083','','(134) 378-9433','rebecca.walker@example.com','',11,28,1960,NULL,NULL,2,0,0,0,0,'2016-11-19 15:41:44','2006-11-20 15:07:23',1,1,NULL,0,NULL,NULL,NULL,NULL),(52,'Mr','Vernon','','Newman','','5427 Stevens Creek Blvd','','Orlando','MN','','USA','(792)-676-7007','','(427)-110-3793','vernon.newman@example.com',NULL,8,24,1961,NULL,NULL,1,1,0,11,NULL,NULL,'2006-10-11 03:51:16',1,0,NULL,0,NULL,NULL,NULL,NULL),(53,'Mr','George','','Newman','','9425 Lovers Ln','','Madison','LA','','USA','(321) 940-9019','','(782) 311-7625','george.powell@example.com','',5,5,1988,NULL,NULL,1,0,0,0,0,'2016-11-19 15:43:22','2006-06-21 08:18:13',1,1,NULL,0,NULL,NULL,NULL,NULL),(54,'Mr','Connor','','Newman','','7304 Parker Rd','','Forney','CA','','USA','(838)-504-2399','','(354)-932-3933','connor.silva@example.com',NULL,5,12,1977,NULL,NULL,1,3,0,11,NULL,NULL,'2006-05-24 17:02:09',1,0,NULL,0,NULL,NULL,NULL,NULL),(55,'Mrs','Marie','','Newman','','3717 Lovers Ln','','Hialeah','NE','','USA','(833)-140-7523','','(740)-971-1815','marie.king@example.com',NULL,10,20,1950,NULL,'2021-08-30',2,4,0,11,NULL,NULL,'2015-10-04 01:39:08',1,0,NULL,0,NULL,NULL,NULL,NULL),(56,'Mr','Norman','','Newman','','8751 E North St','','Norwalk','TX','','USA','(185)-313-3302','','(936)-644-4251','norman.rice@example.com',NULL,3,9,1970,NULL,NULL,1,4,0,11,NULL,NULL,'2006-07-23 14:13:59',1,0,NULL,0,NULL,NULL,NULL,NULL),(57,'Mr','Jon','','Olson','','1272 Shady Ln Dr','','Toledo','MT','','USA','(698)-235-3995','','(242)-098-1494','jon.olson@example.com',NULL,1,20,1981,NULL,NULL,1,1,1,12,NULL,NULL,'2014-08-31 04:21:43',1,0,NULL,0,NULL,NULL,NULL,NULL),(58,'Ms','Sandra','','Olson','','6590 Ranchview Dr','','Mcallen','RI','','USA','(071)-579-9864','','(654)-049-3879','sandra.vasquez@example.com',NULL,12,28,1992,NULL,NULL,2,2,1,12,NULL,NULL,'2007-11-22 02:36:13',1,0,NULL,0,NULL,NULL,NULL,NULL),(59,'Mr','Franklin','','Beck','','6381 Valwood Pkwy','','Buffalo','ME','','USA','(237)-926-6342','','(742)-524-0575','franklin.beck@example.com',NULL,7,30,1974,NULL,NULL,1,1,0,13,NULL,NULL,'2007-02-01 16:50:26',1,0,NULL,0,NULL,NULL,NULL,NULL),(60,'Mr','Joel','','Beck','','2334 Daisy Dr','','Yakima','UT','','USA','(206) 919-0303','','(748) 409-3185','joel.murray@example.com','',6,26,2011,NULL,NULL,1,3,0,13,0,'2016-11-19 15:27:13','2006-11-07 12:19:08',1,1,NULL,0,NULL,NULL,NULL,NULL),(61,'Miss','Stella','','Beck','','9568 Mockingbird Hill','','Inglewood','IL','','USA','(830) 356-0875','','(970) 626-0902','stella.soto@example.com','',7,18,2010,NULL,NULL,2,3,0,13,0,'2016-11-19 15:25:34','2009-03-23 09:24:30',1,1,NULL,0,NULL,NULL,NULL,NULL),(62,'Ms','Emma','','Beck','','8890 Hunters Creek Dr','','Vallejo','MT','','USA','(623) 770-5283','','(447) 069-6505','emma.rice@example.com','',11,30,2015,NULL,NULL,2,3,0,13,0,'2016-11-19 15:25:41','2013-07-10 17:58:37',1,1,NULL,0,NULL,NULL,NULL,NULL),(63,'Miss','Julie','','Beck','','9648 Frances Ct','','Amarillo','OK','','USA','(523) 696-1294','','(107) 329-0388','julie.gregory@example.com','',8,21,1982,NULL,NULL,2,2,0,13,0,'2016-11-19 15:27:02','2004-10-13 20:53:29',1,1,NULL,0,NULL,NULL,NULL,NULL),(67,'Miss','Brianna','','Berry','','1931 Edwards Rd','','Riverside','PA','','USA','(174) 272-0341','','(310) 207-4173','brianna.berry@example.com','',10,17,1977,NULL,NULL,2,2,1,14,0,'2016-11-19 15:38:39','2013-10-15 09:25:25',1,1,NULL,0,NULL,NULL,NULL,NULL),(68,'Mr','Salvador','','Berry','','1487 W Sherman Dr','','Portland','NJ','','USA','(004) 784-0725','','(696) 118-7224','salvador.robertson@example.com','',11,9,1944,NULL,'2023-02-17',1,1,1,14,0,'2016-11-19 15:38:31','2003-09-29 17:56:26',1,1,NULL,0,NULL,NULL,NULL,NULL),(69,'Mr','Salvador','','Berry','','7928 Country Club Rd','','Lincoln','FL','','USA','(873) 186-8043','','(063) 874-1910','salvador.steward@example.com','',11,1,2011,NULL,NULL,1,3,1,14,0,'2016-11-19 15:38:00','2010-10-03 22:37:50',1,1,NULL,0,NULL,NULL,NULL,NULL),(70,'Ms','Edith',NULL,'Simmons',NULL,'3395 N Stelling Rd',NULL,'Murrieta','KY',NULL,'USA','(228)-690-1613',NULL,'(602)-815-9891','edith.simmons@example.com',NULL,3,25,1977,NULL,NULL,2,1,0,0,NULL,NULL,'2003-04-25 18:30:46',1,0,NULL,0,NULL,NULL,NULL,NULL),(71,'Mr','Dave',NULL,'Simmons',NULL,'7581 Central St',NULL,'Roseville','RI',NULL,'USA','(196)-952-9025',NULL,'(850)-773-0796','dave.bradley@example.com',NULL,2,17,1965,NULL,NULL,1,2,0,0,NULL,NULL,'2013-07-20 08:52:02',1,0,NULL,0,NULL,NULL,NULL,NULL),(72,'Mr','Jonathan',NULL,'Simmons',NULL,'4096 Elgin St',NULL,'Saint Paul','OR',NULL,'USA','(267)-764-5383',NULL,'(359)-187-3057','jonathan.holland@example.com',NULL,3,10,1983,NULL,NULL,1,3,0,0,NULL,NULL,'2002-10-01 07:06:30',1,0,NULL,0,NULL,NULL,NULL,NULL),(73,'Mr','Allen',NULL,'Simmons',NULL,'5097 Sunset St',NULL,'Belen','CO',NULL,'USA','(084)-776-1439',NULL,'(549)-426-1692','allen.howard@example.com',NULL,12,18,1983,NULL,NULL,1,3,0,0,NULL,NULL,'2006-10-24 06:38:46',1,0,NULL,0,NULL,NULL,NULL,NULL),(74,'Mr','Micheal',NULL,'Simmons',NULL,'9703 Harrison Ct',NULL,'Alexandria','MD',NULL,'USA','(025)-038-3863',NULL,'(542)-730-3571','micheal.gordon@example.com',NULL,7,27,1987,NULL,NULL,1,3,0,0,NULL,NULL,'2005-01-21 16:03:19',1,0,NULL,0,NULL,NULL,NULL,NULL),(75,'Mr','Kelly',NULL,'Simmons',NULL,'7765 Marsh Ln',NULL,'Oxnard','UT',NULL,'USA','(637)-815-9511',NULL,'(747)-456-7524','kelly.foster@example.com',NULL,12,9,1960,NULL,NULL,1,3,0,0,NULL,NULL,'2008-02-08 09:12:55',1,0,NULL,0,NULL,NULL,NULL,NULL),(76,'Mr','Leroy','','Larson','','3866 Edwards Rd','','Inglewood','CO','','USA','(663)-858-8880','','(731)-811-2661','leroy.larson@example.com',NULL,3,17,1993,NULL,NULL,1,1,2,16,NULL,NULL,'2016-03-01 14:19:32',1,0,NULL,0,NULL,NULL,NULL,NULL),(77,'Ms','Natalie','','Larson','','5739 Hunters Creek Dr','','Charleston','NM','','USA','(209)-144-2421','','(265)-630-7859','natalie.lynch@example.com',NULL,5,23,1977,NULL,NULL,2,2,2,16,NULL,NULL,'2013-07-06 04:09:48',1,0,NULL,0,NULL,NULL,NULL,NULL),(78,'Mr','Norman','','Cooper','','1782 Daisy Dr','','Oxnard','GA','','USA','(718) 878-3276','','(912) 550-0265','norman.cooper@example.com','',2,15,1967,NULL,NULL,1,1,1,17,NULL,'2019-09-08 21:43:50','2014-09-26 00:09:54',1,3,NULL,0,NULL,'','',NULL),(79,'Mr','Bradley','','Cooper','','9496 Cackson St','','El Monte','ME','','USA','(020)-152-0784','','(129)-121-8642','bradley.spencer@example.com',NULL,10,28,1990,NULL,NULL,1,2,5,17,NULL,NULL,'2007-06-20 13:29:12',1,0,NULL,0,NULL,NULL,NULL,NULL),(80,'Miss','Judy','','Cooper','','5515 Lakeshore Rd','','Forney','AZ','','USA','(538) 341-4356','','(784) 554-0404','judy.douglas@example.com','',1,3,2010,NULL,NULL,2,3,1,17,0,'2019-09-08 21:44:06','2015-12-26 15:02:22',1,3,NULL,0,NULL,'','',NULL),(81,'Mrs','Isobel','','Cooper','','9849 Fairview St','','Edgewood','MD','','USA','(375) 417-6951','','(086) 565-1921','isobel.jimenez@example.com','',11,5,2012,NULL,NULL,2,3,1,17,0,'2016-11-19 15:39:54','2008-02-28 11:35:15',1,1,NULL,0,NULL,NULL,NULL,NULL),(82,'Mr','Jesse','','Cooper','','4450 Brown Terrace','','Aurora','FL','','USA','(036) 874-8797','','(725) 279-2801','jesse.morales@example.com','',2,20,2014,NULL,NULL,1,3,1,17,0,'2016-11-19 15:39:58','2007-04-24 18:10:43',1,1,NULL,0,NULL,NULL,NULL,NULL),(83,'Ms','Terry','','Cooper','','6299 Daisy Dr','','St. Louis','CT','','USA','(948) 039-8020','','(800) 640-6871','terry.kim@example.com','',9,20,1982,NULL,NULL,2,0,0,0,0,'2016-11-19 15:40:22','2011-10-07 17:53:37',1,1,NULL,0,NULL,NULL,NULL,NULL),(84,'Mr','Randall','','Riley','','1403 Avondale Ave','','Scottsdale','ID','','USA','(055)-343-0760','','(217)-027-5703','randall.riley@example.com',NULL,9,10,1982,NULL,NULL,1,1,1,18,NULL,NULL,'2002-04-09 05:31:36',1,0,NULL,0,NULL,NULL,NULL,NULL),(85,'Mr','Bernard','','Riley','','6129 Mockingbird Ln','','Portland','SC','','USA','(753)-827-4801','','(367)-872-9300','bernard.shaw@example.com',NULL,5,31,1988,NULL,NULL,1,2,1,18,NULL,NULL,'2015-03-05 07:54:37',1,0,NULL,0,NULL,NULL,NULL,NULL),(86,'Ms','Charlene','','Riley','','2764 Mcgowen St','','Van Alstyne','ME','','USA','(351)-644-7769','','(272)-375-0289','charlene.holmes@example.com',NULL,2,24,1994,NULL,NULL,2,4,2,18,NULL,NULL,'2003-02-10 12:19:20',1,0,NULL,0,NULL,NULL,NULL,NULL),(87,'Mr','Scott','','Riley','','6514 Lovers Ln','','Greeley','SC','','USA','(225)-752-3695','','(811)-926-7831','scott.curtis@example.com',NULL,9,12,2011,NULL,NULL,1,3,2,18,NULL,NULL,'2008-11-13 08:27:32',1,0,NULL,0,NULL,NULL,NULL,NULL),(88,'Mr','Cecil','','Riley','','3843 Locust Rd','','Modesto','MS','','USA','(195) 545-9986','','(997) 692-8061','cecil.brooks@example.com','',12,29,NULL,NULL,NULL,1,3,2,18,0,'2023-11-16 12:39:33','2008-06-30 07:18:09',1,1,NULL,0,'','','',NULL),(89,'Mr','Charlie','','Riley','','7456 Walnut Hill Ln','','Berkeley','AR','','USA','(683)-044-6359','','(243)-373-2589','charlie.steward@example.com',NULL,11,28,2013,NULL,NULL,1,3,2,18,NULL,NULL,'2005-04-12 20:56:36',1,0,NULL,0,NULL,NULL,NULL,NULL),(90,'Mr','Tomothy','','Riley','','1151 First Street','','Santa Ana','KS','','USA','(428)-265-4577','','(314)-894-6418','tomothy.morris@example.com',NULL,5,20,2015,NULL,NULL,1,3,2,18,NULL,NULL,'2007-01-20 19:02:31',1,0,NULL,0,NULL,NULL,NULL,NULL),(91,'Mrs','Lydia','','Riley','','5887 Daisy Dr','','Sacramento','MS','','USA','(979)-417-1072','','(082)-882-0459','lydia.beck@example.com',NULL,10,18,2016,NULL,NULL,2,3,2,18,NULL,NULL,'2010-12-30 01:21:15',1,0,NULL,0,NULL,NULL,NULL,NULL),(92,'Mr','Bruce','','Kennedy','','9481 Wycliff Ave','','Long Beach','KY','','USA','(306)-408-4342','','(414)-142-2127','bruce.kennedy@example.com',NULL,3,14,1968,NULL,NULL,1,1,1,19,NULL,NULL,'2014-11-23 09:17:25',1,0,NULL,0,NULL,NULL,NULL,NULL),(93,'Ms','Katie','','Kennedy','','8164 W Sherman Dr','','Miramar','MA','','USA','(130)-036-3270','','(993)-725-1216','katie.hoffman@example.com',NULL,8,20,1959,NULL,NULL,2,2,1,19,NULL,NULL,'2011-07-16 02:59:16',1,0,NULL,0,NULL,NULL,NULL,NULL),(94,'Mr','Rick','','Kennedy','','7581 Country Club Rd','','Vancouver','MN','','USA','(045) 695-1038','','(534) 739-9684','rick.simpson@example.com','',7,25,1983,NULL,NULL,1,0,0,0,0,'2016-11-19 15:42:48','2006-05-25 19:29:47',1,1,NULL,0,NULL,NULL,NULL,NULL),(95,'Mrs','Judith','','Kennedy','','2874 Paddock Way','','Anaheim','IA','','USA','(773) 685-8434','','(384) 824-9114','judith.matthews@example.com','',8,1,1978,NULL,NULL,0,0,0,0,0,'2016-11-19 15:42:57','2003-07-08 08:25:48',1,1,NULL,0,NULL,NULL,NULL,NULL),(96,'Mr','Curtis','','Kennedy','','8606 Cherry St','','Bernalillo','GA','','USA','(461) 623-8151','','(361) 282-0616','curtis.ross@example.com','',8,5,1976,NULL,NULL,1,0,0,0,0,'2016-11-19 15:43:06','2006-04-08 10:42:12',1,1,NULL,0,NULL,NULL,NULL,NULL),(97,'Mr','Erik','','Kennedy','','9277 Pockrus Page Rd','','Detroit','ND','','USA','(867) 583-3910','','(526) 231-1258','erik.mitchell@example.com','',9,25,1964,NULL,NULL,1,0,0,0,0,'2016-11-19 15:43:10','2010-01-28 17:10:25',1,1,NULL,0,NULL,NULL,NULL,NULL),(98,'Mrs','Carrie','','Kennedy','','7713 First Street','','Hayward','FL','','USA','(060)-528-8391','','(465)-239-8937','carrie.knight@example.com',NULL,4,19,1960,NULL,NULL,2,5,5,19,NULL,NULL,'2007-02-16 17:31:50',1,0,NULL,0,NULL,NULL,NULL,NULL),(99,'Miss','Amanda','','Black','','4307 Avondale Ave','','Shiloh','CT','','USA','(828)-463-5829','','(207)-736-7509','amanda.black@example.com',NULL,5,18,1966,NULL,NULL,2,1,2,20,NULL,NULL,'2014-05-10 06:07:19',1,0,NULL,0,NULL,NULL,NULL,NULL),(100,'Miss','Lena','','Black','','4858 Taylor St','','Manchester','UT','','USA','(747)-292-0200','','(006)-199-3045','lena.walker@example.com',NULL,12,24,1971,NULL,NULL,2,2,2,20,NULL,NULL,'2004-09-29 01:37:47',1,0,NULL,0,NULL,NULL,NULL,NULL),(102,'Ms','Samantha','','Black','','9227 Plum St','','Coppell','MA','','USA','(374)-404-6562','','(060)-500-5393','samantha.duncan@example.com',NULL,8,10,2010,NULL,NULL,2,3,2,20,NULL,NULL,'2005-03-07 21:32:47',1,0,NULL,0,NULL,NULL,NULL,NULL),(103,'Mrs','Serenity','','Black','','1122 W Belt Line Rd','','Norman','NY','','USA','(795)-160-6735','','(993)-000-0313','serenity.banks@example.com',NULL,12,17,2013,NULL,NULL,2,3,2,20,NULL,NULL,'2014-05-16 11:35:23',1,0,NULL,0,NULL,NULL,NULL,NULL),(104,'','Mark','','Smith','','123 Main St.','','Seattle','WA','98121','US','(206) 555-5555','','(206) 555-1234','mark.smith@example.com','',3,31,1980,NULL,NULL,1,1,0,21,0,'2021-04-25 09:41:33','2017-04-15 17:20:21',-1,1,NULL,0,'','','',NULL),(105,'','Mary','','Smith','','123 Main St.','','Seattle','WA','98121','US','(206) 555-5555','','','','',3,30,1985,NULL,NULL,1,2,0,21,0,'2021-03-21 17:46:45','2017-04-15 17:20:21',-1,1,NULL,1,'','','',NULL),(106,NULL,'Sam','','Smith','','123 Main St.','','Seattle','WA','98121','US','(206) 555-5555','','','',NULL,0,0,NULL,NULL,NULL,1,3,0,21,NULL,NULL,'2017-04-15 17:20:21',-1,0,NULL,0,NULL,NULL,NULL,NULL),(107,NULL,'Tony','','Smith','','123 Main St.','','Seattle','WA','98121','US','(206) 555-5555','','','',NULL,0,0,NULL,NULL,NULL,1,3,0,21,NULL,NULL,'2017-04-15 17:20:21',-1,0,NULL,0,NULL,NULL,NULL,NULL),(114,'','Boby','','Hall','','','','Kansas City','MO','','United States','','','','boby@example.com','',12,21,1950,NULL,NULL,1,0,1,0,0,NULL,'2021-04-25 10:32:31',3,0,'2021-04-25',0,'','','',NULL),(115,'Mr','Michael',NULL,'Turner',NULL,'4590 Maple Ave',NULL,'Austin','TX','78701','US','(512) 555-0148','','','michael.turner@example.com',NULL,8,7,1990,NULL,NULL,1,1,0,23,NULL,NULL,'2021-04-25 10:50:12',-1,0,NULL,0,NULL,NULL,NULL,NULL),(116,'Mrs','Patricia',NULL,'Turner',NULL,'4590 Maple Ave',NULL,'Austin','TX','78701','US','(512) 555-0148','','','patricia.turner@example.com',NULL,8,7,2000,NULL,NULL,2,2,0,23,NULL,NULL,'2021-04-25 10:50:12',-1,0,NULL,1,NULL,NULL,NULL,NULL),(123,'','Boby','','Hall','','','','Kansas City','MO','','United States','','','','boby@example.com','',12,21,1950,NULL,NULL,1,0,1,0,0,NULL,'2021-04-25 10:56:50',3,0,'2021-04-25',0,'','','',NULL),(162,'','Boby','','Hall','','','','Kansas City','MO','','United States','','','','boby@example.com','',12,21,1950,NULL,NULL,1,0,1,0,0,NULL,'2021-04-25 13:17:35',3,0,'2021-04-25',0,'','','',NULL),(169,'','Boby','','Hall','','','','Kansas City','MO','','United States','','','','boby@example.com','',12,21,1950,NULL,NULL,1,0,1,0,0,NULL,'2021-04-25 16:26:33',3,0,'2021-04-25',0,'','','',NULL),(178,'','Boby','','Hall','','','','Kansas City','MO','','United States','','','','boby@example.com','',12,21,1950,NULL,NULL,1,0,1,0,0,NULL,'2021-04-25 16:59:38',3,0,'2021-04-25',0,'','','',NULL),(187,'','Boby','','Hall','','','','Kansas City','MO','','United States','','','','boby@example.com','',12,21,1950,NULL,NULL,1,0,1,0,0,NULL,'2021-04-25 17:30:35',3,0,'2021-04-25',0,'','','',NULL),(196,'','Boby','','Hall','','','','Kansas City','MO','','United States','','','','boby@example.com','',12,21,1950,NULL,NULL,1,0,1,0,0,NULL,'2021-04-25 17:40:34',3,0,'2021-04-25',0,'','','',NULL),(205,'','Boby','','Hall','','','','Kansas City','MO','','United States','','','','boby@example.com','',12,21,1950,NULL,NULL,1,0,1,0,0,NULL,'2021-04-25 20:09:02',3,0,'2021-04-25',0,'','','',NULL),(212,'','Boby','','Hall','','','','Kansas City','MO','','United States','','','','boby@example.com','',12,21,1950,NULL,NULL,1,0,1,0,0,NULL,'2021-04-25 21:43:48',3,0,'2021-04-25',0,'','','',NULL),(213,NULL,'Sr.',NULL,'Master',NULL,'123 Main St.',NULL,'Kansas City','MO','98001','US','',NULL,NULL,'sr@mater.cmo',NULL,8,7,1990,NULL,NULL,1,1,0,42,NULL,NULL,'2025-01-01 00:00:00',-1,0,NULL,0,NULL,NULL,NULL,NULL),(214,NULL,'lady',NULL,'Master',NULL,'123 Main St.',NULL,'Kansas City','MO','98001','US','',NULL,NULL,'lady@nower.com',NULL,8,7,2000,NULL,NULL,1,2,0,42,NULL,NULL,'2025-01-01 00:00:00',-1,0,NULL,1,NULL,NULL,NULL,NULL),(221,'','Boby','','Hall','','','','Kansas City','MO','','United States','','','','boby@example.com','',12,21,1950,NULL,NULL,1,0,1,0,0,NULL,'2021-04-25 21:57:16',3,0,'2021-04-25',0,'','','',NULL),(228,'','Boby','','Hall','','','','Kansas City','MO','','United States','','','','boby@example.com','',12,21,1950,NULL,NULL,1,0,1,0,0,NULL,'2021-04-25 22:50:53',3,0,'2021-04-25',0,'','','',NULL),(229,'Ms','Jordan',NULL,'Casey',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'jordan.casey@example.com',NULL,3,15,1994,NULL,NULL,2,0,0,0,NULL,NULL,'2026-07-20 09:15:00',-1,0,NULL,0,NULL,NULL,NULL,NULL);
-INSERT INTO `person_per` VALUES (900,'Mr','John','','Plainauth','','','','','','','USA','','','','john.plainauth@example.com',NULL,1,1,1980,NULL,NULL,1,1,0,0,NULL,NULL,'2024-01-01 00:00:00',1,0,NULL,0,NULL,NULL,NULL,NULL);
--- Zero-permission user (all flags 0 including EditSelf=0) in family 1 (Campbell). Used by no-permission-user.spec.js to verify
+INSERT INTO `person_per` VALUES (1,NULL,'Church',NULL,'Admin',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,0,0,0,NULL,NULL,0,0,0,0,NULL,NULL,'2004-08-25 18:00:00',1,0,NULL,0,NULL,NULL,NULL,NULL,0,NULL),(2,'Mr','Mathew','','Campbell','','3259 Daisy Dr','','Denton','AR','','USA','(728)-139-0768','','(003)-025-4087','mathew.campbell@example.com',NULL,6,15,1970,NULL,NULL,1,1,1,1,NULL,NULL,'2009-12-25 07:19:06',1,0,NULL,0,NULL,NULL,NULL,NULL,0,NULL),(3,'Mr','Tony','','Campbell','','9889 Lone Wolf Trail','','Worcester','ME','','USA','(221) 294-5282','','(820) 203-5704','tony.wade@example.com','',3,3,1945,NULL,NULL,1,0,2,0,0,'2016-11-19 16:07:39','2006-05-18 08:07:27',1,1,NULL,0,NULL,NULL,NULL,NULL,0,NULL),(4,'Mr','Darren','','Campbell','','8142 Locust Rd','','Tucson','WV','','USA','(336) 819-5290','','(800) 502-3720','darren.freeman@example.com','',7,23,1910,NULL,NULL,1,4,5,1,0,'2016-11-19 15:39:19','2016-04-03 09:13:02',1,1,NULL,0,NULL,NULL,NULL,NULL,0,NULL),(5,'Mr','Albert','','Campbell','','2560 Edwards Rd','','Garland','MT','','USA','(389) 860-7800','','(591) 749-3007','albert.garcia@example.com','',9,9,2013,NULL,NULL,1,3,1,1,0,'2016-11-19 15:39:30','2003-06-23 04:32:34',1,1,NULL,0,NULL,NULL,NULL,NULL,0,NULL),(6,'Mrs','Constance','','Hart','','4878 Valley View Ln','','Grand Rapids','ND','','USA','(042)-989-4488','','(385)-141-5437','constance.hart@example.com',NULL,7,8,1966,NULL,NULL,2,1,1,2,NULL,NULL,'2009-04-13 01:17:12',1,0,NULL,0,NULL,NULL,NULL,NULL,0,NULL),(7,'Mr','Marion','','Hart','','9211 Railroad St','','Rockford','ME','','USA','(178)-657-2640','','(167)-162-6079','marion.sutton@example.com',NULL,11,11,1960,NULL,NULL,1,2,1,2,NULL,NULL,'2006-08-18 00:45:56',1,0,NULL,0,NULL,NULL,NULL,NULL,0,NULL),(8,'Ms','Herminia','','Hart','','9302 Mcclellan Rd','','Anna','AR','','USA','(628) 153-9939','','(568) 461-7599','herminia.bennett@example.com','',11,1,2016,NULL,NULL,2,3,1,2,0,'2016-11-19 15:42:20','2004-11-25 05:24:25',1,1,NULL,0,NULL,NULL,NULL,NULL,0,NULL),(9,'Mrs','Jean','','Hart','','1952 E Sandy Lake Rd','','Grand Prairie','VA','','USA','(079) 999-6246','','(604) 581-1182','jean.williams@example.com','',6,7,2015,NULL,NULL,2,3,1,2,0,'2016-11-19 15:42:14','2009-08-19 12:28:31',1,1,NULL,0,NULL,NULL,NULL,NULL,0,NULL),(10,'Mr','Tom','','Hart','','3822 Ranchview Dr','','Yakima','MT','','USA','(527) 157-1824','','(295) 083-9014','tom.gardner@example.com','',6,29,2014,NULL,NULL,1,3,1,2,0,'2016-11-19 15:42:10','2003-02-22 08:03:31',1,1,NULL,0,NULL,NULL,NULL,NULL,0,NULL),(11,'Miss','Isabella','','Hart','','1062 W Campbell Ave','','Orange','AZ','','USA','(812) 239-4176','','(370) 444-2204','isabella.murphy@example.com','',11,1,2013,NULL,NULL,2,3,1,2,0,'2016-11-19 15:42:07','2011-12-29 16:42:21',1,1,NULL,0,NULL,NULL,NULL,NULL,0,NULL),(12,'Miss','Hannah','','Hart','','8339 W Campbell Ave','','Cincinnati','MA','','USA','(807) 426-5975','','(438) 063-5382','hannah.dean@example.com','',11,10,2012,NULL,NULL,2,3,1,2,0,'2016-11-19 15:42:04','2014-10-07 16:03:06',1,1,NULL,0,NULL,NULL,NULL,NULL,0,NULL),(13,'Mr','Ivan','','Hart','','9113 Wheeler Ridge Dr','','Glendale','FL','','USA','(087) 032-9002','','(722) 034-5627','ivan.hayes@example.com','',2,8,2010,NULL,NULL,1,3,1,2,0,'2016-11-19 15:42:01','2013-02-28 09:48:03',1,1,NULL,0,NULL,NULL,NULL,NULL,0,NULL),(14,'Mr','Nathan','','Lewis','','2379 Northaven Rd','','Detroit','WV','','USA','(609)-441-0871','','(289)-209-6037','nathan.lewis@example.com',NULL,9,5,1947,NULL,NULL,1,1,1,3,NULL,NULL,'2007-11-19 10:08:41',1,0,NULL,0,NULL,NULL,NULL,NULL,0,NULL),(15,'Miss','Vivan','','Lewis','','4179 Nowlin Rd','','Burkburnett','CO','','USA','(705)-700-7379','','(673)-131-2063','vivan.stone@example.com',NULL,1,7,1953,NULL,NULL,2,2,2,3,NULL,NULL,'2009-12-31 07:48:03',1,0,NULL,0,NULL,NULL,NULL,NULL,0,NULL),(16,'Miss','Alicia','','Lewis','','9671 Crockett St','','Antioch','AK','','USA','(207)-652-5270','','(101)-986-5384','alicia.wood@example.com',NULL,5,8,2001,NULL,NULL,2,3,2,3,NULL,NULL,'2011-05-22 19:11:16',1,0,NULL,0,NULL,NULL,NULL,NULL,0,NULL),(17,'Mr','Edwin','','Lewis','','8088 Westheimer Rd','','New Haven','OK','','USA','(282)-503-9925','','(564)-714-4633','edwin.adams@example.com',NULL,4,3,1960,NULL,NULL,1,4,5,3,NULL,NULL,'2003-09-03 15:13:09',1,0,NULL,0,NULL,NULL,NULL,NULL,0,NULL),(18,'Miss','Kathryn','','Ray','','4212 Parker Rd','','Chesapeake','WI','','USA','(220)-345-1335','','(698)-371-0398','kathryn.ray@example.com',NULL,1,1,1961,NULL,NULL,2,1,1,4,NULL,NULL,'2003-10-14 16:05:17',1,0,NULL,0,NULL,NULL,NULL,NULL,0,NULL),(19,'Ms','Laurie','','Ray','','8886 Edwards Rd','','Burkburnett','OK','','USA','(729) 498-1504','','(325) 373-6885','laurie.spencer@example.com','',4,0,1945,NULL,'2019-04-12',2,2,1,4,0,'2021-04-25 21:36:05','2008-05-09 05:12:00',1,1,NULL,0,'','','',NULL,0,NULL),(20,'Mr','Ruben','','Ray','','4029 Marsh Ln','','Laredo','PA','','USA','(025)-226-8939','','(860)-989-5496','ruben.robertson@example.com',NULL,7,31,1947,NULL,NULL,1,4,2,4,NULL,NULL,'2011-02-18 08:54:47',1,0,NULL,0,NULL,NULL,NULL,NULL,0,NULL),(21,'Mr','Anthony','','Ray','','1384 Mockingbird Hill','','Hartford','TX','','USA','(338)-134-5037','','(824)-719-7975','anthony.romero@example.com',NULL,8,11,2001,NULL,NULL,1,3,2,4,NULL,NULL,'2009-08-31 21:41:59',1,0,NULL,0,NULL,NULL,NULL,NULL,0,NULL),(22,'Ms','Tiffany','','Ray','','5628 College St','','Houston','WI','','USA','(345)-423-2511','','(290)-521-0022','tiffany.mitchelle@example.com',NULL,9,11,2003,NULL,NULL,2,3,2,4,NULL,NULL,'2007-06-22 01:54:41',1,0,NULL,0,NULL,NULL,NULL,NULL,0,NULL),(23,'Miss','Leah','','Ray','','3962 Preston Rd','','Seattle','IN','','USA','(062)-298-8987','','(460)-918-7940','leah.romero@example.com',NULL,2,28,2008,NULL,NULL,2,3,2,4,NULL,NULL,'2009-08-13 03:54:14',1,0,NULL,0,NULL,NULL,NULL,NULL,0,NULL),(24,'Mr','Clyde','','Ray','','6667 Elgin St','','Flint','ID','','USA','(033)-156-6960','','(880)-267-2598','clyde.prescott@example.com',NULL,8,11,2007,NULL,NULL,1,3,2,4,NULL,NULL,'2016-03-23 12:51:45',1,0,NULL,0,NULL,NULL,NULL,NULL,0,NULL),(25,'Mrs','Peyton','','Ray','','2168 Daisy Dr','','Ontario','CT','','USA','(872)-942-4541','','(575)-806-0327','peyton.caldwell@example.com',NULL,12,18,2005,NULL,NULL,2,3,2,4,NULL,NULL,'2007-08-08 06:34:24',1,0,NULL,0,NULL,NULL,NULL,NULL,0,NULL),(26,'Mr','Paul','','Smith','','5572 Robinson Rd','','Santa Clarita','KY','','USA','(886)-863-1106','','(619)-224-1159','paul.robertson@example.com',NULL,11,21,1983,NULL,NULL,1,1,1,5,NULL,NULL,'2007-09-14 23:32:06',1,0,NULL,0,NULL,NULL,NULL,NULL,0,NULL),(27,'Mr','Isaac','','Murry','','4358 W Pecan St','','Columbus','IN','','USA','(094) 366-3908','','(776) 335-5061','isaac.medina@example.com','',7,18,1967,NULL,NULL,1,0,0,0,0,'2016-11-19 15:43:47','2004-09-21 04:59:36',1,1,NULL,0,NULL,NULL,NULL,NULL,0,NULL),(28,'Mr','Rafael','','Dixon','','6730 Mockingbird Hill','','Roanoke','IL','','USA','(449)-349-7865','','(868)-958-9892','rafael.dixon@example.com',NULL,12,4,1990,NULL,NULL,1,1,2,6,NULL,NULL,'2013-07-25 20:18:03',1,0,NULL,0,NULL,NULL,NULL,NULL,0,NULL),(29,'Mr','Flenn','','Dixon','','1240 Preston Rd','','Cary','MS','','USA','(003) 336-4322','','(053) 745-5201','flenn.watts@example.com','',10,28,1959,NULL,NULL,1,0,0,0,0,'2016-11-19 15:40:58','2004-03-04 00:12:40',1,1,NULL,0,NULL,NULL,NULL,NULL,0,NULL),(30,'Miss','Kenzi','','Dixon','','8077 Mcclellan Rd','','Lancaster','PA','','USA','(644) 129-3577','','(930) 426-1283','kenzi.fields@example.com','',4,30,2012,NULL,NULL,2,3,2,6,0,'2016-11-19 15:41:11','2014-09-29 01:36:32',1,1,NULL,0,NULL,NULL,NULL,NULL,0,NULL),(31,'Miss','Paula','','Dixon','','5240 Brown Terrace','','Orange','TN','','USA','(306) 612-2729','','(669) 399-3249','paula.rice@example.com','',9,10,1973,NULL,NULL,2,0,0,0,0,'2016-11-19 15:40:40','2007-04-14 04:13:25',1,1,NULL,0,NULL,NULL,NULL,NULL,0,NULL),(32,'Mr','Chad','','Dixon','','3902 Robinson Rd','','Fort Worth','AZ','','USA','(933) 231-0313','','(525) 406-0888','chad.fuller@example.com','',2,20,1992,NULL,NULL,1,0,0,0,0,'2016-11-19 15:41:02','2010-07-15 12:40:49',1,1,NULL,0,NULL,NULL,NULL,NULL,0,NULL),(33,'Ms','Riley','','Dixon','','2739 E Sandy Lake Rd','','Frederick','AZ','','USA','(601) 891-3110','','(283) 918-7088','riley.reed@example.com','',9,23,1961,NULL,NULL,2,0,0,0,0,'2016-11-19 15:40:43','2006-07-25 23:21:13',1,1,NULL,0,NULL,NULL,NULL,NULL,0,NULL),(34,'Mr','Alvin','','Stewart','','7045 Wycliff Ave','','Gainesville','SD','','USA','(813)-837-2427','','(919)-556-7534','alvin.stewart@example.com',NULL,12,16,1974,NULL,NULL,1,1,1,7,NULL,NULL,'2011-08-17 04:00:29',1,0,NULL,0,NULL,NULL,NULL,NULL,0,NULL),(35,'Mr','Shane','','Stewart','','9986 Blossom Hill Rd','','Hayward','KY','','USA','(988) 219-6753','','(271) 473-8298','tony.wade@example.com','',1,16,1951,NULL,NULL,1,0,0,0,0,'2018-01-01 19:25:55','2007-12-26 21:13:22',1,1,NULL,0,NULL,'','',NULL,0,NULL),(36,'Miss','Kathryn',NULL,'Robertson',NULL,'7218 E Pecan St',NULL,'Gilbert','NE',NULL,'USA','(109)-946-0677',NULL,'(493)-248-4574','kathryn.robertson@example.com',NULL,1,14,1977,NULL,NULL,2,1,0,0,NULL,NULL,'2015-02-07 16:23:42',1,0,NULL,0,NULL,NULL,NULL,NULL,0,NULL),(37,'Mr','Wayne',NULL,'Robertson',NULL,'5100 Bollinger Rd',NULL,'Bridgeport','WV',NULL,'USA','(584)-942-4752',NULL,'(947)-378-9079','wayne.jacobs@example.com',NULL,3,10,1982,NULL,NULL,1,2,0,0,NULL,NULL,'2005-03-04 15:19:32',1,0,NULL,0,NULL,NULL,NULL,NULL,0,NULL),(38,'Miss','Mae',NULL,'Robertson',NULL,'5205 Saddle Dr',NULL,'Fort Wayne','PA',NULL,'USA','(572)-934-2319',NULL,'(625)-704-9068','mae.robinson@example.com',NULL,8,19,1979,NULL,NULL,2,3,0,0,NULL,NULL,'2008-10-02 23:33:21',1,0,NULL,0,NULL,NULL,NULL,NULL,0,NULL),(39,'Mr','Soham',NULL,'Robertson',NULL,'3619 Daisy Dr',NULL,'San Jose','AL',NULL,'USA','(789)-386-8063',NULL,'(314)-889-8596','soham.vargas@example.com',NULL,10,3,1961,NULL,NULL,1,3,0,0,NULL,NULL,'2003-04-01 17:32:42',1,0,NULL,0,NULL,NULL,NULL,NULL,0,NULL),(40,'Mr','Austin',NULL,'Robertson',NULL,'5722 Adams St',NULL,'Rochester','NJ',NULL,'USA','(728)-300-2942',NULL,'(359)-620-0341','austin.chapman@example.com',NULL,7,13,1977,NULL,NULL,1,3,0,0,NULL,NULL,'2015-05-27 00:37:53',1,0,NULL,0,NULL,NULL,NULL,NULL,0,NULL),(41,'Mrs','Stella',NULL,'Robertson',NULL,'5862 Brown Terrace',NULL,'Centennial','AK',NULL,'USA','(751)-040-3371',NULL,'(979)-231-1273','stella.steward@example.com',NULL,2,15,1956,NULL,NULL,2,3,0,0,NULL,NULL,'2003-12-11 09:28:32',1,0,NULL,0,NULL,NULL,NULL,NULL,0,NULL),(42,'Mr','Clinton',NULL,'Robertson',NULL,'1916 Lone Wolf Trail',NULL,'Glendale','OR',NULL,'USA','(253)-317-5937',NULL,'(954)-007-6834','clinton.black@example.com',NULL,10,20,1969,NULL,NULL,1,3,0,0,NULL,NULL,'2012-03-22 08:26:55',1,0,NULL,0,NULL,NULL,NULL,NULL,0,NULL),(43,'Ms','Natalie','','Diaz','','1158 Harrison Ct','','Hialeah','IA','','USA','(613)-399-6088','','(129)-829-3141','natalie.diaz@example.com',NULL,5,26,1970,NULL,NULL,2,1,3,9,NULL,NULL,'2013-04-20 15:01:05',1,0,NULL,0,NULL,NULL,NULL,NULL,0,NULL),(44,'Mrs','Rhonda','','Diaz','','7320 Cackson St','','Murrieta','NH','','USA','(169)-598-1721','','(839)-859-9851','rhonda.mcdonalid@example.com',NULL,4,4,1973,NULL,NULL,2,2,3,9,NULL,NULL,'2012-02-09 10:41:53',1,0,NULL,0,NULL,NULL,NULL,NULL,0,NULL),(48,'Mr','Kurt','','Diaz','','5324 Adams St','','Richardson','WI','','USA','(284)-936-1476','','(220)-137-4630','kurt.hernandez@example.com',NULL,6,20,2005,NULL,NULL,1,3,3,9,NULL,NULL,'2010-01-07 01:55:34',1,0,NULL,0,NULL,NULL,NULL,NULL,0,NULL),(49,'Ms','Lorraine','','Diaz','','4771 Crockett St','','Las Cruces','MA','','USA','(344)-896-8256','','(825)-077-7472','lorraine.craig@example.com',NULL,7,26,2007,NULL,NULL,2,3,3,9,NULL,NULL,'2004-06-21 14:40:43',1,0,NULL,0,NULL,NULL,NULL,NULL,0,NULL),(50,'Mrs','Sherri','','Gordon','','1255 Brown Terrace','','Louisville','MI','','USA','(215) 006-0420','','(730) 313-8457','sherri.gordon@example.com','',12,18,1972,NULL,NULL,2,1,2,10,0,'2019-09-11 23:09:35','2004-09-09 18:40:30',1,1,NULL,0,NULL,'','',NULL,0,NULL),(51,'Ms','Rebecca','','Gordon','','6049 Lone Wolf Trail','','Fayetteville','VA','','USA','(808) 292-7083','','(134) 378-9433','rebecca.walker@example.com','',11,28,1960,NULL,NULL,2,0,0,0,0,'2016-11-19 15:41:44','2006-11-20 15:07:23',1,1,NULL,0,NULL,NULL,NULL,NULL,0,NULL),(52,'Mr','Vernon','','Newman','','5427 Stevens Creek Blvd','','Orlando','MN','','USA','(792)-676-7007','','(427)-110-3793','vernon.newman@example.com',NULL,8,24,1961,NULL,NULL,1,1,0,11,NULL,NULL,'2006-10-11 03:51:16',1,0,NULL,0,NULL,NULL,NULL,NULL,0,NULL),(53,'Mr','George','','Newman','','9425 Lovers Ln','','Madison','LA','','USA','(321) 940-9019','','(782) 311-7625','george.powell@example.com','',5,5,1988,NULL,NULL,1,0,0,0,0,'2016-11-19 15:43:22','2006-06-21 08:18:13',1,1,NULL,0,NULL,NULL,NULL,NULL,0,NULL),(54,'Mr','Connor','','Newman','','7304 Parker Rd','','Forney','CA','','USA','(838)-504-2399','','(354)-932-3933','connor.silva@example.com',NULL,5,12,1977,NULL,NULL,1,3,0,11,NULL,NULL,'2006-05-24 17:02:09',1,0,NULL,0,NULL,NULL,NULL,NULL,0,NULL),(55,'Mrs','Marie','','Newman','','3717 Lovers Ln','','Hialeah','NE','','USA','(833)-140-7523','','(740)-971-1815','marie.king@example.com',NULL,10,20,1950,NULL,'2021-08-30',2,4,0,11,NULL,NULL,'2015-10-04 01:39:08',1,0,NULL,0,NULL,NULL,NULL,NULL,0,NULL),(56,'Mr','Norman','','Newman','','8751 E North St','','Norwalk','TX','','USA','(185)-313-3302','','(936)-644-4251','norman.rice@example.com',NULL,3,9,1970,NULL,NULL,1,4,0,11,NULL,NULL,'2006-07-23 14:13:59',1,0,NULL,0,NULL,NULL,NULL,NULL,0,NULL),(57,'Mr','Jon','','Olson','','1272 Shady Ln Dr','','Toledo','MT','','USA','(698)-235-3995','','(242)-098-1494','jon.olson@example.com',NULL,1,20,1981,NULL,NULL,1,1,1,12,NULL,NULL,'2014-08-31 04:21:43',1,0,NULL,0,NULL,NULL,NULL,NULL,0,NULL),(58,'Ms','Sandra','','Olson','','6590 Ranchview Dr','','Mcallen','RI','','USA','(071)-579-9864','','(654)-049-3879','sandra.vasquez@example.com',NULL,12,28,1992,NULL,NULL,2,2,1,12,NULL,NULL,'2007-11-22 02:36:13',1,0,NULL,0,NULL,NULL,NULL,NULL,0,NULL),(59,'Mr','Franklin','','Beck','','6381 Valwood Pkwy','','Buffalo','ME','','USA','(237)-926-6342','','(742)-524-0575','franklin.beck@example.com',NULL,7,30,1974,NULL,NULL,1,1,0,13,NULL,NULL,'2007-02-01 16:50:26',1,0,NULL,0,NULL,NULL,NULL,NULL,0,NULL),(60,'Mr','Joel','','Beck','','2334 Daisy Dr','','Yakima','UT','','USA','(206) 919-0303','','(748) 409-3185','joel.murray@example.com','',6,26,2011,NULL,NULL,1,3,0,13,0,'2016-11-19 15:27:13','2006-11-07 12:19:08',1,1,NULL,0,NULL,NULL,NULL,NULL,0,NULL),(61,'Miss','Stella','','Beck','','9568 Mockingbird Hill','','Inglewood','IL','','USA','(830) 356-0875','','(970) 626-0902','stella.soto@example.com','',7,18,2010,NULL,NULL,2,3,0,13,0,'2016-11-19 15:25:34','2009-03-23 09:24:30',1,1,NULL,0,NULL,NULL,NULL,NULL,0,NULL),(62,'Ms','Emma','','Beck','','8890 Hunters Creek Dr','','Vallejo','MT','','USA','(623) 770-5283','','(447) 069-6505','emma.rice@example.com','',11,30,2015,NULL,NULL,2,3,0,13,0,'2016-11-19 15:25:41','2013-07-10 17:58:37',1,1,NULL,0,NULL,NULL,NULL,NULL,0,NULL),(63,'Miss','Julie','','Beck','','9648 Frances Ct','','Amarillo','OK','','USA','(523) 696-1294','','(107) 329-0388','julie.gregory@example.com','',8,21,1982,NULL,NULL,2,2,0,13,0,'2016-11-19 15:27:02','2004-10-13 20:53:29',1,1,NULL,0,NULL,NULL,NULL,NULL,0,NULL),(67,'Miss','Brianna','','Berry','','1931 Edwards Rd','','Riverside','PA','','USA','(174) 272-0341','','(310) 207-4173','brianna.berry@example.com','',10,17,1977,NULL,NULL,2,2,1,14,0,'2016-11-19 15:38:39','2013-10-15 09:25:25',1,1,NULL,0,NULL,NULL,NULL,NULL,0,NULL),(68,'Mr','Salvador','','Berry','','1487 W Sherman Dr','','Portland','NJ','','USA','(004) 784-0725','','(696) 118-7224','salvador.robertson@example.com','',11,9,1944,NULL,'2023-02-17',1,1,1,14,0,'2016-11-19 15:38:31','2003-09-29 17:56:26',1,1,NULL,0,NULL,NULL,NULL,NULL,0,NULL),(69,'Mr','Salvador','','Berry','','7928 Country Club Rd','','Lincoln','FL','','USA','(873) 186-8043','','(063) 874-1910','salvador.steward@example.com','',11,1,2011,NULL,NULL,1,3,1,14,0,'2016-11-19 15:38:00','2010-10-03 22:37:50',1,1,NULL,0,NULL,NULL,NULL,NULL,0,NULL),(70,'Ms','Edith',NULL,'Simmons',NULL,'3395 N Stelling Rd',NULL,'Murrieta','KY',NULL,'USA','(228)-690-1613',NULL,'(602)-815-9891','edith.simmons@example.com',NULL,3,25,1977,NULL,NULL,2,1,0,0,NULL,NULL,'2003-04-25 18:30:46',1,0,NULL,0,NULL,NULL,NULL,NULL,0,NULL),(71,'Mr','Dave',NULL,'Simmons',NULL,'7581 Central St',NULL,'Roseville','RI',NULL,'USA','(196)-952-9025',NULL,'(850)-773-0796','dave.bradley@example.com',NULL,2,17,1965,NULL,NULL,1,2,0,0,NULL,NULL,'2013-07-20 08:52:02',1,0,NULL,0,NULL,NULL,NULL,NULL,0,NULL),(72,'Mr','Jonathan',NULL,'Simmons',NULL,'4096 Elgin St',NULL,'Saint Paul','OR',NULL,'USA','(267)-764-5383',NULL,'(359)-187-3057','jonathan.holland@example.com',NULL,3,10,1983,NULL,NULL,1,3,0,0,NULL,NULL,'2002-10-01 07:06:30',1,0,NULL,0,NULL,NULL,NULL,NULL,0,NULL),(73,'Mr','Allen',NULL,'Simmons',NULL,'5097 Sunset St',NULL,'Belen','CO',NULL,'USA','(084)-776-1439',NULL,'(549)-426-1692','allen.howard@example.com',NULL,12,18,1983,NULL,NULL,1,3,0,0,NULL,NULL,'2006-10-24 06:38:46',1,0,NULL,0,NULL,NULL,NULL,NULL,0,NULL),(74,'Mr','Micheal',NULL,'Simmons',NULL,'9703 Harrison Ct',NULL,'Alexandria','MD',NULL,'USA','(025)-038-3863',NULL,'(542)-730-3571','micheal.gordon@example.com',NULL,7,27,1987,NULL,NULL,1,3,0,0,NULL,NULL,'2005-01-21 16:03:19',1,0,NULL,0,NULL,NULL,NULL,NULL,0,NULL),(75,'Mr','Kelly',NULL,'Simmons',NULL,'7765 Marsh Ln',NULL,'Oxnard','UT',NULL,'USA','(637)-815-9511',NULL,'(747)-456-7524','kelly.foster@example.com',NULL,12,9,1960,NULL,NULL,1,3,0,0,NULL,NULL,'2008-02-08 09:12:55',1,0,NULL,0,NULL,NULL,NULL,NULL,0,NULL),(76,'Mr','Leroy','','Larson','','3866 Edwards Rd','','Inglewood','CO','','USA','(663)-858-8880','','(731)-811-2661','leroy.larson@example.com',NULL,3,17,1993,NULL,NULL,1,1,2,16,NULL,NULL,'2016-03-01 14:19:32',1,0,NULL,0,NULL,NULL,NULL,NULL,0,NULL),(77,'Ms','Natalie','','Larson','','5739 Hunters Creek Dr','','Charleston','NM','','USA','(209)-144-2421','','(265)-630-7859','natalie.lynch@example.com',NULL,5,23,1977,NULL,NULL,2,2,2,16,NULL,NULL,'2013-07-06 04:09:48',1,0,NULL,0,NULL,NULL,NULL,NULL,0,NULL),(78,'Mr','Norman','','Cooper','','1782 Daisy Dr','','Oxnard','GA','','USA','(718) 878-3276','','(912) 550-0265','norman.cooper@example.com','',2,15,1967,NULL,NULL,1,1,1,17,NULL,'2019-09-08 21:43:50','2014-09-26 00:09:54',1,3,NULL,0,NULL,'','',NULL,0,NULL),(79,'Mr','Bradley','','Cooper','','9496 Cackson St','','El Monte','ME','','USA','(020)-152-0784','','(129)-121-8642','bradley.spencer@example.com',NULL,10,28,1990,NULL,NULL,1,2,5,17,NULL,NULL,'2007-06-20 13:29:12',1,0,NULL,0,NULL,NULL,NULL,NULL,0,NULL),(80,'Miss','Judy','','Cooper','','5515 Lakeshore Rd','','Forney','AZ','','USA','(538) 341-4356','','(784) 554-0404','judy.douglas@example.com','',1,3,2010,NULL,NULL,2,3,1,17,0,'2019-09-08 21:44:06','2015-12-26 15:02:22',1,3,NULL,0,NULL,'','',NULL,0,NULL),(81,'Mrs','Isobel','','Cooper','','9849 Fairview St','','Edgewood','MD','','USA','(375) 417-6951','','(086) 565-1921','isobel.jimenez@example.com','',11,5,2012,NULL,NULL,2,3,1,17,0,'2016-11-19 15:39:54','2008-02-28 11:35:15',1,1,NULL,0,NULL,NULL,NULL,NULL,0,NULL),(82,'Mr','Jesse','','Cooper','','4450 Brown Terrace','','Aurora','FL','','USA','(036) 874-8797','','(725) 279-2801','jesse.morales@example.com','',2,20,2014,NULL,NULL,1,3,1,17,0,'2016-11-19 15:39:58','2007-04-24 18:10:43',1,1,NULL,0,NULL,NULL,NULL,NULL,0,NULL),(83,'Ms','Terry','','Cooper','','6299 Daisy Dr','','St. Louis','CT','','USA','(948) 039-8020','','(800) 640-6871','terry.kim@example.com','',9,20,1982,NULL,NULL,2,0,0,0,0,'2016-11-19 15:40:22','2011-10-07 17:53:37',1,1,NULL,0,NULL,NULL,NULL,NULL,0,NULL),(84,'Mr','Randall','','Riley','','1403 Avondale Ave','','Scottsdale','ID','','USA','(055)-343-0760','','(217)-027-5703','randall.riley@example.com',NULL,9,10,1982,NULL,NULL,1,1,1,18,NULL,NULL,'2002-04-09 05:31:36',1,0,NULL,0,NULL,NULL,NULL,NULL,0,NULL),(85,'Mr','Bernard','','Riley','','6129 Mockingbird Ln','','Portland','SC','','USA','(753)-827-4801','','(367)-872-9300','bernard.shaw@example.com',NULL,5,31,1988,NULL,NULL,1,2,1,18,NULL,NULL,'2015-03-05 07:54:37',1,0,NULL,0,NULL,NULL,NULL,NULL,0,NULL),(86,'Ms','Charlene','','Riley','','2764 Mcgowen St','','Van Alstyne','ME','','USA','(351)-644-7769','','(272)-375-0289','charlene.holmes@example.com',NULL,2,24,1994,NULL,NULL,2,4,2,18,NULL,NULL,'2003-02-10 12:19:20',1,0,NULL,0,NULL,NULL,NULL,NULL,0,NULL),(87,'Mr','Scott','','Riley','','6514 Lovers Ln','','Greeley','SC','','USA','(225)-752-3695','','(811)-926-7831','scott.curtis@example.com',NULL,9,12,2011,NULL,NULL,1,3,2,18,NULL,NULL,'2008-11-13 08:27:32',1,0,NULL,0,NULL,NULL,NULL,NULL,0,NULL),(88,'Mr','Cecil','','Riley','','3843 Locust Rd','','Modesto','MS','','USA','(195) 545-9986','','(997) 692-8061','cecil.brooks@example.com','',12,29,NULL,NULL,NULL,1,3,2,18,0,'2023-11-16 12:39:33','2008-06-30 07:18:09',1,1,NULL,0,'','','',NULL,0,NULL),(89,'Mr','Charlie','','Riley','','7456 Walnut Hill Ln','','Berkeley','AR','','USA','(683)-044-6359','','(243)-373-2589','charlie.steward@example.com',NULL,11,28,2013,NULL,NULL,1,3,2,18,NULL,NULL,'2005-04-12 20:56:36',1,0,NULL,0,NULL,NULL,NULL,NULL,0,NULL),(90,'Mr','Tomothy','','Riley','','1151 First Street','','Santa Ana','KS','','USA','(428)-265-4577','','(314)-894-6418','tomothy.morris@example.com',NULL,5,20,2015,NULL,NULL,1,3,2,18,NULL,NULL,'2007-01-20 19:02:31',1,0,NULL,0,NULL,NULL,NULL,NULL,0,NULL),(91,'Mrs','Lydia','','Riley','','5887 Daisy Dr','','Sacramento','MS','','USA','(979)-417-1072','','(082)-882-0459','lydia.beck@example.com',NULL,10,18,2016,NULL,NULL,2,3,2,18,NULL,NULL,'2010-12-30 01:21:15',1,0,NULL,0,NULL,NULL,NULL,NULL,0,NULL),(92,'Mr','Bruce','','Kennedy','','9481 Wycliff Ave','','Long Beach','KY','','USA','(306)-408-4342','','(414)-142-2127','bruce.kennedy@example.com',NULL,3,14,1968,NULL,NULL,1,1,1,19,NULL,NULL,'2014-11-23 09:17:25',1,0,NULL,0,NULL,NULL,NULL,NULL,0,NULL),(93,'Ms','Katie','','Kennedy','','8164 W Sherman Dr','','Miramar','MA','','USA','(130)-036-3270','','(993)-725-1216','katie.hoffman@example.com',NULL,8,20,1959,NULL,NULL,2,2,1,19,NULL,NULL,'2011-07-16 02:59:16',1,0,NULL,0,NULL,NULL,NULL,NULL,0,NULL),(94,'Mr','Rick','','Kennedy','','7581 Country Club Rd','','Vancouver','MN','','USA','(045) 695-1038','','(534) 739-9684','rick.simpson@example.com','',7,25,1983,NULL,NULL,1,0,0,0,0,'2016-11-19 15:42:48','2006-05-25 19:29:47',1,1,NULL,0,NULL,NULL,NULL,NULL,0,NULL),(95,'Mrs','Judith','','Kennedy','','2874 Paddock Way','','Anaheim','IA','','USA','(773) 685-8434','','(384) 824-9114','judith.matthews@example.com','',8,1,1978,NULL,NULL,0,0,0,0,0,'2016-11-19 15:42:57','2003-07-08 08:25:48',1,1,NULL,0,NULL,NULL,NULL,NULL,0,NULL),(96,'Mr','Curtis','','Kennedy','','8606 Cherry St','','Bernalillo','GA','','USA','(461) 623-8151','','(361) 282-0616','curtis.ross@example.com','',8,5,1976,NULL,NULL,1,0,0,0,0,'2016-11-19 15:43:06','2006-04-08 10:42:12',1,1,NULL,0,NULL,NULL,NULL,NULL,0,NULL),(97,'Mr','Erik','','Kennedy','','9277 Pockrus Page Rd','','Detroit','ND','','USA','(867) 583-3910','','(526) 231-1258','erik.mitchell@example.com','',9,25,1964,NULL,NULL,1,0,0,0,0,'2016-11-19 15:43:10','2010-01-28 17:10:25',1,1,NULL,0,NULL,NULL,NULL,NULL,0,NULL),(98,'Mrs','Carrie','','Kennedy','','7713 First Street','','Hayward','FL','','USA','(060)-528-8391','','(465)-239-8937','carrie.knight@example.com',NULL,4,19,1960,NULL,NULL,2,5,5,19,NULL,NULL,'2007-02-16 17:31:50',1,0,NULL,0,NULL,NULL,NULL,NULL,0,NULL),(99,'Miss','Amanda','','Black','','4307 Avondale Ave','','Shiloh','CT','','USA','(828)-463-5829','','(207)-736-7509','amanda.black@example.com',NULL,5,18,1966,NULL,NULL,2,1,2,20,NULL,NULL,'2014-05-10 06:07:19',1,0,NULL,0,NULL,NULL,NULL,NULL,0,NULL),(100,'Miss','Lena','','Black','','4858 Taylor St','','Manchester','UT','','USA','(747)-292-0200','','(006)-199-3045','lena.walker@example.com',NULL,12,24,1971,NULL,NULL,2,2,2,20,NULL,NULL,'2004-09-29 01:37:47',1,0,NULL,0,NULL,NULL,NULL,NULL,0,NULL),(102,'Ms','Samantha','','Black','','9227 Plum St','','Coppell','MA','','USA','(374)-404-6562','','(060)-500-5393','samantha.duncan@example.com',NULL,8,10,2010,NULL,NULL,2,3,2,20,NULL,NULL,'2005-03-07 21:32:47',1,0,NULL,0,NULL,NULL,NULL,NULL,0,NULL),(103,'Mrs','Serenity','','Black','','1122 W Belt Line Rd','','Norman','NY','','USA','(795)-160-6735','','(993)-000-0313','serenity.banks@example.com',NULL,12,17,2013,NULL,NULL,2,3,2,20,NULL,NULL,'2014-05-16 11:35:23',1,0,NULL,0,NULL,NULL,NULL,NULL,0,NULL),(104,'','Mark','','Smith','','123 Main St.','','Seattle','WA','98121','US','(206) 555-5555','','(206) 555-1234','mark.smith@example.com','',3,31,1980,NULL,NULL,1,1,0,21,0,'2021-04-25 09:41:33','2017-04-15 17:20:21',-1,1,NULL,0,'','','',NULL,1,NULL),(105,'','Mary','','Smith','','123 Main St.','','Seattle','WA','98121','US','(206) 555-5555','','','','',3,30,1985,NULL,NULL,1,2,0,21,0,'2021-03-21 17:46:45','2017-04-15 17:20:21',-1,1,NULL,1,'','','',NULL,1,NULL),(106,NULL,'Sam','','Smith','','123 Main St.','','Seattle','WA','98121','US','(206) 555-5555','','','',NULL,0,0,NULL,NULL,NULL,1,3,0,21,NULL,NULL,'2017-04-15 17:20:21',-1,0,NULL,0,NULL,NULL,NULL,NULL,1,NULL),(107,NULL,'Tony','','Smith','','123 Main St.','','Seattle','WA','98121','US','(206) 555-5555','','','',NULL,0,0,NULL,NULL,NULL,1,3,0,21,NULL,NULL,'2017-04-15 17:20:21',-1,0,NULL,0,NULL,NULL,NULL,NULL,1,NULL),(114,'','Boby','','Hall','','','','Kansas City','MO','','United States','','','','boby@example.com','',12,21,1950,NULL,NULL,1,0,1,0,0,NULL,'2021-04-25 10:32:31',3,0,'2021-04-25',0,'','','',NULL,0,NULL),(115,'Mr','Michael',NULL,'Turner',NULL,'4590 Maple Ave',NULL,'Austin','TX','78701','US','(512) 555-0148','','','michael.turner@example.com',NULL,8,7,1990,NULL,NULL,1,1,0,23,NULL,NULL,'2021-04-25 10:50:12',-1,0,NULL,0,NULL,NULL,NULL,NULL,1,NULL),(116,'Mrs','Patricia',NULL,'Turner',NULL,'4590 Maple Ave',NULL,'Austin','TX','78701','US','(512) 555-0148','','','patricia.turner@example.com',NULL,8,7,2000,NULL,NULL,2,2,0,23,NULL,NULL,'2021-04-25 10:50:12',-1,0,NULL,1,NULL,NULL,NULL,NULL,1,NULL),(123,'','Boby','','Hall','','','','Kansas City','MO','','United States','','','','boby@example.com','',12,21,1950,NULL,NULL,1,0,1,0,0,NULL,'2021-04-25 10:56:50',3,0,'2021-04-25',0,'','','',NULL,0,NULL),(162,'','Boby','','Hall','','','','Kansas City','MO','','United States','','','','boby@example.com','',12,21,1950,NULL,NULL,1,0,1,0,0,NULL,'2021-04-25 13:17:35',3,0,'2021-04-25',0,'','','',NULL,0,NULL),(169,'','Boby','','Hall','','','','Kansas City','MO','','United States','','','','boby@example.com','',12,21,1950,NULL,NULL,1,0,1,0,0,NULL,'2021-04-25 16:26:33',3,0,'2021-04-25',0,'','','',NULL,0,NULL),(178,'','Boby','','Hall','','','','Kansas City','MO','','United States','','','','boby@example.com','',12,21,1950,NULL,NULL,1,0,1,0,0,NULL,'2021-04-25 16:59:38',3,0,'2021-04-25',0,'','','',NULL,0,NULL),(187,'','Boby','','Hall','','','','Kansas City','MO','','United States','','','','boby@example.com','',12,21,1950,NULL,NULL,1,0,1,0,0,NULL,'2021-04-25 17:30:35',3,0,'2021-04-25',0,'','','',NULL,0,NULL),(196,'','Boby','','Hall','','','','Kansas City','MO','','United States','','','','boby@example.com','',12,21,1950,NULL,NULL,1,0,1,0,0,NULL,'2021-04-25 17:40:34',3,0,'2021-04-25',0,'','','',NULL,0,NULL),(205,'','Boby','','Hall','','','','Kansas City','MO','','United States','','','','boby@example.com','',12,21,1950,NULL,NULL,1,0,1,0,0,NULL,'2021-04-25 20:09:02',3,0,'2021-04-25',0,'','','',NULL,0,NULL),(212,'','Boby','','Hall','','','','Kansas City','MO','','United States','','','','boby@example.com','',12,21,1950,NULL,NULL,1,0,1,0,0,NULL,'2021-04-25 21:43:48',3,0,'2021-04-25',0,'','','',NULL,0,NULL),(213,NULL,'Sr.',NULL,'Master',NULL,'123 Main St.',NULL,'Kansas City','MO','98001','US','',NULL,NULL,'sr@mater.cmo',NULL,8,7,1990,NULL,NULL,1,1,0,42,NULL,NULL,'2025-01-01 00:00:00',-1,0,NULL,0,NULL,NULL,NULL,NULL,1,NULL),(214,NULL,'lady',NULL,'Master',NULL,'123 Main St.',NULL,'Kansas City','MO','98001','US','',NULL,NULL,'lady@nower.com',NULL,8,7,2000,NULL,NULL,1,2,0,42,NULL,NULL,'2025-01-01 00:00:00',-1,0,NULL,1,NULL,NULL,NULL,NULL,1,NULL),(221,'','Boby','','Hall','','','','Kansas City','MO','','United States','','','','boby@example.com','',12,21,1950,NULL,NULL,1,0,1,0,0,NULL,'2021-04-25 21:57:16',3,0,'2021-04-25',0,'','','',NULL,0,NULL),(228,'','Boby','','Hall','','','','Kansas City','MO','','United States','','','','boby@example.com','',12,21,1950,NULL,NULL,1,0,1,0,0,NULL,'2021-04-25 22:50:53',3,0,'2021-04-25',0,'','','',NULL,0,NULL),(229,'Ms','Jordan',NULL,'Casey',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'jordan.casey@example.com',NULL,3,15,1994,NULL,NULL,2,0,0,0,NULL,NULL,'2026-07-20 09:15:00',-1,0,NULL,0,NULL,NULL,NULL,NULL,1,NULL);
+INSERT INTO `person_per` VALUES (900,'Mr','John','','Plainauth','','','','','','','USA','','','','john.plainauth@example.com',NULL,1,1,1980,NULL,NULL,1,1,0,0,NULL,NULL,'2024-01-01 00:00:00',1,0,NULL,0,NULL,NULL,NULL,NULL,0,NULL);
+-- Zero-permission user (all flags 0 including EditSelf=0) in family 1 (Campbell). Used by zero-permission-staff.spec.js to verify
 -- that login works but CRM access is fully blocked and no self-edit (verify link) is granted.
-INSERT INTO `person_per` VALUES (901,'Ms','Alice','','Noperm','','','','','','','USA','','','','alice.noperm@example.com',NULL,1,1,1985,NULL,NULL,2,1,0,1,NULL,NULL,'2024-01-01 00:00:00',1,0,NULL,0,NULL,NULL,NULL,NULL);
--- MenuOptions-only user (usr_MenuOptions=1, all other permission flags 0, non-admin, non-EditSelf).
--- Used by people.properties.security.spec.js to verify that the EditRecords gate blocks property
--- read/write on person and family routes (GHSA-4wmp-3v34-g7q8).
-INSERT INTO `person_per` VALUES (902,'Mr','Bob','','Menuonly','','','','','','','USA','','','','bob.menuonly@example.com',NULL,1,1,1990,NULL,NULL,1,1,0,0,NULL,NULL,'2024-01-01 00:00:00',1,0,NULL,0,NULL,NULL,NULL,NULL);
+INSERT INTO `person_per` VALUES (901,'Ms','Alice','','Noperm','','','','','','','USA','','','','alice.noperm@example.com',NULL,1,1,1985,NULL,NULL,2,1,0,1,NULL,NULL,'2024-01-01 00:00:00',1,0,NULL,0,NULL,NULL,NULL,NULL,0,NULL);
+-- No-permission staff user (every permission flag 0, non-admin, non-EditSelf), also a volunteer team leader.
+-- Used by the property security specs to verify that the Edit Records and Manage Groups gates refuse
+-- a user holding neither (GHSA-4wmp-3v34-g7q8).
+INSERT INTO `person_per` VALUES (902,'Mr','Bob','','Teamleader','','','','','','','USA','','','','bob.teamleader@example.com',NULL,1,1,1990,NULL,NULL,1,1,0,0,NULL,NULL,'2024-01-01 00:00:00',1,0,NULL,0,NULL,NULL,NULL,NULL,0,NULL);
 -- Dedicated 2FA lockout test user (GHSA-f2fq-4rmp-9x8c regression test).
 -- Same TOTP secret as twofa_user; usr_FailedLogins starts at 0 so the lockout test
 -- can exhaust iMaxFailedLogins with wrong OTP codes and assert the account locks.
-INSERT INTO `person_per` VALUES (903,'Mr','Twofa','','Lockout','','','','','','','USA','','','','twofa.lockout@example.com',NULL,1,1,1990,NULL,NULL,1,1,0,0,NULL,NULL,'2024-01-01 00:00:00',1,0,NULL,0,NULL,NULL,NULL,NULL);
-INSERT INTO `person_per` VALUES (904,'Ms','Grace','','Financeonly','','','','','','','USA','','','','grace.financeonly@example.com',NULL,1,1,1988,NULL,NULL,2,1,0,0,NULL,NULL,'2024-01-01 00:00:00',1,0,NULL,0,NULL,NULL,NULL,NULL);
-INSERT INTO `person_per` VALUES (905,'Mr','Kyle','','Kioskonly','','','','','','','USA','','','','kyle.kioskonly@example.com',NULL,1,1,1985,NULL,NULL,1,1,0,0,NULL,NULL,'2024-01-01 00:00:00',1,0,NULL,0,NULL,NULL,NULL,NULL);
+INSERT INTO `person_per` VALUES (903,'Mr','Twofa','','Lockout','','','','','','','USA','','','','twofa.lockout@example.com',NULL,1,1,1990,NULL,NULL,1,1,0,0,NULL,NULL,'2024-01-01 00:00:00',1,0,NULL,0,NULL,NULL,NULL,NULL,0,NULL);
+INSERT INTO `person_per` VALUES (904,'Ms','Grace','','Financeonly','','','','','','','USA','','','','grace.financeonly@example.com',NULL,1,1,1988,NULL,NULL,2,1,0,0,NULL,NULL,'2024-01-01 00:00:00',1,0,NULL,0,NULL,NULL,NULL,NULL,0,NULL);
+INSERT INTO `person_per` VALUES (905,'Mr','Kyle','','Kioskonly','','','','','','','USA','','','','kyle.kioskonly@example.com',NULL,1,1,1985,NULL,NULL,1,1,0,0,NULL,NULL,'2024-01-01 00:00:00',1,0,NULL,0,NULL,NULL,NULL,NULL,0,NULL);
 -- Locale-admin: dedicated admin user for locale smoke tests (per_ID 906)
 -- Locale preference set per-test via POST /api/user/906/setting/ui.locale; never mutates system-wide sLanguage
-INSERT INTO `person_per` VALUES (906,'Mr','Locale','','Admin','','','','','','','USA','','','','locale-admin@churchcrm.test',NULL,1,1,1980,NULL,NULL,1,1,0,0,NULL,NULL,'2024-01-01 00:00:00',1,0,NULL,0,NULL,NULL,NULL,NULL);
+INSERT INTO `person_per` VALUES (906,'Mr','Locale','','Admin','','','','','','','USA','','','','locale-admin@churchcrm.test',NULL,1,1,1980,NULL,NULL,1,1,0,0,NULL,NULL,'2024-01-01 00:00:00',1,0,NULL,0,NULL,NULL,NULL,NULL,0,NULL);
 -- Dedicated password-lockout test user (see the matching user_usr row).
-INSERT INTO `person_per` VALUES (907,'Mr','Login','','Lockout','','','','','','','USA','','','','login.lockout@example.com',NULL,1,1,1990,NULL,NULL,1,1,0,0,NULL,NULL,'2024-01-01 00:00:00',1,0,NULL,0,NULL,NULL,NULL,NULL);
+INSERT INTO `person_per` VALUES (907,'Mr','Login','','Lockout','','','','','','','USA','','','','login.lockout@example.com',NULL,1,1,1990,NULL,NULL,1,1,0,0,NULL,NULL,'2024-01-01 00:00:00',1,0,NULL,0,NULL,NULL,NULL,NULL,0,NULL);
 -- Sign-in block fixtures (issue #10193): 910 deceased, 911 inactive, 912 active user deactivated mid-spec by session-ends spec. Password: changeme.
-INSERT INTO `person_per` VALUES (910,'Mr','Deceased','','Signin','','','','','','','USA','','','','deceased.user@example.com',NULL,1,1,1980,NULL,'2024-03-01',1,1,0,0,NULL,NULL,'2024-01-01 00:00:00',1,0,NULL,0,NULL,NULL,NULL,NULL);
-INSERT INTO `person_per` VALUES (911,'Mr','Inactive','','Signin','','','','','','','USA','','','','inactive.user@example.com',NULL,1,1,1980,NULL,NULL,1,1,0,0,NULL,NULL,'2024-01-01 00:00:00',1,0,NULL,0,NULL,NULL,NULL,'2024-03-01');
-INSERT INTO `person_per` VALUES (912,'Mr','Deactivate','','Target','','','','','','','USA','','','','deactivate.target@example.com',NULL,1,1,1980,NULL,NULL,1,1,0,0,NULL,NULL,'2024-01-01 00:00:00',1,0,NULL,0,NULL,NULL,NULL,NULL);
+INSERT INTO `person_per` VALUES (910,'Mr','Deceased','','Signin','','','','','','','USA','','','','deceased.user@example.com',NULL,1,1,1980,NULL,'2024-03-01',1,1,0,0,NULL,NULL,'2024-01-01 00:00:00',1,0,NULL,0,NULL,NULL,NULL,NULL,0,NULL);
+INSERT INTO `person_per` VALUES (911,'Mr','Inactive','','Signin','','','','','','','USA','','','','inactive.user@example.com',NULL,1,1,1980,NULL,NULL,1,1,0,0,NULL,NULL,'2024-01-01 00:00:00',1,0,NULL,0,NULL,NULL,NULL,'2024-03-01',0,NULL);
+INSERT INTO `person_per` VALUES (912,'Mr','Deactivate','','Target','','','','','','','USA','','','','deactivate.target@example.com',NULL,1,1,1980,NULL,NULL,1,1,0,0,NULL,NULL,'2024-01-01 00:00:00',1,0,NULL,0,NULL,NULL,NULL,NULL,0,NULL);
 /*!40000 ALTER TABLE `person_per` ENABLE KEYS */;
 UNLOCK TABLES;
 COMMIT;
@@ -1649,112 +1666,6 @@ UNLOCK TABLES;
 COMMIT;
 
 -- Dumped table `property_pro` with 30 row(s)
---
-
---
--- Table structure for table `queryparameteroptions_qpo`
---
-
-DROP TABLE IF EXISTS `queryparameteroptions_qpo`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `queryparameteroptions_qpo` (
-  `qpo_ID` smallint(5) unsigned NOT NULL AUTO_INCREMENT,
-  `qpo_qrp_ID` mediumint(8) unsigned NOT NULL DEFAULT 0,
-  `qpo_Display` varchar(50) NOT NULL DEFAULT '',
-  `qpo_Value` varchar(255) NOT NULL DEFAULT '',
-  PRIMARY KEY (`qpo_ID`)
-) ENGINE=InnoDB AUTO_INCREMENT=66 DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `queryparameteroptions_qpo`
---
-
-LOCK TABLES `queryparameteroptions_qpo` WRITE;
-/*!40000 ALTER TABLE `queryparameteroptions_qpo` DISABLE KEYS */;
-SET autocommit=0;
-INSERT INTO `queryparameteroptions_qpo` VALUES (1,4,'Male','1'),(2,4,'Female','2'),(3,6,'Male','1'),(4,6,'Female','2'),(5,15,'Name','CONCAT(COALESCE(`per_FirstName`,\'),COALESCE(`per_MiddleName`,\'),COALESCE(`per_LastName`,\'))'),(6,15,'Zip Code','fam_Zip'),(7,15,'State','fam_State'),(8,15,'City','fam_City'),(9,15,'Home Phone','per_HomePhone'),(10,27,'2012/2013','17'),(11,27,'2013/2014','18'),(12,27,'2014/2015','19'),(13,27,'2015/2016','20'),(14,28,'2012/2013','17'),(15,28,'2013/2014','18'),(16,28,'2014/2015','19'),(17,28,'2015/2016','20'),(18,30,'2012/2013','17'),(19,30,'2013/2014','18'),(20,30,'2014/2015','19'),(21,30,'2015/2016','20'),(22,31,'2012/2013','17'),(23,31,'2013/2014','18'),(24,31,'2014/2015','19'),(25,31,'2015/2016','20'),(26,15,'Email','per_Email'),(27,15,'WorkEmail','per_WorkEmail'),(28,32,'2012/2013','17'),(29,32,'2013/2014','18'),(30,32,'2014/2015','19'),(31,32,'2015/2016','20'),(32,33,'Member','1'),(33,33,'Regular Attender','2'),(34,33,'Guest','3'),(35,33,'Non-Attender','4'),(36,33,'Non-Attender (staff)','5'),(37,28,'2016/2017','21'),(38,28,'2017/2018','22'),(39,28,'2018/2019','23'),(40,28,'2019/2020','24'),(41,28,'2020/2021','25'),(42,28,'2021/2022','26'),(43,28,'2022/2023','27'),(44,30,'2016/2017','21'),(45,30,'2017/2018','22'),(46,30,'2018/2019','23'),(47,30,'2019/2020','24'),(48,30,'2020/2021','25'),(49,30,'2021/2022','26'),(50,30,'2022/2023','27'),(51,31,'2016/2017','21'),(52,31,'2017/2018','22'),(53,31,'2018/2019','23'),(54,31,'2019/2020','24'),(55,31,'2020/2021','25'),(56,31,'2021/2022','26'),(57,31,'2022/2023','27'),(58,32,'2016/2017','21'),(59,32,'2017/2018','22'),(60,32,'2018/2019','23'),(61,32,'2019/2020','24'),(62,32,'2020/2021','25'),(63,32,'2021/2022','26'),(64,32,'2022/2023','27');
-/*!40000 ALTER TABLE `queryparameteroptions_qpo` ENABLE KEYS */;
-UNLOCK TABLES;
-COMMIT;
-
--- Dumped table `queryparameteroptions_qpo` with 64 row(s)
---
-
---
--- Table structure for table `queryparameters_qrp`
---
-
-DROP TABLE IF EXISTS `queryparameters_qrp`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `queryparameters_qrp` (
-  `qrp_ID` mediumint(8) unsigned NOT NULL AUTO_INCREMENT,
-  `qrp_qry_ID` mediumint(8) unsigned NOT NULL DEFAULT 0,
-  `qrp_Type` tinyint(3) unsigned NOT NULL DEFAULT 0,
-  `qrp_OptionSQL` text DEFAULT NULL,
-  `qrp_Name` varchar(25) DEFAULT NULL,
-  `qrp_Description` text DEFAULT NULL,
-  `qrp_Alias` varchar(25) DEFAULT NULL,
-  `qrp_Default` varchar(25) DEFAULT NULL,
-  `qrp_Required` tinyint(3) unsigned NOT NULL DEFAULT 0,
-  `qrp_InputBoxSize` tinyint(3) unsigned NOT NULL DEFAULT 0,
-  `qrp_Validation` varchar(5) NOT NULL DEFAULT '',
-  `qrp_NumericMax` int(11) DEFAULT NULL,
-  `qrp_NumericMin` int(11) DEFAULT NULL,
-  `qrp_AlphaMinLength` int(11) DEFAULT NULL,
-  `qrp_AlphaMaxLength` int(11) DEFAULT NULL,
-  PRIMARY KEY (`qrp_ID`),
-  KEY `qrp_qry_ID` (`qrp_qry_ID`)
-) ENGINE=InnoDB AUTO_INCREMENT=203 DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `queryparameters_qrp`
---
-
-LOCK TABLES `queryparameters_qrp` WRITE;
-/*!40000 ALTER TABLE `queryparameters_qrp` DISABLE KEYS */;
-SET autocommit=0;
-INSERT INTO `queryparameters_qrp` VALUES (1,4,0,NULL,'Minimum Age','The minimum age for which you want records returned.','min','0',0,5,'n',120,0,NULL,NULL),(2,4,0,NULL,'Maximum Age','The maximum age for which you want records returned.','max','120',1,5,'n',120,0,NULL,NULL),(4,6,1,'','Gender','The desired gender to search the database for.','gender','1',1,0,'',0,0,0,0),(5,7,2,'SELECT lst_OptionID as Value, lst_OptionName as Display FROM list_lst WHERE lst_ID=2 ORDER BY lst_OptionSequence','Family Role','Select the desired family role.','role','1',0,0,'',0,0,0,0),(6,7,1,'','Gender','The gender for which you would like records returned.','gender','1',1,0,'',0,0,0,0),(8,9,2,'SELECT pro_ID AS Value, pro_Name as Display \r\nFROM property_pro\r\nWHERE pro_Class= \'p\' \r\nORDER BY pro_Name ','Property','The property for which you would like person records returned.','PropertyID','0',1,0,'',0,0,0,0),(9,10,2,'SELECT distinct don_date as Value, don_date as Display FROM donations_don ORDER BY don_date ASC','Beginning Date','Please select the beginning date to calculate total contributions for each member (i.e. YYYY-MM-DD). NOTE: You can only choose dates that contain donations.','startdate','1',1,0,'0',0,0,0,0),(10,10,2,'SELECT distinct don_date as Value, don_date as Display FROM donations_don\r\nORDER BY don_date DESC','Ending Date','Please enter the last date to calculate total contributions for each member (i.e. YYYY-MM-DD).','enddate','1',1,0,'',0,0,0,0),(14,15,0,'','Search','Enter any part of the following: Name, City, State, Zip, Home Phone, Email, or Work Email.','searchstring','',1,0,'',0,0,0,0),(15,15,1,'','Field','Select field to search for.','searchwhat','1',1,0,'',0,0,0,0),(16,11,2,'SELECT distinct don_date as Value, don_date as Display FROM donations_don ORDER BY don_date ASC','Beginning Date','Please select the beginning date to calculate total contributions for each member (i.e. YYYY-MM-DD). NOTE: You can only choose dates that contain donations.','startdate','1',1,0,'0',0,0,0,0),(17,11,2,'SELECT distinct don_date as Value, don_date as Display FROM donations_don\r\nORDER BY don_date DESC','Ending Date','Please enter the last date to calculate total contributions for each member (i.e. YYYY-MM-DD).','enddate','1',1,0,'',0,0,0,0),(18,18,0,'','Month','The birthday month for which you would like records returned.','birthmonth','1',1,0,'',12,1,1,2),(19,19,2,'SELECT grp_ID AS Value, grp_Name AS Display FROM group_grp ORDER BY grp_Type','Class','The sunday school class for which you would like records returned.','group','1',1,0,'',12,1,1,2),(20,20,2,'SELECT grp_ID AS Value, grp_Name AS Display FROM group_grp ORDER BY grp_Type','Class','The sunday school class for which you would like records returned.','group','1',1,0,'',12,1,1,2),(21,21,2,'SELECT grp_ID AS Value, grp_Name AS Display FROM group_grp ORDER BY grp_Type','Registered students','Group of registered students','group','1',1,0,'',12,1,1,2),(22,22,0,'','Month','The membership anniversary month for which you would like records returned.','membermonth','1',1,0,'',12,1,1,2),(25,25,2,'SELECT vol_ID AS Value, vol_Name AS Display FROM volunteeropportunity_vol ORDER BY vol_Name','Volunteer opportunities','Choose a volunteer opportunity','volopp','1',1,0,'',12,1,1,2),(26,26,0,'','Months','Number of months since becoming a friend','friendmonths','1',1,0,'',24,1,1,2),(27,28,1,'','First Fiscal Year','First fiscal year for comparison','fyid1','9',1,0,'',12,9,0,0),(28,28,1,'','Second Fiscal Year','Second fiscal year for comparison','fyid2','9',1,0,'',12,9,0,0),(30,30,1,'','First Fiscal Year','Pledged this year','fyid1','9',1,0,'',12,9,0,0),(31,30,1,'','Second Fiscal Year','but not this year','fyid2','9',1,0,'',12,9,0,0),(32,32,1,'','Fiscal Year','Fiscal Year.','fyid','9',1,0,'',12,9,0,0),(33,18,1,'','Classification','Member, Regular Attender, etc.','percls','1',1,0,'',12,1,1,2),(100,100,2,'SELECT vol_ID AS Value, vol_Name AS Display FROM volunteeropportunity_vol ORDER BY vol_Name','Volunteer opportunities','First volunteer opportunity choice','volopp1','1',1,0,'',12,1,1,2),(101,100,2,'SELECT vol_ID AS Value, vol_Name AS Display FROM volunteeropportunity_vol ORDER BY vol_Name','Volunteer opportunities','Second volunteer opportunity choice','volopp2','1',1,0,'',12,1,1,2),(200,200,2,'SELECT custom_field as Value, custom_Name as Display FROM person_custom_master','Custom field','Choose customer person field','custom','1',0,0,'i',0,0,0,0),(201,200,0,'','Field value','Match custom field to this value','value','1',0,0,'',0,0,0,0);
-/*!40000 ALTER TABLE `queryparameters_qrp` ENABLE KEYS */;
-UNLOCK TABLES;
-COMMIT;
-
--- Dumped table `queryparameters_qrp` with 29 row(s)
---
-
---
--- Table structure for table `query_qry`
---
-
-DROP TABLE IF EXISTS `query_qry`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `query_qry` (
-  `qry_ID` mediumint(8) unsigned NOT NULL AUTO_INCREMENT,
-  `qry_SQL` text NOT NULL,
-  `qry_Name` varchar(255) NOT NULL DEFAULT '',
-  `qry_Description` text NOT NULL,
-  `qry_Count` tinyint(1) unsigned NOT NULL DEFAULT 0,
-  PRIMARY KEY (`qry_ID`)
-) ENGINE=InnoDB AUTO_INCREMENT=202 DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `query_qry`
---
-
-LOCK TABLES `query_qry` WRITE;
-/*!40000 ALTER TABLE `query_qry` DISABLE KEYS */;
-SET autocommit=0;
-INSERT INTO `query_qry` VALUES (9,'SELECT \r\nper_ID as AddToCart, \r\nCONCAT(per_FirstName,\' \',per_LastName) AS Name, \r\nCONCAT(r2p_Value,\' \') AS Value\r\nFROM person_per,record2property_r2p\r\nWHERE per_ID = r2p_record_ID\r\nAND r2p_pro_ID = ~PropertyID~\r\nORDER BY per_LastName','Person by Property','Returns person records which are assigned the given property.',1),(18,'SELECT per_ID as AddToCart, per_BirthDay as Day, CONCAT(per_FirstName,\' \',per_LastName) AS Name FROM person_per WHERE per_cls_ID=~percls~ AND per_BirthMonth=~birthmonth~ ORDER BY per_BirthDay','Birthdays','People with birthdays in a particular month',0),(21,'SELECT per_ID as AddToCart, CONCAT(\'<a href=/people/view/\',per_ID,\'>\',per_FirstName,\' \',per_LastName,\'</a>\') AS Name FROM person_per LEFT JOIN person2group2role_p2g2r ON per_id = p2g2r_per_ID WHERE p2g2r_grp_ID=~group~ ORDER BY per_LastName','Registered students','Find Registered students',1),(22,'SELECT per_ID as AddToCart, DAYOFMONTH(per_MembershipDate) as Day, per_MembershipDate AS DATE, CONCAT(per_FirstName,\' \',per_LastName) AS Name FROM person_per WHERE per_cls_ID=1 AND MONTH(per_MembershipDate)=~membermonth~ ORDER BY per_MembershipDate','Membership anniversaries','Members who joined in a particular month',0),(25,'SELECT per_ID as AddToCart, CONCAT(\'<a href=/people/view/\',per_ID,\'>\',per_FirstName,\' \',per_LastName,\'</a>\') AS Name FROM person_per LEFT JOIN person2volunteeropp_p2vo ON per_id = p2vo_per_ID WHERE p2vo_vol_ID = ~volopp~ ORDER BY per_LastName','Volunteers','Find volunteers for a particular opportunity',1),(26,'SELECT per_ID as AddToCart, CONCAT(per_FirstName,\' \',per_LastName) AS Name FROM person_per WHERE DATE_SUB(NOW(),INTERVAL ~friendmonths~ MONTH)<per_FriendDate ORDER BY per_MembershipDate','Recent friends','Friends who signed up in previous months',0),(28,'SELECT fam_Name, a.plg_amount as PlgFY1, b.plg_amount as PlgFY2 from family_fam left join pledge_plg a on a.plg_famID = fam_ID and a.plg_FYID=~fyid1~ and a.plg_PledgeOrPayment=\'Pledge\' left join pledge_plg b on b.plg_famID = fam_ID and b.plg_FYID=~fyid2~ and b.plg_PledgeOrPayment=\'Pledge\' order by fam_Name','Pledge comparison','Compare pledges between two fiscal years',1),(30,'SELECT per_ID as AddToCart, CONCAT(per_FirstName,\' \',per_LastName) AS Name, fam_address1, fam_city, fam_state, fam_zip FROM person_per join family_fam on per_fam_id=fam_id where per_fmr_id<>3 and per_fam_id in (select fam_id from family_fam inner join pledge_plg a on a.plg_famID=fam_ID and a.plg_FYID=~fyid1~ and a.plg_amount>0) and per_fam_id not in (select fam_id from family_fam inner join pledge_plg b on b.plg_famID=fam_ID and b.plg_FYID=~fyid2~ and b.plg_amount>0)','Missing pledges','Find people who pledged one year but not another',1),(31,'select per_ID as AddToCart, per_FirstName, per_LastName, per_email from person_per, autopayment_aut where aut_famID=per_fam_ID and aut_CreditCard!=\"\" and per_email!=\"\" and (per_fmr_ID=1 or per_fmr_ID=2 or per_cls_ID=1)','Credit Card People','People who are configured to pay by credit card.',0),(32,'SELECT fam_Name, fam_Envelope, b.fun_Name as Fund_Name, a.plg_amount as Pledge from family_fam left join pledge_plg a on a.plg_famID = fam_ID and a.plg_FYID=~fyid~ and a.plg_PledgeOrPayment=\'Pledge\' and a.plg_amount>0 join donationfund_fun b on b.fun_ID = a.plg_fundID order by fam_Name, a.plg_fundID','Family Pledge by Fiscal Year','Pledge summary by family name for each fund for the selected fiscal year',1),(100,'SELECT a.per_ID as AddToCart, CONCAT(\'<a href=/people/view/\',a.per_ID,\'>\',a.per_FirstName,\' \',a.per_LastName,\'</a>\') AS Name FROM person_per AS a LEFT JOIN person2volunteeropp_p2vo p2v1 ON (a.per_id = p2v1.p2vo_per_ID AND p2v1.p2vo_vol_ID = ~volopp1~) LEFT JOIN person2volunteeropp_p2vo p2v2 ON (a.per_id = p2v2.p2vo_per_ID AND p2v2.p2vo_vol_ID = ~volopp2~) WHERE p2v1.p2vo_per_ID=p2v2.p2vo_per_ID ORDER BY per_LastName','Volunteers','Find volunteers for who match two specific opportunity codes',1),(200,'SELECT a.per_ID as AddToCart, CONCAT(\'<a href=/people/view/\',a.per_ID,\'>\',a.per_FirstName,\' \',a.per_LastName,\'</a>\') AS Name FROM person_per AS a LEFT JOIN person_custom pc ON a.per_id = pc.per_ID WHERE pc.~custom~=\'~value~\' ORDER BY per_LastName','CustomSearch','Find people with a custom field value',1);
-/*!40000 ALTER TABLE `query_qry` ENABLE KEYS */;
-UNLOCK TABLES;
-COMMIT;
-
--- Dumped table `query_qry` with 12 row(s)
 --
 
 --
@@ -1942,10 +1853,11 @@ CREATE TABLE `user_usr` (
   `usr_AddRecords` tinyint(3) unsigned NOT NULL DEFAULT 0,
   `usr_EditRecords` tinyint(3) unsigned NOT NULL DEFAULT 0,
   `usr_DeleteRecords` tinyint(3) unsigned NOT NULL DEFAULT 0,
-  `usr_MenuOptions` tinyint(3) unsigned NOT NULL DEFAULT 0,
   `usr_ManageGroups` tinyint(3) unsigned NOT NULL DEFAULT 0,
   `usr_Finance` tinyint(3) unsigned NOT NULL DEFAULT 0,
   `usr_ManageFundraisers` tinyint(3) unsigned NOT NULL DEFAULT 0,
+  `usr_ManageMinistries` tinyint(3) unsigned NOT NULL DEFAULT 0,
+  `usr_ManageMyMinistries` tinyint(3) unsigned NOT NULL DEFAULT 0,
   `usr_Notes` tinyint(3) unsigned NOT NULL DEFAULT 0,
   `usr_Admin` tinyint(3) unsigned NOT NULL DEFAULT 0,
   `usr_SearchLimit` tinyint(4) DEFAULT 10,
@@ -1973,9 +1885,13 @@ CREATE TABLE `user_usr` (
   `usr_TwoFactorAuthLastKeyTimestamp` int(11) DEFAULT NULL,
   `usr_TwoFactorAuthRecoveryCodes` text DEFAULT NULL,
   `usr_TwoFactorAuthGracePeriodStart` timestamp NULL DEFAULT NULL,
+  `usr_LastPortalActivity` datetime DEFAULT NULL,
+  `usr_PortalCalendarToken` varchar(64) DEFAULT NULL,
+  `usr_PortalCalendarSelection` text DEFAULT NULL,
   PRIMARY KEY (`usr_per_ID`),
   UNIQUE KEY `usr_UserName` (`usr_UserName`),
-  UNIQUE KEY `usr_apiKey_unique` (`usr_apiKey`)
+  UNIQUE KEY `usr_apiKey_unique` (`usr_apiKey`),
+  UNIQUE KEY `usr_PortalCalendarToken` (`usr_PortalCalendarToken`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -1986,29 +1902,29 @@ CREATE TABLE `user_usr` (
 LOCK TABLES `user_usr` WRITE;
 /*!40000 ALTER TABLE `user_usr` DISABLE KEYS */;
 SET autocommit=0;
-INSERT INTO `user_usr` VALUES (1,'$2y$12$e3o8rmvWUYdgzUNB/AAMK.pRvT9rwsIZx4wYB0brOmVPB1UL.HA5S',0,'2026-04-10 12:28:02',375,0,0,0,0,0,0,0,0,0,1,10,'skin-red',1,1,'2016-01-01',23,1,'Admin','ajGwpy8Pdai22XDUpqjC5Ob04v0eG7EGgb4vz2bD2juT8YDmfM',0,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,0,NULL,NULL,NULL,NULL),(3,'$2y$12$uWQcp6KU7C4JCTaVH.0hiekfpga36yBVhXG8.M/w9u3MmvHt/NWi2',0,'2025-11-30 02:08:31',2,0,1,1,1,1,1,1,1,1,0,10,'skin-yellow-light',0,0,'2016-01-01',26,0,'tony.wade@example.com','JZJApQ9XOnF7nvupWZlTWBRrqMtHE9eNcWBTUzEWGqL4Sdqp6C',0,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(95,'$2y$12$7R0MqgyidzOqzXPrGbYdkO.y/decFpwSJM..fznzzvT4wiZqaJE4q',0,'2022-12-29 21:01:30',0,0,1,1,0,0,0,0,0,0,0,10,'skin-blue',0,0,'2016-01-01',26,0,'judith.matthews@example.com','judithMatthewsEditRecordsNoNotesApiKey1234',0,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(99,'$2y$12$cGFZFitpCTIFEVwcsvNRZOOXuebt8Tl6smvKCBNJnp9YRci31OJHG',0,'2025-12-01 20:26:05',0,0,0,0,0,0,0,0,0,0,0,10,'skin-blue',0,0,'2016-01-01',29,0,'amanda.black@example.com','amandaBlackEditSelfOnlyApiKey12345678901',1,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(4,'$2y$12$e3o8rmvWUYdgzUNB/AAMK.pRvT9rwsIZx4wYB0brOmVPB1UL.HA5S',0,'2016-01-01 00:00:00',0,0,0,0,0,0,0,0,0,0,0,10,'skin-blue',0,0,'2016-01-01',26,0,'limited.user','limitedUserApiKeyForTesting123456789012345678',1,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(27,'$2y$12$e3o8rmvWUYdgzUNB/AAMK.pRvT9rwsIZx4wYB0brOmVPB1UL.HA5S',0,'2016-01-01 00:00:00',0,0,0,0,0,0,0,0,0,0,0,10,'skin-blue',0,0,'2016-01-01',26,0,'twofa_user',NULL,0,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'def50200923f831141edcddb9e69c79f4ef68b1f0cdd9acf4223f286f2c6ab7e0f09d397cabc831fdaa5bee117f409a50090ae4ea6ff51203508d29b59869396f303d5fd3cf14fe76cf85dba9c85735750aa4f312e1ab29caa60a15bb1b76aecb4a7be50423d2867e49a69ec',NULL,NULL,NULL),(7,'$2y$12$e3o8rmvWUYdgzUNB/AAMK.pRvT9rwsIZx4wYB0brOmVPB1UL.HA5S',0,'2016-01-01 00:00:00',0,99,1,1,0,0,0,0,0,0,0,10,'skin-blue',0,0,'2016-01-01',26,0,'locked.user',NULL,0,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(8,'$2y$12$e3o8rmvWUYdgzUNB/AAMK.pRvT9rwsIZx4wYB0brOmVPB1UL.HA5S',1,'2016-01-01 00:00:00',0,0,1,1,0,0,0,0,0,0,0,10,'skin-blue',0,0,'2016-01-01',26,0,'mustchange.user',NULL,0,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(900,'$2y$12$e3o8rmvWUYdgzUNB/AAMK.pRvT9rwsIZx4wYB0brOmVPB1UL.HA5S',0,'2024-01-01 00:00:00',0,0,0,0,0,0,0,0,0,1,0,10,'skin-blue',0,0,'2016-01-01',26,0,'john.plainauth@example.com','plainAuthReadOnlyApiKeyForTesting12345678901',0,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(100,'$2y$12$e3o8rmvWUYdgzUNB/AAMK.pRvT9rwsIZx4wYB0brOmVPB1UL.HA5S',0,'2024-01-01 00:00:00',0,0,0,0,0,0,0,0,0,1,0,10,'skin-blue',0,0,'2016-01-01',26,0,'lena.black.editself.notes@example.com','editSelfPlusNotesApiKeyForTesting12345678901',1,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(96,'$2y$12$e3o8rmvWUYdgzUNB/AAMK.pRvT9rwsIZx4wYB0brOmVPB1UL.HA5S',0,'2016-01-01 00:00:00',0,0,0,0,1,0,0,1,0,0,0,10,'skin-blue',0,0,'2016-01-01',26,0,'finance.nofundraiser','financeNoFundraiserApiKeyForTesting12345',0,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(901,'$2y$12$e3o8rmvWUYdgzUNB/AAMK.pRvT9rwsIZx4wYB0brOmVPB1UL.HA5S',0,'2024-01-01 00:00:00',0,0,0,0,0,0,0,0,0,0,0,10,'skin-blue',0,0,'2016-01-01',26,0,'noperm.user','noPermUserApiKeyForTesting123456789012345678',0,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
+INSERT INTO `user_usr` VALUES (1,'$2y$12$e3o8rmvWUYdgzUNB/AAMK.pRvT9rwsIZx4wYB0brOmVPB1UL.HA5S',0,'2026-04-10 12:28:02',375,0,0,0,0,0,0,0,0,0,0,1,10,'skin-red',1,1,'2016-01-01',23,1,'Admin','ajGwpy8Pdai22XDUpqjC5Ob04v0eG7EGgb4vz2bD2juT8YDmfM',0,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,0,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(3,'$2y$12$uWQcp6KU7C4JCTaVH.0hiekfpga36yBVhXG8.M/w9u3MmvHt/NWi2',0,'2025-11-30 02:08:31',2,0,1,1,1,1,1,1,0,1,1,0,10,'skin-yellow-light',0,0,'2016-01-01',26,0,'tony.wade@example.com','JZJApQ9XOnF7nvupWZlTWBRrqMtHE9eNcWBTUzEWGqL4Sdqp6C',0,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(95,'$2y$12$7R0MqgyidzOqzXPrGbYdkO.y/decFpwSJM..fznzzvT4wiZqaJE4q',0,'2022-12-29 21:01:30',0,0,1,1,0,0,0,0,0,1,0,0,10,'skin-blue',0,0,'2016-01-01',26,0,'judith.matthews@example.com','judithMatthewsEditRecordsNoNotesApiKey1234',0,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(99,'$2y$12$cGFZFitpCTIFEVwcsvNRZOOXuebt8Tl6smvKCBNJnp9YRci31OJHG',0,'2025-12-01 20:26:05',0,0,0,0,0,0,0,0,0,0,0,0,10,'skin-blue',0,0,'2016-01-01',29,0,'amanda.black@example.com','amandaBlackEditSelfOnlyApiKey12345678901',1,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(4,'$2y$12$e3o8rmvWUYdgzUNB/AAMK.pRvT9rwsIZx4wYB0brOmVPB1UL.HA5S',0,'2016-01-01 00:00:00',0,0,0,0,0,0,0,0,0,0,0,0,10,'skin-blue',0,0,'2016-01-01',26,0,'limited.user','limitedUserApiKeyForTesting123456789012345678',1,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(27,'$2y$12$e3o8rmvWUYdgzUNB/AAMK.pRvT9rwsIZx4wYB0brOmVPB1UL.HA5S',0,'2016-01-01 00:00:00',0,0,0,0,0,0,0,0,0,0,0,0,10,'skin-blue',0,0,'2016-01-01',26,0,'twofa_user',NULL,0,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'def50200923f831141edcddb9e69c79f4ef68b1f0cdd9acf4223f286f2c6ab7e0f09d397cabc831fdaa5bee117f409a50090ae4ea6ff51203508d29b59869396f303d5fd3cf14fe76cf85dba9c85735750aa4f312e1ab29caa60a15bb1b76aecb4a7be50423d2867e49a69ec',NULL,NULL,NULL,NULL,NULL,NULL),(7,'$2y$12$e3o8rmvWUYdgzUNB/AAMK.pRvT9rwsIZx4wYB0brOmVPB1UL.HA5S',0,'2016-01-01 00:00:00',0,99,1,1,0,0,0,0,0,0,0,0,10,'skin-blue',0,0,'2016-01-01',26,0,'locked.user',NULL,0,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(8,'$2y$12$e3o8rmvWUYdgzUNB/AAMK.pRvT9rwsIZx4wYB0brOmVPB1UL.HA5S',1,'2016-01-01 00:00:00',0,0,1,1,0,0,0,0,0,0,0,0,10,'skin-blue',0,0,'2016-01-01',26,0,'mustchange.user',NULL,0,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(900,'$2y$12$e3o8rmvWUYdgzUNB/AAMK.pRvT9rwsIZx4wYB0brOmVPB1UL.HA5S',0,'2024-01-01 00:00:00',0,0,0,0,0,0,0,0,0,0,1,0,10,'skin-blue',0,0,'2016-01-01',26,0,'john.plainauth@example.com','plainAuthReadOnlyApiKeyForTesting12345678901',0,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(100,'$2y$12$e3o8rmvWUYdgzUNB/AAMK.pRvT9rwsIZx4wYB0brOmVPB1UL.HA5S',0,'2024-01-01 00:00:00',0,0,0,0,0,0,0,0,0,0,1,0,10,'skin-blue',0,0,'2016-01-01',26,0,'lena.black.editself.notes@example.com','editSelfPlusNotesApiKeyForTesting12345678901',1,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(96,'$2y$12$e3o8rmvWUYdgzUNB/AAMK.pRvT9rwsIZx4wYB0brOmVPB1UL.HA5S',0,'2016-01-01 00:00:00',0,0,0,0,1,0,1,0,0,0,0,0,10,'skin-blue',0,0,'2016-01-01',26,0,'finance.nofundraiser','financeNoFundraiserApiKeyForTesting12345',0,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(901,'$2y$12$e3o8rmvWUYdgzUNB/AAMK.pRvT9rwsIZx4wYB0brOmVPB1UL.HA5S',0,'2024-01-01 00:00:00',0,0,0,0,0,0,0,0,0,0,0,0,10,'skin-blue',0,0,'2016-01-01',26,0,'noperm.user','noPermUserApiKeyForTesting123456789012345678',0,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
 
--- MenuOptions-only user (usr_MenuOptions=1, all other permission flags 0, non-admin, non-EditSelf).
--- Used by people.properties.security.spec.js (GHSA-4wmp-3v34-g7q8).
-INSERT INTO `user_usr` VALUES (902,'$2y$12$e3o8rmvWUYdgzUNB/AAMK.pRvT9rwsIZx4wYB0brOmVPB1UL.HA5S',0,'2024-01-01 00:00:00',0,0,0,0,0,1,0,0,0,0,0,10,'skin-blue',0,0,'2016-01-01',26,0,'menuoptions.user','menuOptionsOnlyApiKeyForTesting12345678901',0,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
+-- No-permission staff user (every permission flag 0, non-admin, non-EditSelf). Used by the property security specs
+-- (GHSA-4wmp-3v34-g7q8).
+INSERT INTO `user_usr` VALUES (902,'$2y$12$e3o8rmvWUYdgzUNB/AAMK.pRvT9rwsIZx4wYB0brOmVPB1UL.HA5S',0,'2024-01-01 00:00:00',0,0,0,0,0,0,0,0,0,0,0,0,10,'skin-blue',0,0,'2016-01-01',26,0,'teamleader.user','teamLeaderApiKeyForTesting1234567890123456',0,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
 -- Dedicated 2FA lockout test user (GHSA-f2fq-4rmp-9x8c).
 -- Same TOTP secret (JBSWY3DPEBLW64TMMQ======) as twofa_user; starts unlocked (FailedLogins=0)
 -- so the lockout test exhausts iMaxFailedLogins with wrong OTPs and asserts the account locks.
-INSERT INTO `user_usr` VALUES (903,'$2y$12$e3o8rmvWUYdgzUNB/AAMK.pRvT9rwsIZx4wYB0brOmVPB1UL.HA5S',0,'2024-01-01 00:00:00',0,0,0,0,0,0,0,0,0,0,0,10,'skin-blue',0,0,'2016-01-01',26,0,'twofa_lockout_user',NULL,0,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'def50200923f831141edcddb9e69c79f4ef68b1f0cdd9acf4223f286f2c6ab7e0f09d397cabc831fdaa5bee117f409a50090ae4ea6ff51203508d29b59869396f303d5fd3cf14fe76cf85dba9c85735750aa4f312e1ab29caa60a15bb1b76aecb4a7be50423d2867e49a69ec',NULL,NULL,NULL);
+INSERT INTO `user_usr` VALUES (903,'$2y$12$e3o8rmvWUYdgzUNB/AAMK.pRvT9rwsIZx4wYB0brOmVPB1UL.HA5S',0,'2024-01-01 00:00:00',0,0,0,0,0,0,0,0,0,0,0,0,10,'skin-blue',0,0,'2016-01-01',26,0,'twofa_lockout_user',NULL,0,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'def50200923f831141edcddb9e69c79f4ef68b1f0cdd9acf4223f286f2c6ab7e0f09d397cabc831fdaa5bee117f409a50090ae4ea6ff51203508d29b59869396f303d5fd3cf14fe76cf85dba9c85735750aa4f312e1ab29caa60a15bb1b76aecb4a7be50423d2867e49a69ec',NULL,NULL,NULL,NULL,NULL,NULL);
 -- Dedicated password-lockout test user (API account-lockout test in public.user.spec.js).
 -- No module permissions, no 2FA, usr_FailedLogins starts at 0; the test locks it by design, so no other spec may log in as it.
-INSERT INTO `user_usr` VALUES (907,'$2y$12$e3o8rmvWUYdgzUNB/AAMK.pRvT9rwsIZx4wYB0brOmVPB1UL.HA5S',0,'2024-01-01 00:00:00',0,0,0,0,0,0,0,0,0,0,0,10,'skin-blue',0,0,'2016-01-01',26,0,'login_lockout_user',NULL,0,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
+INSERT INTO `user_usr` VALUES (907,'$2y$12$e3o8rmvWUYdgzUNB/AAMK.pRvT9rwsIZx4wYB0brOmVPB1UL.HA5S',0,'2024-01-01 00:00:00',0,0,0,0,0,0,0,0,0,0,0,0,10,'skin-blue',0,0,'2016-01-01',26,0,'login_lockout_user',NULL,0,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
 -- finance.only (id=904): Finance=1, non-admin — used to assert Finance role (not Admin) can access fund CRUD and dashboard
-INSERT INTO `user_usr` VALUES (904,'$2y$12$e3o8rmvWUYdgzUNB/AAMK.pRvT9rwsIZx4wYB0brOmVPB1UL.HA5S',0,'2024-01-01 00:00:00',0,0,0,0,0,0,0,1,0,0,0,10,'skin-blue',0,0,'2016-01-01',26,0,'grace.financeonly@example.com','financeOnlyApiKeyForTesting12345678901234',0,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
+INSERT INTO `user_usr` VALUES (904,'$2y$12$e3o8rmvWUYdgzUNB/AAMK.pRvT9rwsIZx4wYB0brOmVPB1UL.HA5S',0,'2024-01-01 00:00:00',0,0,0,0,0,0,1,0,0,0,0,0,10,'skin-blue',0,0,'2016-01-01',26,0,'grace.financeonly@example.com','financeOnlyApiKeyForTesting12345678901234',0,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
 -- managegroups.only (id=905): ManageGroups=1, non-admin — used to assert ManageGroups role can access kiosk manager
-INSERT INTO `user_usr` VALUES (905,'$2y$12$e3o8rmvWUYdgzUNB/AAMK.pRvT9rwsIZx4wYB0brOmVPB1UL.HA5S',0,'2024-01-01 00:00:00',0,0,0,0,0,0,1,0,0,0,0,10,'skin-blue',0,0,'2016-01-01',26,0,'kyle.kioskonly@example.com','manageGroupsOnlyApiKeyForTesting12345678901',0,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
+INSERT INTO `user_usr` VALUES (905,'$2y$12$e3o8rmvWUYdgzUNB/AAMK.pRvT9rwsIZx4wYB0brOmVPB1UL.HA5S',0,'2024-01-01 00:00:00',0,0,0,0,0,1,0,0,0,0,0,0,10,'skin-blue',0,0,'2016-01-01',26,0,'kyle.kioskonly@example.com','manageGroupsOnlyApiKeyForTesting12345678901',0,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
 -- Locale-admin: dedicated admin user for locale smoke tests (usr_per_ID 906)
 -- Password: changeme (shared test hash). Locale changed per-test; never touches system-wide sLanguage.
-INSERT INTO `user_usr` VALUES (906,'$2y$12$e3o8rmvWUYdgzUNB/AAMK.pRvT9rwsIZx4wYB0brOmVPB1UL.HA5S',0,'2024-01-01 00:00:00',0,0,0,0,0,0,0,0,0,0,1,10,'skin-blue',0,0,'2016-01-01',10,0,'locale-admin@churchcrm.test','localeAdminApiKeyForTesting1234567890',0,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
+INSERT INTO `user_usr` VALUES (906,'$2y$12$e3o8rmvWUYdgzUNB/AAMK.pRvT9rwsIZx4wYB0brOmVPB1UL.HA5S',0,'2024-01-01 00:00:00',0,0,0,0,0,0,0,0,0,0,0,1,10,'skin-blue',0,0,'2016-01-01',10,0,'locale-admin@churchcrm.test','localeAdminApiKeyForTesting1234567890',0,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
 -- Sign-in block fixtures (issue #10193): non-admin, zero permissions; the person rows carry the deceased / inactive dates.
-INSERT INTO `user_usr` VALUES (910,'$2y$12$e3o8rmvWUYdgzUNB/AAMK.pRvT9rwsIZx4wYB0brOmVPB1UL.HA5S',0,'2024-01-01 00:00:00',0,0,0,0,0,0,0,0,0,0,0,10,'skin-blue',0,0,'2016-01-01',26,0,'deceased.user','deceasedUserApiKeyForTesting1234567890123',0,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
-INSERT INTO `user_usr` VALUES (911,'$2y$12$e3o8rmvWUYdgzUNB/AAMK.pRvT9rwsIZx4wYB0brOmVPB1UL.HA5S',0,'2024-01-01 00:00:00',0,0,0,0,0,0,0,0,0,0,0,10,'skin-blue',0,0,'2016-01-01',26,0,'inactive.user','inactiveUserApiKeyForTesting1234567890123',0,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
-INSERT INTO `user_usr` VALUES (912,'$2y$12$e3o8rmvWUYdgzUNB/AAMK.pRvT9rwsIZx4wYB0brOmVPB1UL.HA5S',0,'2024-01-01 00:00:00',0,0,0,0,0,0,0,0,0,0,0,10,'skin-blue',0,0,'2016-01-01',26,0,'deactivate.target',NULL,0,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
+INSERT INTO `user_usr` VALUES (910,'$2y$12$e3o8rmvWUYdgzUNB/AAMK.pRvT9rwsIZx4wYB0brOmVPB1UL.HA5S',0,'2024-01-01 00:00:00',0,0,0,0,0,0,0,0,0,0,0,0,10,'skin-blue',0,0,'2016-01-01',26,0,'deceased.user','deceasedUserApiKeyForTesting1234567890123',0,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
+INSERT INTO `user_usr` VALUES (911,'$2y$12$e3o8rmvWUYdgzUNB/AAMK.pRvT9rwsIZx4wYB0brOmVPB1UL.HA5S',0,'2024-01-01 00:00:00',0,0,0,0,0,0,0,0,0,0,0,0,10,'skin-blue',0,0,'2016-01-01',26,0,'inactive.user','inactiveUserApiKeyForTesting1234567890123',0,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
+INSERT INTO `user_usr` VALUES (912,'$2y$12$e3o8rmvWUYdgzUNB/AAMK.pRvT9rwsIZx4wYB0brOmVPB1UL.HA5S',0,'2024-01-01 00:00:00',0,0,0,0,0,0,0,0,0,0,0,0,10,'skin-blue',0,0,'2016-01-01',26,0,'deactivate.target',NULL,0,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
 /*!40000 ALTER TABLE `user_usr` ENABLE KEYS */;
 UNLOCK TABLES;
 COMMIT;
@@ -2040,7 +1956,7 @@ CREATE TABLE `version_ver` (
 LOCK TABLES `version_ver` WRITE;
 /*!40000 ALTER TABLE `version_ver` DISABLE KEYS */;
 SET autocommit=0;
-INSERT INTO `version_ver` VALUES (1,'3.5.0','2019-02-10 20:14:23',NULL),(2,'3.5.2','2019-09-10 22:54:56','2019-09-10 22:54:56'),(3,'3.5.4','2019-10-11 22:45:35','2019-10-11 22:45:35'),(4,'4.0.0','2020-06-16 13:11:20','2020-06-16 13:11:20'),(5,'4.1.0','2020-06-16 13:11:20','2020-06-16 13:11:21'),(6,'4.2.3','2020-10-17 01:46:16','2020-10-17 01:46:16'),(7,'4.3.1','2020-11-23 18:55:02','2020-11-23 18:55:02'),(8,'4.3.2','2020-12-10 01:57:09','2020-12-10 01:57:09'),(9,'4.4.0','2021-03-21 17:44:23','2021-03-21 17:44:23'),(10,'4.4.1','2021-05-09 13:58:09','2021-04-27 13:58:09'),(11,'4.4.2','2021-05-09 13:58:09','2021-04-27 13:58:09'),(12,'4.4.3','2021-05-09 13:58:09','2021-04-27 13:58:09'),(13,'4.4.4','2021-07-08 13:58:09','2021-07-08 13:58:09'),(14,'4.4.5','2021-07-09 13:58:09','2021-07-09 13:58:09'),(15,'4.5.0','2021-07-09 13:58:09','2021-09-03 13:58:09'),(16,'4.5.1','2022-12-03 14:02:00','2022-12-03 14:02:00'),(17,'4.5.2','2022-12-28 21:42:20','2022-12-28 21:42:20'),(18,'4.5.3','2023-01-01 20:32:08','2023-01-01 20:32:08'),(19,'5.0.0','2023-05-06 17:29:55','2023-05-06 17:29:55'),(20,'5.0.5','2023-10-21 19:04:42','2023-10-21 19:04:42'),(21,'5.1.0','2023-10-31 23:33:49','2023-10-31 23:33:49'),(22,'5.2.2','2023-11-05 12:28:43','2023-11-05 12:28:43'),(23,'5.2.3','2023-11-16 12:39:14','2023-11-16 12:39:14'),(24,'5.3.0','2023-11-18 11:10:21','2023-11-18 11:10:21'),(25,'5.3.1','2023-11-21 02:04:10','2023-11-21 02:04:10'),(27,'5.4.0','2023-12-03 20:27:58','2023-12-03 20:27:58'),(29,'5.4.3','2024-01-03 23:24:10','2024-01-03 23:24:10'),(30,'5.5.0','2024-01-03 23:43:18','2024-01-03 23:43:18'),(31,'5.6.0','2024-03-07 20:35:26','2024-03-07 20:35:26'),(32,'5.7.0','2024-03-08 11:58:40','2024-03-08 11:58:40'),(33,'5.8.0','2024-04-25 14:50:41','2024-04-25 14:50:41'),(35,'5.9.0','2024-07-13 17:23:00','2024-07-13 17:23:00'),(36,'5.17.0','2024-07-13 17:23:02','2025-03-28 17:23:02'),(37,'5.18.0','2025-05-10 20:09:48','2025-05-10 20:09:48'),(38,'5.19.0','2025-09-01 13:44:08','2025-09-01 13:44:08'),(39,'5.20.0','2025-10-11 15:27:51','2025-10-11 15:27:51'),(40,'5.21.0','2025-10-13 02:54:08','2025-10-13 02:54:08'),(41,'5.22.0','2025-10-20 00:31:20','2025-10-20 00:31:20'),(42,'6.0.0','2025-11-01 21:56:03','2025-11-01 21:56:03'),(43,'6.0.1','2025-11-15 20:47:13','2025-11-15 20:47:13'),(44,'6.0.2','2025-11-16 01:28:56','2025-11-16 01:28:56'),(45,'6.1.0','2025-11-21 02:25:12','2025-11-21 02:25:12'),(46,'6.2.0','2025-11-21 04:32:38','2025-11-21 04:32:38'),(47,'6.3.0','2025-11-27 02:22:39','2025-11-27 02:22:39'),(48,'6.4.0','2025-12-06 02:24:41','2025-12-06 02:24:41'),(49,'6.5.0','2025-12-13 00:20:35','2025-12-13 00:20:35'),(50,'6.5.1','2025-12-14 17:34:29','2025-12-14 17:34:29'),(51,'6.5.2','2025-12-15 00:59:49','2025-12-15 00:59:49'),(52,'6.5.3','2025-12-15 01:26:13','2025-12-15 01:26:13'),(53,'6.5.4','2025-12-15 01:31:56','2025-12-15 01:31:56'),(55,'6.6.0','2025-12-21 00:24:18','2025-12-21 00:24:18'),(56,'6.6.1','2025-12-26 17:36:40','2025-12-26 17:36:40'),(57,'6.7.0','2025-12-29 16:58:20','2025-12-29 16:58:20'),(58,'6.7.1','2026-01-19 18:05:17','2026-01-19 18:05:17'),(59,'6.7.2','2026-01-25 21:24:56','2026-01-25 21:24:56'),(60,'6.7.3','2026-01-30 02:27:27','2026-01-30 02:27:27'),(61,'6.8.0','2026-01-31 16:57:37','2026-01-31 16:57:37'),(62,'6.8.1','2026-02-01 21:22:06','2026-02-01 21:22:06'),(63,'7.0.0','2026-02-07 18:19:35','2026-02-07 18:19:35'),(64,'7.0.1','2026-02-28 01:03:43','2026-02-28 01:03:43'),(65,'7.0.2','2026-03-05 00:33:03','2026-03-05 00:33:03'),(66,'7.0.3','2026-03-10 00:56:16','2026-03-10 00:56:16'),(67,'7.0.4','2026-03-18 17:06:40','2026-03-18 17:06:40'),(68,'7.0.5','2026-03-18 19:28:55','2026-03-18 19:28:55'),(69,'7.1.0','2026-03-19 19:04:36','2026-03-19 19:04:36'),(70,'7.1.1','2026-04-05 14:36:43','2026-04-05 14:36:43'),(71,'7.1.2','2026-04-06 18:47:07','2026-04-06 18:47:07'),(72,'7.2.0','2026-04-10 12:27:54','2026-04-10 12:27:54'),(73,'7.2.1','2026-04-13 21:25:56','2026-04-13 21:25:56'),(74,'7.2.2','2026-04-17 00:16:04','2026-04-17 00:16:04'),(75,'7.2.3','2026-04-23 05:18:45','2026-04-23 05:18:45'),(76,'7.3.0','2026-04-25 15:27:48','2026-04-25 15:27:48'),(77,'7.3.1','2026-04-26 16:11:39','2026-04-26 16:11:39'),(78,'7.3.2','2026-04-30 19:48:51','2026-04-30 19:48:51'),(79,'7.3.3','2026-05-03 16:08:58','2026-05-03 16:08:58'),(80,'7.4.0','2026-05-11 02:55:53','2026-05-11 02:55:53'),(81,'7.4.1','2026-07-14 00:00:00','2026-07-14 00:00:00'),(82,'7.4.3','2026-07-14 00:00:00','2026-07-14 00:00:00'),(83,'7.5.0','2026-07-18 00:15:21','2026-07-18 00:15:21'),(84,'7.5.1','2026-07-19 20:21:34','2026-07-19 20:21:34'),(85,'7.6.0','2026-07-26 20:10:55','2026-07-26 20:10:55'),(86,'7.6.1','2026-08-09 23:38:27','2026-08-09 23:38:27'),(87,'7.6.2','2026-08-17 15:46:03','2026-08-17 15:46:03'),(88,'7.6.3','2026-08-25 18:13:07','2026-08-25 18:13:07'),(89,'7.6.4','2026-09-01 03:49:05','2026-09-01 03:49:05'),(90,'7.7.0','2026-09-01 18:33:45','2026-09-01 18:33:45'),(91,'7.7.1','2026-09-19 05:49:02','2026-09-19 05:49:02'),(92,'7.8.0','2026-09-26 19:44:44','2026-09-26 19:44:44');
+INSERT INTO `version_ver` VALUES (1,'3.5.0','2019-02-10 20:14:23',NULL),(2,'3.5.2','2019-09-10 22:54:56','2019-09-10 22:54:56'),(3,'3.5.4','2019-10-11 22:45:35','2019-10-11 22:45:35'),(4,'4.0.0','2020-06-16 13:11:20','2020-06-16 13:11:20'),(5,'4.1.0','2020-06-16 13:11:20','2020-06-16 13:11:21'),(6,'4.2.3','2020-10-17 01:46:16','2020-10-17 01:46:16'),(7,'4.3.1','2020-11-23 18:55:02','2020-11-23 18:55:02'),(8,'4.3.2','2020-12-10 01:57:09','2020-12-10 01:57:09'),(9,'4.4.0','2021-03-21 17:44:23','2021-03-21 17:44:23'),(10,'4.4.1','2021-05-09 13:58:09','2021-04-27 13:58:09'),(11,'4.4.2','2021-05-09 13:58:09','2021-04-27 13:58:09'),(12,'4.4.3','2021-05-09 13:58:09','2021-04-27 13:58:09'),(13,'4.4.4','2021-07-08 13:58:09','2021-07-08 13:58:09'),(14,'4.4.5','2021-07-09 13:58:09','2021-07-09 13:58:09'),(15,'4.5.0','2021-07-09 13:58:09','2021-09-03 13:58:09'),(16,'4.5.1','2022-12-03 14:02:00','2022-12-03 14:02:00'),(17,'4.5.2','2022-12-28 21:42:20','2022-12-28 21:42:20'),(18,'4.5.3','2023-01-01 20:32:08','2023-01-01 20:32:08'),(19,'5.0.0','2023-05-06 17:29:55','2023-05-06 17:29:55'),(20,'5.0.5','2023-10-21 19:04:42','2023-10-21 19:04:42'),(21,'5.1.0','2023-10-31 23:33:49','2023-10-31 23:33:49'),(22,'5.2.2','2023-11-05 12:28:43','2023-11-05 12:28:43'),(23,'5.2.3','2023-11-16 12:39:14','2023-11-16 12:39:14'),(24,'5.3.0','2023-11-18 11:10:21','2023-11-18 11:10:21'),(25,'5.3.1','2023-11-21 02:04:10','2023-11-21 02:04:10'),(27,'5.4.0','2023-12-03 20:27:58','2023-12-03 20:27:58'),(29,'5.4.3','2024-01-03 23:24:10','2024-01-03 23:24:10'),(30,'5.5.0','2024-01-03 23:43:18','2024-01-03 23:43:18'),(31,'5.6.0','2024-03-07 20:35:26','2024-03-07 20:35:26'),(32,'5.7.0','2024-03-08 11:58:40','2024-03-08 11:58:40'),(33,'5.8.0','2024-04-25 14:50:41','2024-04-25 14:50:41'),(35,'5.9.0','2024-07-13 17:23:00','2024-07-13 17:23:00'),(36,'5.17.0','2024-07-13 17:23:02','2025-03-28 17:23:02'),(37,'5.18.0','2025-05-10 20:09:48','2025-05-10 20:09:48'),(38,'5.19.0','2025-09-01 13:44:08','2025-09-01 13:44:08'),(39,'5.20.0','2025-10-11 15:27:51','2025-10-11 15:27:51'),(40,'5.21.0','2025-10-13 02:54:08','2025-10-13 02:54:08'),(41,'5.22.0','2025-10-20 00:31:20','2025-10-20 00:31:20'),(42,'6.0.0','2025-11-01 21:56:03','2025-11-01 21:56:03'),(43,'6.0.1','2025-11-15 20:47:13','2025-11-15 20:47:13'),(44,'6.0.2','2025-11-16 01:28:56','2025-11-16 01:28:56'),(45,'6.1.0','2025-11-21 02:25:12','2025-11-21 02:25:12'),(46,'6.2.0','2025-11-21 04:32:38','2025-11-21 04:32:38'),(47,'6.3.0','2025-11-27 02:22:39','2025-11-27 02:22:39'),(48,'6.4.0','2025-12-06 02:24:41','2025-12-06 02:24:41'),(49,'6.5.0','2025-12-13 00:20:35','2025-12-13 00:20:35'),(50,'6.5.1','2025-12-14 17:34:29','2025-12-14 17:34:29'),(51,'6.5.2','2025-12-15 00:59:49','2025-12-15 00:59:49'),(52,'6.5.3','2025-12-15 01:26:13','2025-12-15 01:26:13'),(53,'6.5.4','2025-12-15 01:31:56','2025-12-15 01:31:56'),(55,'6.6.0','2025-12-21 00:24:18','2025-12-21 00:24:18'),(56,'6.6.1','2025-12-26 17:36:40','2025-12-26 17:36:40'),(57,'6.7.0','2025-12-29 16:58:20','2025-12-29 16:58:20'),(58,'6.7.1','2026-01-19 18:05:17','2026-01-19 18:05:17'),(59,'6.7.2','2026-01-25 21:24:56','2026-01-25 21:24:56'),(60,'6.7.3','2026-01-30 02:27:27','2026-01-30 02:27:27'),(61,'6.8.0','2026-01-31 16:57:37','2026-01-31 16:57:37'),(62,'6.8.1','2026-02-01 21:22:06','2026-02-01 21:22:06'),(63,'7.0.0','2026-02-07 18:19:35','2026-02-07 18:19:35'),(64,'7.0.1','2026-02-28 01:03:43','2026-02-28 01:03:43'),(65,'7.0.2','2026-03-05 00:33:03','2026-03-05 00:33:03'),(66,'7.0.3','2026-03-10 00:56:16','2026-03-10 00:56:16'),(67,'7.0.4','2026-03-18 17:06:40','2026-03-18 17:06:40'),(68,'7.0.5','2026-03-18 19:28:55','2026-03-18 19:28:55'),(69,'7.1.0','2026-03-19 19:04:36','2026-03-19 19:04:36'),(70,'7.1.1','2026-04-05 14:36:43','2026-04-05 14:36:43'),(71,'7.1.2','2026-04-06 18:47:07','2026-04-06 18:47:07'),(72,'7.2.0','2026-04-10 12:27:54','2026-04-10 12:27:54'),(73,'7.2.1','2026-04-13 21:25:56','2026-04-13 21:25:56'),(74,'7.2.2','2026-04-17 00:16:04','2026-04-17 00:16:04'),(75,'7.2.3','2026-04-23 05:18:45','2026-04-23 05:18:45'),(76,'7.3.0','2026-04-25 15:27:48','2026-04-25 15:27:48'),(77,'7.3.1','2026-04-26 16:11:39','2026-04-26 16:11:39'),(78,'7.3.2','2026-04-30 19:48:51','2026-04-30 19:48:51'),(79,'7.3.3','2026-05-03 16:08:58','2026-05-03 16:08:58'),(80,'7.4.0','2026-05-11 02:55:53','2026-05-11 02:55:53'),(81,'7.4.1','2026-07-14 00:00:00','2026-07-14 00:00:00'),(82,'7.4.3','2026-07-14 00:00:00','2026-07-14 00:00:00'),(83,'7.5.0','2026-07-18 00:15:21','2026-07-18 00:15:21'),(84,'7.5.1','2026-07-19 20:21:34','2026-07-19 20:21:34'),(85,'7.6.0','2026-07-26 20:10:55','2026-07-26 20:10:55'),(86,'7.6.1','2026-08-09 23:38:27','2026-08-09 23:38:27'),(87,'7.6.2','2026-08-17 15:46:03','2026-08-17 15:46:03'),(88,'7.6.3','2026-08-25 18:13:07','2026-08-25 18:13:07'),(89,'7.6.4','2026-09-01 03:49:05','2026-09-01 03:49:05'),(90,'7.7.0','2026-09-01 18:33:45','2026-09-01 18:33:45'),(91,'7.7.1','2026-09-19 05:49:02','2026-09-19 05:49:02'),(92,'7.8.0','2026-09-26 19:44:44','2026-09-26 19:44:44'),(93,'7.8.1','2026-10-10 20:13:31','2026-10-10 20:13:31'),(94,'7.8.2','2026-10-18 23:31:54','2026-10-18 23:31:54');
 /*!40000 ALTER TABLE `version_ver` ENABLE KEYS */;
 UNLOCK TABLES;
 COMMIT;
@@ -2112,47 +2028,6 @@ COMMIT;
 --
 
 --
--- Stand-In structure for view `email_count`
---
-
-DROP TABLE IF EXISTS `email_count`;
-/*!50001 DROP VIEW IF EXISTS `email_count`*/;
-CREATE TABLE IF NOT EXISTS `email_count` (
-`email` varchar(100)
-,`total` bigint(21)
-);
---
--- Stand-In structure for view `email_list`
---
-
-DROP TABLE IF EXISTS `email_list`;
-/*!50001 DROP VIEW IF EXISTS `email_list`*/;
-CREATE TABLE IF NOT EXISTS `email_list` (
-`email` varchar(100)
-,`type` varchar(11)
-,`id` mediumint(9) unsigned
-);
---
--- View structure for view `email_count`
---
-
-DROP TABLE IF EXISTS `email_count`;
-/*!50001 DROP VIEW IF EXISTS `email_count`*/;
-/*!50001 CREATE ALGORITHM=UNDEFINED */
-/*!50013 DEFINER=`churchcrm`@`%` SQL SECURITY DEFINER */
-/*!50001 VIEW `email_count` AS select `email_list`.`email` AS `email`,count(0) AS `total` from `email_list` group by `email_list`.`email` */;
-
---
--- View structure for view `email_list`
---
-
-DROP TABLE IF EXISTS `email_list`;
-/*!50001 DROP VIEW IF EXISTS `email_list`*/;
-/*!50001 CREATE ALGORITHM=UNDEFINED */
-/*!50013 DEFINER=`churchcrm`@`%` SQL SECURITY DEFINER */
-/*!50001 VIEW `email_list` AS select `family_fam`.`fam_Email` AS `email`,'family' AS `type`,`family_fam`.`fam_ID` AS `id` from `family_fam` where `family_fam`.`fam_Email` is not null and `family_fam`.`fam_Email` <> '' union select `person_per`.`per_Email` AS `email`,'person_home' AS `type`,`person_per`.`per_ID` AS `id` from `person_per` where `person_per`.`per_Email` is not null and `person_per`.`per_Email` <> '' union select `person_per`.`per_WorkEmail` AS `email`,'person_work' AS `type`,`person_per`.`per_ID` AS `id` from `person_per` where `person_per`.`per_WorkEmail` is not null and `person_per`.`per_WorkEmail` <> '' */;
-
---
 -- Table structure for table `pledge_denominations_pdem`
 -- (added by migration 7.6.4-pledge-denominations.sql, issue #9376)
 --
@@ -2172,6 +2047,519 @@ CREATE TABLE `pledge_denominations_pdem` (
   UNIQUE KEY `pdem_groupkey_denom_uidx` (`pdem_plg_GroupKey`, `pdem_denominationID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `volunteer_ministry_vmin`
+-- Volunteer Management v2 (#9705); mirrors src/mysql/install/Install.sql
+--
+
+DROP TABLE IF EXISTS `volunteer_ministry_vmin`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `volunteer_ministry_vmin` (
+  `vmin_ID`               int(11)               NOT NULL AUTO_INCREMENT,
+  `vmin_Name`             varchar(100)          NOT NULL,
+  `vmin_Description`      varchar(255)                   DEFAULT NULL,
+  `vmin_Active`           tinyint(1) unsigned   NOT NULL DEFAULT 1,
+  `vmin_CreatedDate`      datetime              NOT NULL,
+  `vmin_CreatedBy_per_ID` mediumint(9) unsigned          DEFAULT NULL,
+  `vmin_HelpWanted`       tinyint(1)            NOT NULL DEFAULT 0,
+  `vmin_HelpWantedText`   text                           DEFAULT NULL,
+  `vmin_SundaySchool`     tinyint(1) unsigned   NOT NULL DEFAULT 0,
+  PRIMARY KEY (`vmin_ID`),
+  UNIQUE KEY `vmin_name_uidx`  (`vmin_Name`),
+  KEY `vmin_active_idx`        (`vmin_Active`),
+  KEY `vmin_created_by_idx`    (`vmin_CreatedBy_per_ID`),
+  CONSTRAINT `fk_vmin_created_by` FOREIGN KEY (`vmin_CreatedBy_per_ID`)
+      REFERENCES `person_per` (`per_ID`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `volunteer_team_vtem`
+-- Volunteer Management v2 (#9705); mirrors src/mysql/install/Install.sql
+--
+
+DROP TABLE IF EXISTS `volunteer_team_vtem`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `volunteer_team_vtem` (
+  `vtem_ID`          int(11)             NOT NULL AUTO_INCREMENT,
+  `vtem_vmin_ID`     int(11)             NOT NULL,
+  `vtem_Name`        varchar(100)        NOT NULL,
+  `vtem_Description` varchar(255)                 DEFAULT NULL,
+  `vtem_Active`      tinyint(1) unsigned NOT NULL DEFAULT 1,
+  -- D23: the Sunday School class this team staffs; qualifications write its Teacher role.
+  `vtem_grp_ID`      mediumint(8) unsigned          DEFAULT NULL,
+  PRIMARY KEY (`vtem_ID`),
+  UNIQUE KEY `vtem_ministry_name_uidx` (`vtem_vmin_ID`, `vtem_Name`),
+  UNIQUE KEY `vtem_class_group_uidx`   (`vtem_grp_ID`),
+  KEY `vtem_ministry_idx`              (`vtem_vmin_ID`),
+  CONSTRAINT `fk_vtem_ministry` FOREIGN KEY (`vtem_vmin_ID`)
+      REFERENCES `volunteer_ministry_vmin` (`vmin_ID`) ON DELETE CASCADE,
+  CONSTRAINT `fk_vtem_class_group` FOREIGN KEY (`vtem_grp_ID`)
+      REFERENCES `group_grp` (`grp_ID`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `volunteer_position_vpos`
+-- Volunteer Management v2 (#9705); mirrors src/mysql/install/Install.sql
+--
+
+DROP TABLE IF EXISTS `volunteer_position_vpos`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `volunteer_position_vpos` (
+  `vpos_ID`          int(11)             NOT NULL AUTO_INCREMENT,
+  `vpos_vmin_ID`     int(11)             NOT NULL,
+  `vpos_vtem_ID`     int(11)             NOT NULL,
+  `vpos_Name`        varchar(100)        NOT NULL,
+  `vpos_Description` varchar(255)                 DEFAULT NULL,
+  `vpos_Active`      tinyint(1) unsigned NOT NULL DEFAULT 1,
+  `vpos_Recruiting`  tinyint(1)          NOT NULL DEFAULT 0,
+  `vpos_SelfAssignable` tinyint(1)        NOT NULL DEFAULT 1,
+  `vpos_Order`       int(11)             NOT NULL DEFAULT 0,
+  PRIMARY KEY (`vpos_ID`),
+  UNIQUE KEY `vpos_ministry_team_name_uidx` (`vpos_vmin_ID`, `vpos_vtem_ID`, `vpos_Name`),
+  KEY `vpos_ministry_active_idx`            (`vpos_vmin_ID`, `vpos_Active`),
+  KEY `vpos_team_idx`                       (`vpos_vtem_ID`),
+  CONSTRAINT `fk_vpos_ministry` FOREIGN KEY (`vpos_vmin_ID`)
+      REFERENCES `volunteer_ministry_vmin` (`vmin_ID`) ON DELETE CASCADE,
+  CONSTRAINT `fk_vpos_team` FOREIGN KEY (`vpos_vtem_ID`)
+      REFERENCES `volunteer_team_vtem` (`vtem_ID`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `volunteer_qualification_vqal`
+-- Volunteer Management v2 (#9705); mirrors src/mysql/install/Install.sql
+--
+
+DROP TABLE IF EXISTS `volunteer_qualification_vqal`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `volunteer_qualification_vqal` (
+  `vqal_ID`               int(11)               NOT NULL AUTO_INCREMENT,
+  `vqal_per_ID`           mediumint(9) unsigned NOT NULL,
+  `vqal_vpos_ID`          int(11)               NOT NULL,
+  `vqal_Active`           tinyint(1) unsigned   NOT NULL DEFAULT 1,
+  `vqal_GrantedDate`      datetime              NOT NULL,
+  `vqal_GrantedBy_per_ID` mediumint(9) unsigned          DEFAULT NULL,
+  `vqal_Notes`            varchar(255)                   DEFAULT NULL,
+  PRIMARY KEY (`vqal_ID`),
+  UNIQUE KEY `vqal_person_position_uidx` (`vqal_per_ID`, `vqal_vpos_ID`),
+  KEY `vqal_position_active_idx`         (`vqal_vpos_ID`, `vqal_Active`),
+  KEY `vqal_person_idx`                  (`vqal_per_ID`),
+  KEY `vqal_granted_by_idx`              (`vqal_GrantedBy_per_ID`),
+  CONSTRAINT `fk_vqal_person` FOREIGN KEY (`vqal_per_ID`)
+      REFERENCES `person_per` (`per_ID`) ON DELETE CASCADE,
+  CONSTRAINT `fk_vqal_position` FOREIGN KEY (`vqal_vpos_ID`)
+      REFERENCES `volunteer_position_vpos` (`vpos_ID`) ON DELETE CASCADE,
+  CONSTRAINT `fk_vqal_granted_by` FOREIGN KEY (`vqal_GrantedBy_per_ID`)
+      REFERENCES `person_per` (`per_ID`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `volunteer_schedule_vsch`
+-- Volunteer Management v2 (#9705); mirrors src/mysql/install/Install.sql
+--
+
+DROP TABLE IF EXISTS `volunteer_schedule_vsch`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `volunteer_schedule_vsch` (
+  `vsch_ID`                int(11)                                        NOT NULL AUTO_INCREMENT,
+  `vsch_vmin_ID`           int(11)                                        NOT NULL,
+  `vsch_vtem_ID`           int(11)                                        NOT NULL,
+  `vsch_Name`              varchar(100)                                   NOT NULL,
+  `vsch_LinkMode`          enum('event_type','class','ministry','event')  NOT NULL,
+  `vsch_event_type_id`     int(11)                                                 DEFAULT NULL,
+  `vsch_TitleFilter`       varchar(255)                                            DEFAULT NULL,
+  `vsch_grp_ID`            mediumint(8) unsigned                                   DEFAULT NULL,
+  `vsch_event_id`          int(11)                                                 DEFAULT NULL,
+  `vsch_StartOffsetMinutes` int(11)                                       NOT NULL DEFAULT 0,
+  `vsch_EndOffsetMinutes`  int(11)                                        NOT NULL DEFAULT 0,
+  `vsch_WindowStart`       date                                           NOT NULL,
+  `vsch_WindowEnd`         date                                                    DEFAULT NULL,
+  `vsch_Active`            tinyint(1) unsigned                            NOT NULL DEFAULT 1,
+  `vsch_OneOff`            tinyint(1) unsigned                            NOT NULL DEFAULT 0,
+  PRIMARY KEY (`vsch_ID`),
+  KEY `vsch_ministry_idx`      (`vsch_vmin_ID`),
+  KEY `vsch_team_idx`          (`vsch_vtem_ID`),
+  KEY `vsch_type_idx`          (`vsch_event_type_id`),
+  KEY `vsch_group_idx`         (`vsch_grp_ID`),
+  KEY `vsch_event_idx`         (`vsch_event_id`),
+  KEY `vsch_active_window_idx` (`vsch_Active`, `vsch_WindowStart`),
+  CONSTRAINT `fk_vsch_ministry` FOREIGN KEY (`vsch_vmin_ID`)
+      REFERENCES `volunteer_ministry_vmin` (`vmin_ID`) ON DELETE CASCADE,
+  CONSTRAINT `fk_vsch_team` FOREIGN KEY (`vsch_vtem_ID`)
+      REFERENCES `volunteer_team_vtem` (`vtem_ID`) ON DELETE CASCADE,
+  CONSTRAINT `fk_vsch_event_type` FOREIGN KEY (`vsch_event_type_id`)
+      REFERENCES `event_types` (`type_id`) ON DELETE SET NULL,
+  CONSTRAINT `fk_vsch_group` FOREIGN KEY (`vsch_grp_ID`)
+      REFERENCES `group_grp` (`grp_ID`) ON DELETE SET NULL,
+  CONSTRAINT `fk_vsch_event` FOREIGN KEY (`vsch_event_id`)
+      REFERENCES `events_event` (`event_id`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `volunteer_occurrence_vocc`
+-- Volunteer Management v2 (#9705); mirrors src/mysql/install/Install.sql
+--
+
+DROP TABLE IF EXISTS `volunteer_occurrence_vocc`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `volunteer_occurrence_vocc` (
+  `vocc_ID`             int(11)                          NOT NULL AUTO_INCREMENT,
+  `vocc_vsch_ID`        int(11)                          NOT NULL,
+  `vocc_event_id`       int(11)                                   DEFAULT NULL,
+  `vocc_OccurrenceDate` date                             NOT NULL,
+  `vocc_Status`         enum('scheduled','cancelled')    NOT NULL DEFAULT 'scheduled',
+  `vocc_Notes`          varchar(255)                              DEFAULT NULL,
+  `vocc_GeneratedDate`  datetime                         NOT NULL,
+  PRIMARY KEY (`vocc_ID`),
+  UNIQUE KEY `vocc_schedule_event_uidx` (`vocc_vsch_ID`, `vocc_event_id`),
+  KEY `vocc_date_idx`  (`vocc_OccurrenceDate`),
+  KEY `vocc_event_idx` (`vocc_event_id`),
+  CONSTRAINT `fk_vocc_schedule` FOREIGN KEY (`vocc_vsch_ID`)
+      REFERENCES `volunteer_schedule_vsch` (`vsch_ID`) ON DELETE CASCADE,
+  CONSTRAINT `fk_vocc_event` FOREIGN KEY (`vocc_event_id`)
+      REFERENCES `events_event` (`event_id`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `volunteer_requirement_vreq`
+-- Volunteer Management v2 (#9705); mirrors src/mysql/install/Install.sql
+--
+
+DROP TABLE IF EXISTS `volunteer_requirement_vreq`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `volunteer_requirement_vreq` (
+  `vreq_ID`       int(11)      NOT NULL AUTO_INCREMENT,
+  `vreq_vsch_ID`  int(11)               DEFAULT NULL,
+  `vreq_vocc_ID`  int(11)               DEFAULT NULL,
+  `vreq_vpos_ID`  int(11)      NOT NULL,
+  `vreq_MinCount` int(11)      NOT NULL DEFAULT 1,
+  `vreq_MaxCount` int(11)               DEFAULT NULL,
+  `vreq_Notes`    varchar(255)          DEFAULT NULL,
+  PRIMARY KEY (`vreq_ID`),
+  UNIQUE KEY `vreq_schedule_position_uidx`   (`vreq_vsch_ID`, `vreq_vpos_ID`),
+  UNIQUE KEY `vreq_occurrence_position_uidx` (`vreq_vocc_ID`, `vreq_vpos_ID`),
+  KEY `vreq_position_idx`                    (`vreq_vpos_ID`),
+  CONSTRAINT `fk_vreq_schedule` FOREIGN KEY (`vreq_vsch_ID`)
+      REFERENCES `volunteer_schedule_vsch` (`vsch_ID`) ON DELETE CASCADE,
+  CONSTRAINT `fk_vreq_occurrence` FOREIGN KEY (`vreq_vocc_ID`)
+      REFERENCES `volunteer_occurrence_vocc` (`vocc_ID`) ON DELETE CASCADE,
+  CONSTRAINT `fk_vreq_position` FOREIGN KEY (`vreq_vpos_ID`)
+      REFERENCES `volunteer_position_vpos` (`vpos_ID`) ON DELETE CASCADE,
+  -- Exactly one parent: a template requirement belongs to a schedule, an
+  -- override to an occurrence, never both and never neither. Enforced on
+  -- MariaDB 10.2.1+ / MySQL 8.0.16+; parsed and ignored by MySQL 5.7.
+  CONSTRAINT `vreq_one_parent_chk`
+      CHECK ((`vreq_vsch_ID` IS NULL) <> (`vreq_vocc_ID` IS NULL))
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `volunteer_requirement_default_vrdf`
+-- Volunteer Management v2 (D35); mirrors src/mysql/install/Install.sql
+--
+
+DROP TABLE IF EXISTS `volunteer_requirement_default_vrdf`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `volunteer_requirement_default_vrdf` (
+  `vrdf_ID`           int(11)               NOT NULL AUTO_INCREMENT,
+  `vrdf_vreq_ID`      int(11)               NOT NULL,
+  `vrdf_per_ID`       mediumint(9) unsigned NOT NULL,
+  `vrdf_Accepted`     tinyint(1) unsigned   NOT NULL DEFAULT 0,
+  `vrdf_SetBy_per_ID` mediumint(9) unsigned          DEFAULT NULL,
+  `vrdf_Sort`         smallint(6)           NOT NULL DEFAULT 0,
+  PRIMARY KEY (`vrdf_ID`),
+  UNIQUE KEY `vrdf_requirement_person_uidx` (`vrdf_vreq_ID`, `vrdf_per_ID`),
+  KEY `vrdf_person_idx`                     (`vrdf_per_ID`),
+  KEY `vrdf_set_by_idx`                     (`vrdf_SetBy_per_ID`),
+  CONSTRAINT `fk_vrdf_requirement` FOREIGN KEY (`vrdf_vreq_ID`)
+      REFERENCES `volunteer_requirement_vreq` (`vreq_ID`) ON DELETE CASCADE,
+  CONSTRAINT `fk_vrdf_person` FOREIGN KEY (`vrdf_per_ID`)
+      REFERENCES `person_per` (`per_ID`) ON DELETE CASCADE,
+  CONSTRAINT `fk_vrdf_set_by` FOREIGN KEY (`vrdf_SetBy_per_ID`)
+      REFERENCES `person_per` (`per_ID`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `volunteer_assignment_vasg`
+-- Volunteer Management v2 (#9705); mirrors src/mysql/install/Install.sql
+--
+
+DROP TABLE IF EXISTS `volunteer_assignment_vasg`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `volunteer_assignment_vasg` (
+  `vasg_ID`                int(11)               NOT NULL AUTO_INCREMENT,
+  `vasg_vocc_ID`           int(11)               NOT NULL,
+  `vasg_vpos_ID`           int(11)               NOT NULL,
+  `vasg_per_ID`            mediumint(9) unsigned NOT NULL,
+  `vasg_vreq_ID`           int(11)                        DEFAULT NULL,
+  `vasg_Status`            enum('pending','accepted','declined','cancelled','substituted','completed')
+                                                 NOT NULL DEFAULT 'pending',
+  `vasg_Source`            enum('coordinator','self_signup','substitute')
+                                                 NOT NULL DEFAULT 'coordinator',
+  `vasg_AssignedDate`      datetime              NOT NULL,
+  `vasg_AssignedBy_per_ID` mediumint(9) unsigned          DEFAULT NULL,
+  `vasg_RespondedDate`     datetime                       DEFAULT NULL,
+  `vasg_Replaces_vasg_ID`  int(11)                        DEFAULT NULL,
+  `vasg_Notes`             varchar(255)                   DEFAULT NULL,
+  PRIMARY KEY (`vasg_ID`),
+  UNIQUE KEY `vasg_occ_pos_per_uidx` (`vasg_vocc_ID`, `vasg_vpos_ID`, `vasg_per_ID`),
+  KEY `vasg_occurrence_idx`     (`vasg_vocc_ID`, `vasg_Status`),
+  KEY `vasg_person_status_idx`  (`vasg_per_ID`, `vasg_Status`),
+  KEY `vasg_position_idx`       (`vasg_vpos_ID`),
+  KEY `vasg_requirement_idx`    (`vasg_vreq_ID`),
+  KEY `vasg_assigned_by_idx`    (`vasg_AssignedBy_per_ID`),
+  KEY `vasg_replaces_idx`       (`vasg_Replaces_vasg_ID`),
+  CONSTRAINT `fk_vasg_occurrence` FOREIGN KEY (`vasg_vocc_ID`)
+      REFERENCES `volunteer_occurrence_vocc` (`vocc_ID`) ON DELETE CASCADE,
+  CONSTRAINT `fk_vasg_position` FOREIGN KEY (`vasg_vpos_ID`)
+      REFERENCES `volunteer_position_vpos` (`vpos_ID`) ON DELETE RESTRICT,
+  CONSTRAINT `fk_vasg_person` FOREIGN KEY (`vasg_per_ID`)
+      REFERENCES `person_per` (`per_ID`) ON DELETE CASCADE,
+  CONSTRAINT `fk_vasg_requirement` FOREIGN KEY (`vasg_vreq_ID`)
+      REFERENCES `volunteer_requirement_vreq` (`vreq_ID`) ON DELETE SET NULL,
+  CONSTRAINT `fk_vasg_assigned_by` FOREIGN KEY (`vasg_AssignedBy_per_ID`)
+      REFERENCES `person_per` (`per_ID`) ON DELETE SET NULL,
+  CONSTRAINT `fk_vasg_replaces` FOREIGN KEY (`vasg_Replaces_vasg_ID`)
+      REFERENCES `volunteer_assignment_vasg` (`vasg_ID`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `volunteer_response_vrsp`
+-- Volunteer Management v2 (#9705); mirrors src/mysql/install/Install.sql
+--
+
+DROP TABLE IF EXISTS `volunteer_response_vrsp`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `volunteer_response_vrsp` (
+  `vrsp_ID`           int(11)               NOT NULL AUTO_INCREMENT,
+  `vrsp_vasg_ID`      int(11)               NOT NULL,
+  `vrsp_per_ID`       mediumint(9) unsigned NOT NULL,
+  `vrsp_Response`     enum('accepted','declined','cancelled','substitute_proposed','substitute_approved','substitute_rejected','substitute_withdrawn')
+                                            NOT NULL,
+  `vrsp_ResponseDate` datetime              NOT NULL,
+  `vrsp_Channel`      enum('web','coordinator') NOT NULL DEFAULT 'web',
+  `vrsp_Comment`      varchar(255)                   DEFAULT NULL,
+  PRIMARY KEY (`vrsp_ID`),
+  KEY `vrsp_assignment_idx` (`vrsp_vasg_ID`, `vrsp_ResponseDate`),
+  KEY `vrsp_person_idx`     (`vrsp_per_ID`),
+  CONSTRAINT `fk_vrsp_assignment` FOREIGN KEY (`vrsp_vasg_ID`)
+      REFERENCES `volunteer_assignment_vasg` (`vasg_ID`) ON DELETE CASCADE,
+  CONSTRAINT `fk_vrsp_person` FOREIGN KEY (`vrsp_per_ID`)
+      REFERENCES `person_per` (`per_ID`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `volunteer_swap_vswp`
+-- Volunteer Management v2 (#9705); mirrors src/mysql/install/Install.sql
+--
+
+DROP TABLE IF EXISTS `volunteer_swap_vswp`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `volunteer_swap_vswp` (
+  `vswp_ID`               int(11)               NOT NULL AUTO_INCREMENT,
+  `vswp_vasg_ID`          int(11)               NOT NULL,
+  `vswp_ProposedBy_per_ID` mediumint(9) unsigned NOT NULL,
+  `vswp_Proposed_per_ID`  mediumint(9) unsigned NOT NULL,
+  `vswp_Status`           enum('proposed','approved','rejected','withdrawn') NOT NULL DEFAULT 'proposed',
+  `vswp_ProposedDate`     datetime              NOT NULL,
+  `vswp_DecidedDate`      datetime                       DEFAULT NULL,
+  `vswp_DecidedBy_per_ID` mediumint(9) unsigned          DEFAULT NULL,
+  `vswp_Comment`          varchar(255)                   DEFAULT NULL,
+  PRIMARY KEY (`vswp_ID`),
+  KEY `vswp_assignment_status_idx` (`vswp_vasg_ID`, `vswp_Status`),
+  KEY `vswp_proposed_person_idx`   (`vswp_Proposed_per_ID`),
+  KEY `vswp_proposed_by_idx`       (`vswp_ProposedBy_per_ID`),
+  KEY `vswp_decided_by_idx`        (`vswp_DecidedBy_per_ID`),
+  CONSTRAINT `fk_vswp_assignment` FOREIGN KEY (`vswp_vasg_ID`)
+      REFERENCES `volunteer_assignment_vasg` (`vasg_ID`) ON DELETE CASCADE,
+  CONSTRAINT `fk_vswp_proposed_by` FOREIGN KEY (`vswp_ProposedBy_per_ID`)
+      REFERENCES `person_per` (`per_ID`) ON DELETE CASCADE,
+  CONSTRAINT `fk_vswp_proposed_person` FOREIGN KEY (`vswp_Proposed_per_ID`)
+      REFERENCES `person_per` (`per_ID`) ON DELETE CASCADE,
+  CONSTRAINT `fk_vswp_decided_by` FOREIGN KEY (`vswp_DecidedBy_per_ID`)
+      REFERENCES `person_per` (`per_ID`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `volunteer_notification_vntf`
+-- Volunteer Management v2 (#9705); mirrors src/mysql/install/Install.sql
+--
+
+DROP TABLE IF EXISTS `volunteer_notification_vntf`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `volunteer_notification_vntf` (
+  `vntf_ID`              int(11)               NOT NULL AUTO_INCREMENT,
+  `vntf_Type`            enum('assignment','reminder','decline_alert','gap_alert','signup_confirm','swap_proposed','swap_resolved','help_offer','pool_add')
+                                               NOT NULL,
+  `vntf_Channel`         enum('email')         NOT NULL DEFAULT 'email',
+  `vntf_per_ID`          mediumint(9) unsigned NOT NULL,
+  `vntf_vasg_ID`         int(11)                        DEFAULT NULL,
+  `vntf_vocc_ID`         int(11)                        DEFAULT NULL,
+  -- D19: opaque, type-specific context for a row that hangs off NEITHER an assignment
+  -- nor an occurrence. `help_offer` is the first such type — it is about a ministry and
+  -- a person, and the one fact the message needs ("were they already in the pool?") is
+  -- true only at the moment of the click and cannot be recomputed at delivery time.
+  -- JSON, read only by the type that wrote it.
+  `vntf_Context`         varchar(190)                   DEFAULT NULL,
+  `vntf_DedupeKey`       varchar(190)          NOT NULL,
+  `vntf_ScheduledFor`    datetime              NOT NULL,
+  `vntf_Status`          enum('pending','sent','failed','skipped') NOT NULL DEFAULT 'pending',
+  `vntf_Attempts`        int(11)               NOT NULL DEFAULT 0,
+  `vntf_LastAttemptDate` datetime                       DEFAULT NULL,
+  `vntf_SentDate`        datetime                       DEFAULT NULL,
+  `vntf_LastError`       varchar(255)                   DEFAULT NULL,
+  PRIMARY KEY (`vntf_ID`),
+  UNIQUE KEY `vntf_dedupe_uidx` (`vntf_DedupeKey`),
+  KEY `vntf_due_idx`            (`vntf_Status`, `vntf_ScheduledFor`),
+  KEY `vntf_assignment_idx`     (`vntf_vasg_ID`),
+  KEY `vntf_person_idx`         (`vntf_per_ID`),
+  KEY `vntf_occurrence_idx`     (`vntf_vocc_ID`),
+  CONSTRAINT `fk_vntf_person` FOREIGN KEY (`vntf_per_ID`)
+      REFERENCES `person_per` (`per_ID`) ON DELETE CASCADE,
+  CONSTRAINT `fk_vntf_assignment` FOREIGN KEY (`vntf_vasg_ID`)
+      REFERENCES `volunteer_assignment_vasg` (`vasg_ID`) ON DELETE CASCADE,
+  CONSTRAINT `fk_vntf_occurrence` FOREIGN KEY (`vntf_vocc_ID`)
+      REFERENCES `volunteer_occurrence_vocc` (`vocc_ID`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `volunteer_scope_vscp`
+-- Volunteer Management v2 (#9705); mirrors src/mysql/install/Install.sql
+--
+
+DROP TABLE IF EXISTS `volunteer_scope_vscp`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `volunteer_scope_vscp` (
+  `vscp_ID`               int(11)                 NOT NULL AUTO_INCREMENT,
+  `vscp_per_ID`           mediumint(9) unsigned   NOT NULL,
+  `vscp_ScopeType`        enum('ministry','team') NOT NULL,
+  `vscp_ScopeId`          int(11)                 NOT NULL,
+  `vscp_GrantedDate`      datetime                NOT NULL,
+  `vscp_GrantedBy_per_ID` mediumint(9) unsigned            DEFAULT NULL,
+  PRIMARY KEY (`vscp_ID`),
+  UNIQUE KEY `vscp_person_scope_uidx` (`vscp_per_ID`, `vscp_ScopeType`, `vscp_ScopeId`),
+  KEY `vscp_person_idx`               (`vscp_per_ID`),
+  KEY `vscp_scope_idx`                (`vscp_ScopeType`, `vscp_ScopeId`),
+  KEY `vscp_granted_by_idx`           (`vscp_GrantedBy_per_ID`),
+  CONSTRAINT `fk_vscp_person` FOREIGN KEY (`vscp_per_ID`)
+      REFERENCES `person_per` (`per_ID`) ON DELETE CASCADE,
+  CONSTRAINT `fk_vscp_granted_by` FOREIGN KEY (`vscp_GrantedBy_per_ID`)
+      REFERENCES `person_per` (`per_ID`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Volunteer v2 (#9713): the events_event -> volunteer_ministry_vmin ownership link.
+-- Added after volunteer_ministry_vmin exists; events_event is dumped far earlier.
+--
+ALTER TABLE `events_event`
+    ADD CONSTRAINT `events_event_FK_ministry` FOREIGN KEY (`event_ministry_id`)
+    REFERENCES `volunteer_ministry_vmin` (`vmin_ID`) ON DELETE SET NULL;
+
+--
+-- Volunteer v2 (D19): the group_grp -> volunteer_ministry_vmin ownership link.
+--
+-- Declared here rather than inside the group_grp CREATE TABLE because that table is
+-- created long before volunteer_ministry_vmin exists. ON DELETE SET NULL so a cascade
+-- can never remove a church group; the ministry-deletion path removes the pool group
+-- explicitly instead (design D19).
+--
+ALTER TABLE `group_grp`
+    ADD CONSTRAINT `group_grp_FK_ministry` FOREIGN KEY (`grp_ministry_id`)
+    REFERENCES `volunteer_ministry_vmin` (`vmin_ID`) ON DELETE SET NULL;
+
+--
+-- Member Portal (#9866 / #9869): the calendars -> volunteer_ministry_vmin ownership link.
+--
+-- Declared here rather than inside the calendars CREATE TABLE because that table is created
+-- long before volunteer_ministry_vmin exists. ON DELETE SET NULL so a cascade can never remove
+-- a church calendar; the ministry-deletion path removes the ministry's own calendar explicitly
+-- instead (design §5.3).
+--
+ALTER TABLE `calendars`
+    ADD CONSTRAINT `calendars_ministry_fk` FOREIGN KEY (`ministry_id`)
+    REFERENCES `volunteer_ministry_vmin` (`vmin_ID`) ON DELETE SET NULL;
+
+--
+-- Table structure for table `volunteer_calendar_vcal`
+-- Volunteer v2 (D25); mirrors src/mysql/install/Install.sql. Empty: specs create their own grants.
+--
+
+DROP TABLE IF EXISTS `volunteer_calendar_vcal`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `volunteer_calendar_vcal` (
+  `vcal_calendar_id` int(11) NOT NULL,
+  `vcal_vmin_ID`     int(11) NOT NULL,
+  PRIMARY KEY (`vcal_calendar_id`, `vcal_vmin_ID`),
+  KEY `vcal_ministry_idx` (`vcal_vmin_ID`),
+  CONSTRAINT `fk_vcal_calendar` FOREIGN KEY (`vcal_calendar_id`)
+      REFERENCES `calendars` (`calendar_id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_vcal_ministry` FOREIGN KEY (`vcal_vmin_ID`)
+      REFERENCES `volunteer_ministry_vmin` (`vmin_ID`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `email_log_eml`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `email_log_eml` (
+  `eml_ID`        int(10) unsigned      NOT NULL AUTO_INCREMENT,
+  `eml_per_ID`    mediumint(8) unsigned DEFAULT NULL,
+  `eml_fam_ID`    mediumint(8) unsigned DEFAULT NULL,
+  `eml_usr_ID`    mediumint(9) unsigned DEFAULT NULL,
+  `eml_Address`   varchar(255)          NOT NULL,
+  `eml_Kind`      varchar(50)           NOT NULL,
+  `eml_Subject`   varchar(255)          NOT NULL DEFAULT '',
+  `eml_Body`      longtext              DEFAULT NULL,
+  `eml_Status`    varchar(20)           NOT NULL,
+  `eml_Error`     text                  DEFAULT NULL,
+  `eml_MessageID` varchar(255)          DEFAULT NULL,
+  `eml_DateSent`  datetime              NOT NULL,
+  `eml_Batch`       varchar(32)         DEFAULT NULL,
+  `eml_Attempts`    tinyint(3) unsigned NOT NULL DEFAULT 0,
+  `eml_NextAttempt` datetime            DEFAULT NULL,
+  PRIMARY KEY (`eml_ID`),
+  KEY `idx_eml_per_ID`   (`eml_per_ID`),
+  KEY `idx_eml_fam_ID`   (`eml_fam_ID`),
+  KEY `idx_eml_DateSent` (`eml_DateSent`),
+  KEY `idx_eml_Status`   (`eml_Status`),
+  KEY `idx_eml_Batch`    (`eml_Batch`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+INSERT INTO `email_log_eml` VALUES
+(1,2,NULL,1,'mathew.campbell@example.com','composer','Welcome to the choir','<p>Dear Mathew,</p><p>Practice is on Thursdays at 7pm.</p>','sent',NULL,'<seed-1@churchcrm.test>','2026-08-01 10:00:00',NULL,1,NULL),
+(2,2,NULL,NULL,'mathew.campbell@example.com','birthday','Happy Birthday from Main St. Cathedral',NULL,'sent',NULL,'<seed-2@churchcrm.test>','2026-06-15 06:00:00',NULL,1,NULL),
+(3,2,1,NULL,'mathew.campbell@example.com','verify','Please confirm your family details',NULL,'sent',NULL,'<seed-3@churchcrm.test>','2026-05-02 09:30:00',NULL,1,NULL),
+(4,2,NULL,1,'mathew.campbell@example.com','composer','Potluck this Sunday','<p>Dear Mathew,</p><p>Bring a dish to share.</p>','failed','SMTP Error: Could not connect to SMTP host.',NULL,'2026-04-20 14:15:00',NULL,1,NULL),
+(5,2,NULL,1,'mathew.campbell@example.com','composer','Thank you for serving','<p>Dear Mathew,</p><p>Thank you for helping on Sunday.</p>','sent',NULL,'<seed-5@churchcrm.test>','2026-03-10 08:45:00',NULL,1,NULL),
+(6,2,NULL,1,'mathew.campbell@example.com','composer','Oldest message','<p>Dear Mathew,</p><p>This is the sixth and oldest seeded message.</p>','sent',NULL,'<seed-6@churchcrm.test>','2026-02-01 08:00:00',NULL,1,NULL),
+(7,3,NULL,NULL,'tony.wade@example.com','account.reset-token','Reset your ChurchCRM password',NULL,'sent',NULL,'<seed-7@churchcrm.test>','2026-07-04 12:00:00',NULL,1,NULL),
+(8,100,NULL,1,'lena.walker@example.com','composer','Seeded failed message for Lena','<p>Dear Lena,</p><p>This one never went out.</p>','failed','SMTP Error: Could not connect to SMTP host.',NULL,'2026-03-01 09:00:00',NULL,1,NULL),
+(9,100,NULL,NULL,'lena.walker@example.com','birthday','Seeded skipped birthday greeting for Lena',NULL,'skipped',NULL,NULL,'2026-03-02 06:00:00',NULL,0,NULL);
 
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 /*!40101 SET AUTOCOMMIT=@OLD_AUTOCOMMIT */;

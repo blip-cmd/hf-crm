@@ -242,10 +242,11 @@ class UserService
             'addRecords'        => $allow && isset($body['AddRecords'])        ? 1 : 0,
             'editRecords'       => $allow && isset($body['EditRecords'])       ? 1 : 0,
             'deleteRecords'     => $allow && isset($body['DeleteRecords'])     ? 1 : 0,
-            'menuOptions'       => $allow && isset($body['MenuOptions'])       ? 1 : 0,
             'manageGroups'      => $allow && isset($body['ManageGroups'])      ? 1 : 0,
             'finance'           => $allow && isset($body['Finance'])           ? 1 : 0,
             'manageFundraisers' => $allow && isset($body['ManageFundraisers']) ? 1 : 0,
+            'manageMinistries'  => $allow && isset($body['ManageMinistries'])  ? 1 : 0,
+            'manageMyMinistries' => $allow && isset($body['ManageMyMinistries']) ? 1 : 0,
             'notes'             => $allow && isset($body['Notes'])             ? 1 : 0,
             'addEvent'          => $allow && isset($body['AddEvent'])          ? 1 : 0,
         ];
@@ -308,10 +309,11 @@ class UserService
                 ->setAddRecords($perms['addRecords'])
                 ->setEditRecords($perms['editRecords'])
                 ->setDeleteRecords($perms['deleteRecords'])
-                ->setMenuOptions($perms['menuOptions'])
                 ->setManageGroups($perms['manageGroups'])
                 ->setFinance($perms['finance'])
                 ->setManageFundraisers($perms['manageFundraisers'])
+                ->setManageMinistries($perms['manageMinistries'])
+                ->setManageMyMinistries($perms['manageMyMinistries'])
                 ->setNotes($perms['notes'])
                 ->setAdmin($perms['admin'])
                 ->setDefaultFY($defaultFY)
@@ -420,10 +422,11 @@ class UserService
         $user->setAddRecords($perms['addRecords'])
             ->setEditRecords($perms['editRecords'])
             ->setDeleteRecords($perms['deleteRecords'])
-            ->setMenuOptions($perms['menuOptions'])
             ->setManageGroups($perms['manageGroups'])
             ->setFinance($perms['finance'])
             ->setManageFundraisers($perms['manageFundraisers'])
+            ->setManageMinistries($perms['manageMinistries'])
+            ->setManageMyMinistries($perms['manageMyMinistries'])
             ->setNotes($perms['notes'])
             ->setAdmin($perms['admin'])
             ->setUserName($userName)

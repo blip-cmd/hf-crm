@@ -1,16 +1,15 @@
 /// <reference types="cypress" />
 
 /**
- * UI tests for group property assignment/removal on /groups/view/{id}
- * and property definition deletion on PropertyList.php.
+ * UI tests for group property assignment/removal on /groups/view/{id}.
  *
  * Requires: Docker / local environment with seeded data.
  * - Group with ID=1 must exist
  * - At least one group property definition must exist (pro_Class='g')
  *
- * API-based data setup runs BEFORE freshAdminLogin(). Despite withCredentials:false
+ * API-based data setup runs BEFORE cy.freshAdminFormLogin(). Despite withCredentials:false
  * on makePrivateAPICall, CI confirmed that cy.setupAdminSession() is not sufficient —
- * the PHP session is still killed by cy.request(). freshAdminLogin() is required.
+ * the PHP session is still killed by cy.request(). cy.freshAdminFormLogin() is required.
  */
 
 /**
@@ -19,15 +18,6 @@
  * PHP session created by cy.request() is discarded and a real browser
  * session is established instead.
  */
-function freshAdminLogin() {
-    cy.clearCookies();
-    cy.visit("/session/begin");
-    cy.get("input[name=User]").type(Cypress.env("admin.username"));
-    cy.get("input[name=Password]").type(
-        Cypress.env("admin.password") + "{enter}"
-    );
-    cy.url().should("not.include", "/session/begin");
-}
 
 // ------------------------------------------------------------------ //
 // Group Property Assignment — /groups/view/{id}
@@ -109,7 +99,7 @@ describe("UI: Group Property Assignment (/groups/view/{id})", () => {
             });
 
             // Step 2: Login after all API setup
-            freshAdminLogin();
+            cy.freshAdminFormLogin();
 
             // Step 3: UI only from here
             cy.get("@prop").then((prop) => {
@@ -165,7 +155,7 @@ describe("UI: Group Property Assignment (/groups/view/{id})", () => {
             });
 
             // Login AFTER API setup
-            freshAdminLogin();
+            cy.freshAdminFormLogin();
         });
 
         afterEach(() => {
@@ -265,96 +255,6 @@ describe("UI: Group Property Assignment (/groups/view/{id})", () => {
 });
 
 // ------------------------------------------------------------------ //
-// Property Definition Delete — PropertyList.php
-// ------------------------------------------------------------------ //
-describe("UI: Property Definition Delete (PropertyList.php)", () => {
-    beforeEach(() => {
-        cy.setupAdminSession();
-    });
-
-    it("loads PropertyList for groups and shows the table", () => {
-        cy.visit("/PropertyList.php?Type=g");
-        cy.get("body").then(($body) => {
-            if ($body.find(".delete-property-btn").length) {
-                cy.get(".delete-property-btn").should("exist");
-            } else {
-                cy.log(
-                    "No group property definitions exist yet — table is empty"
-                );
-            }
-        });
-    });
-
-    it("clicking Delete opens a bootbox warning; Cancel leaves row intact", () => {
-        cy.visit("/PropertyList.php?Type=g");
-
-        cy.get("body").then(($body) => {
-            if (!$body.find(".delete-property-btn").length) {
-                cy.log("No deletable properties — skipping");
-                return;
-            }
-
-            cy.get(".delete-property-btn").first().closest(".dropdown")
-                .find("[data-bs-toggle='dropdown']").click();
-
-            cy.get(".delete-property-btn").first().then(($btn) => {
-                const propertyId = $btn.data("property-id");
-                const rowSelector = `tr:has([data-property-id="${propertyId}"])`;
-
-                cy.wrap($btn).click();
-
-                cy.get(".bootbox").should("be.visible");
-                cy.get(".bootbox .modal-body").should(
-                    "contain.text",
-                    "will also remove all its assignments"
-                );
-
-                cy.get(".bootbox .btn-secondary").click({ force: true });
-
-                // The meaningful assertion: row was NOT removed
-                cy.get(rowSelector).should("exist");
-            });
-        });
-    });
-
-    it("confirming Delete fires DELETE API and removes the table row", () => {
-        cy.visit("/PropertyList.php?Type=g");
-
-        cy.get("body").then(($body) => {
-            if (!$body.find(".delete-property-btn").length) {
-                cy.log("No deletable properties — skipping");
-                return;
-            }
-
-            cy.intercept("DELETE", "**/api/people/properties/definition/*").as(
-                "deleteDef"
-            );
-
-            // Open the dropdown in the FIRST table row
-            cy.get(".delete-property-btn").first().closest(".dropdown")
-                .find("[data-bs-toggle='dropdown']").click();
-
-            cy.get(".delete-property-btn")
-                .first()
-                .then(($btn) => {
-                    const propertyId = $btn.data("property-id");
-                    const rowSelector = `tr:has([data-property-id="${propertyId}"])`;
-
-                    cy.wrap($btn).click();
-                    cy.get(".bootbox-accept")
-                        .should("be.visible")
-                        .click();
-
-                    cy.wait("@deleteDef")
-                        .its("response.statusCode")
-                        .should("eq", 200);
-                    cy.get(rowSelector).should("not.exist");
-                });
-        });
-    });
-});
-
-// ------------------------------------------------------------------ //
 // GroupPropsFormEditor Delete button — CSP regression (#8520)
 // Uses groupID=1 (same as tests above) to test that the form field
 // delete button has data-* attributes and triggers bootbox correctly.
@@ -374,7 +274,7 @@ describe("UI: GroupPropsFormEditor Delete button (CSP regression #8520)", () => 
         );
 
         // Now login and create a test field via UI
-        freshAdminLogin();
+        cy.freshAdminFormLogin();
         cy.visit(`/groups/${groupID}/properties/form`);
         cy.get("select#newFieldType").select("1");
         cy.get("input#newFieldName").clear().type(fieldName);
@@ -383,7 +283,7 @@ describe("UI: GroupPropsFormEditor Delete button (CSP regression #8520)", () => 
     });
 
     beforeEach(() => {
-        freshAdminLogin();
+        cy.freshAdminFormLogin();
         cy.visit(`/groups/${groupID}/properties/form`);
     });
 
@@ -453,7 +353,7 @@ describe("UI: GroupPropsFormEditor Back button and Show in Profile (#9381)", () 
         );
 
         // Login and create a test field if it doesn't already exist
-        freshAdminLogin();
+        cy.freshAdminFormLogin();
         cy.visit(`/groups/${groupID}/properties/form`);
         cy.get("body").then(($body) => {
             if (!$body.find(`input[value="${testFieldName}"]`).length) {
@@ -466,7 +366,7 @@ describe("UI: GroupPropsFormEditor Back button and Show in Profile (#9381)", () 
     });
 
     beforeEach(() => {
-        freshAdminLogin();
+        cy.freshAdminFormLogin();
         cy.visit(`/groups/${groupID}/properties/form`);
     });
 

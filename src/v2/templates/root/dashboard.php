@@ -6,6 +6,19 @@ require SystemURLs::getDocumentRoot() . '/Include/Header.php';
 
 ?>
 
+<?php if ($canReviewSelfRegistrations) { ?>
+<div class="alert alert-warning d-none flex-wrap gap-2 align-items-center justify-content-between" id="selfRegisterDashboardAlert" role="status">
+    <div>
+        <i class="fa-solid fa-user-clock me-2"></i>
+        <strong id="selfRegisterDashboardCount">0</strong>
+        <?= gettext('self-registrations are waiting for review') ?>
+    </div>
+    <a href="<?= $sRootPath ?>/people/self-register" class="btn btn-sm btn-warning">
+        <?= gettext('Review now') ?>
+    </a>
+</div>
+<?php } ?>
+
 <!-- Stat Cards Row -->
 <div class="row row-cards mb-3 g-2">
     <div class="col-6 col-md-4 col-lg">
@@ -238,7 +251,7 @@ require SystemURLs::getDocumentRoot() . '/Include/Header.php';
                 <h3 class="card-title"><i class="fa-solid fa-circle-dollar-to-slot me-2"></i> <?= gettext('Deposit Tracking') ?></h3>
             </div>
             <div class="card-body">
-                <div id="deposit-lineGraph" style="min-height: 300px;"></div>
+                <div id="deposit-lineGraph" class="deposit-line-graph"></div>
             </div>
         </div>
     </div>

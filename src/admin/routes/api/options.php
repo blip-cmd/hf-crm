@@ -4,6 +4,8 @@ use ChurchCRM\model\ChurchCRM\GroupQuery;
 use ChurchCRM\model\ChurchCRM\ListOption;
 use ChurchCRM\model\ChurchCRM\ListOptionQuery;
 use ChurchCRM\Service\ClassificationService;
+use ChurchCRM\Service\GradeService;
+use ChurchCRM\Service\GroupService;
 use ChurchCRM\Slim\Middleware\InputSanitizationMiddleware;
 use ChurchCRM\Slim\SlimUtils;
 use Psr\Http\Message\ResponseInterface as Response;
@@ -59,6 +61,9 @@ $app->group('/api/options', function (RouteCollectorProxy $group): void {
             ->orderByOptionId(\Propel\Runtime\ActiveQuery\Criteria::DESC)
             ->findOne();
         $newOptionId = $maxOptionId ? $maxOptionId->getOptionId() + 1 : 1;
+        if ($listId === GradeService::listId()) {
+            $newOptionId = max($newOptionId, GradeService::FIRST_CUSTOM_OPTION_ID);
+        }
 
         $option = new ListOption();
         $option
@@ -134,6 +139,20 @@ $app->group('/api/options', function (RouteCollectorProxy $group): void {
             throw new HttpNotFoundException($request, gettext('Option not found'));
         }
 
+        $roleGroup = GroupQuery::create()->findOneByRoleListId($listId);
+        if ($roleGroup !== null) {
+            try {
+                (new GroupService())->deleteGroupRole((int) $roleGroup->getId(), $optionId);
+            } catch (\InvalidArgumentException $e) {
+                if ($e->getCode() === 404) {
+                    throw new HttpNotFoundException($request, gettext('Option not found'));
+                }
+                throw new HttpBadRequestException($request, gettext('Cannot delete the only remaining option'));
+            }
+
+            return SlimUtils::renderSuccessJSON($response);
+        }
+
         $deletedSeq = $option->getOptionSequence();
         $option->delete();
 
@@ -172,21 +191,11 @@ $app->group('/api/options', function (RouteCollectorProxy $group): void {
                     ->filterByType($optionId)
                     ->update(['Type' => 0]);
                 break;
-            default:
-                // Dynamic list — check if it is a group role list and reset affected members
-                $roleGroup = GroupQuery::create()->findOneByRoleListId($listId);
-                if ($roleGroup !== null) {
-                    if ((int) $roleGroup->getDefaultRole() === $optionId) {
-                        $roleGroup->setDefaultRole(1);
-                        $roleGroup->save();
-                    }
-                    $defaultRole = (int) $roleGroup->getDefaultRole();
-                    \ChurchCRM\model\ChurchCRM\Person2group2roleP2g2rQuery::create()
-                        ->filterByGroupId($roleGroup->getId())
-                        ->filterByRoleId($optionId)
-                        ->update(['RoleId' => $defaultRole]);
-                }
-                break;
+        }
+        if ($listId === GradeService::listId()) {
+            \ChurchCRM\model\ChurchCRM\PersonQuery::create()
+                ->filterByGradeId($optionId)
+                ->update(['GradeId' => null]);
         }
 
         return SlimUtils::renderSuccessJSON($response);

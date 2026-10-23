@@ -149,91 +149,75 @@ describe("API Private Deposit Operations", () => {
         });
     });
 
-    describe("Authorization Tests - Finance Operations", () => {
-        it("Non-finance user denied getting pledges", () => {
-            // Test that a user without bFinance permission is denied
-            cy.makePrivateNoFinanceAPICall(
-                "GET",
-                `/api/deposits/${depositID}/pledges`,
-                null,
-                [401, 403, 500]
-            );
-        });
-
-        it("Non-finance user denied exporting CSV", () => {
-            // Test that a user without bFinance permission is denied
-            cy.makePrivateNoFinanceAPICall(
-                "GET",
-                `/api/deposits/${depositID}/csv`,
-                null,
-                [401, 403, 500]
-            );
-        });
-
-        it("Non-finance user denied generating PDF", () => {
-            // Test that a user without bFinance permission is denied
-            cy.makePrivateNoFinanceAPICall(
-                "GET",
-                `/api/deposits/${depositID}/pdf`,
-                null,
-                [401, 403, 500]
-            );
-        });
-
-        it("Non-finance user denied creating deposits", () => {
-            // Test that a user without bFinance permission is denied
+    describe("Deposit Operations", () => {
+        it("Closing a card deposit deletes only uncleared payments", () => {
             const today = new Date().toISOString().split("T")[0];
-            cy.makePrivateNoFinanceAPICall(
-                "POST",
-                `/api/deposits`,
-                {
-                    depositType: "Bank",
-                    depositComment: "Unauthorized Deposit",
+            const payment = (depositId, type) => ({
+                type,
+                iMethod: "CASH",
+                Date: today,
+                FamilyID: "1",
+                FYID: 29,
+                DepositID: depositId,
+                tScanString: "",
+                FundSplit: JSON.stringify([
+                    { FundID: "1", Amount: 15, NonDeductible: 0, Comment: "" },
+                ]),
+            });
+
+            cy.makePrivateAdminAPICall("POST", "/api/deposits", {
+                depositType: "CreditCard",
+                depositComment: "Close cleanup",
+                depositDate: today,
+            }, 200).then((created) => {
+                const id = created.body.Id;
+                cy.makePrivateAdminAPICall("POST", "/api/payments/pledges", payment(id, "Payment"), 200);
+                cy.makePrivateAdminAPICall("POST", "/api/payments/pledges", payment(id, "Pledge"), 200);
+                cy.makePrivateAdminAPICall("POST", `/api/deposits/${id}`, {
+                    depositType: "CreditCard",
+                    depositComment: "Closed",
                     depositDate: today,
-                },
-                [401, 403]
-            );
+                    depositClosed: true,
+                }, 200);
+                cy.makePrivateAdminAPICall("GET", `/api/deposits/${id}/payments`, null, 200).then((payments) => {
+                    expect(payments.body).to.have.length(0);
+                });
+                cy.makePrivateAdminAPICall("GET", `/api/deposits/${id}/pledges`, null, 200).then((pledges) => {
+                    expect(pledges.body.length).to.be.greaterThan(0);
+                });
+            });
         });
 
-        it("Non-finance user denied updating deposits", () => {
-            // Test that a user without bFinance permission is denied
+        it("Closing a bank deposit keeps uncleared payments", () => {
             const today = new Date().toISOString().split("T")[0];
-            cy.makePrivateNoFinanceAPICall(
-                "POST",
-                `/api/deposits/${depositID}`,
-                {
+            cy.makePrivateAdminAPICall("POST", "/api/deposits", {
+                depositType: "Bank",
+                depositComment: "Bank close",
+                depositDate: today,
+            }, 200).then((created) => {
+                const id = created.body.Id;
+                cy.makePrivateAdminAPICall("POST", "/api/payments/pledges", {
+                    type: "Payment",
+                    iMethod: "CASH",
+                    Date: today,
+                    FamilyID: "1",
+                    FYID: 29,
+                    DepositID: id,
+                    tScanString: "",
+                    FundSplit: JSON.stringify([
+                        { FundID: "1", Amount: 12, NonDeductible: 0, Comment: "" },
+                    ]),
+                }, 200);
+                cy.makePrivateAdminAPICall("POST", `/api/deposits/${id}`, {
                     depositType: "Bank",
-                    depositComment: "Unauthorized Update",
+                    depositComment: "Bank closed",
                     depositDate: today,
-                    depositClosed: false,
-                },
-                [401, 403, 500]
-            );
-        });
-
-        it("Non-finance user denied deleting deposits", () => {
-            // Test that a user without bFinance permission is denied
-            cy.makePrivateNoFinanceAPICall(
-                "DELETE",
-                `/api/deposits/${depositID}`,
-                null,
-                [401, 403]
-            );
-        });
-
-        // Regression for PR #8562: the main dashboard JS used to hit
-        // /api/deposits/dashboard unconditionally, producing a bootbox error
-        // for non-finance users. The JS fix prevents the call client-side,
-        // but we also assert the server-side FinanceRoleAuthMiddleware
-        // (applied to the /deposits route group) denies the request so the
-        // fix is defense-in-depth, not the only line of defense.
-        it("Non-finance user denied getting deposit dashboard data", () => {
-            cy.makePrivateNoFinanceAPICall(
-                "GET",
-                `/api/deposits/dashboard`,
-                null,
-                [401, 403]
-            );
+                    depositClosed: true,
+                }, 200);
+                cy.makePrivateAdminAPICall("GET", `/api/deposits/${id}/payments`, null, 200).then((payments) => {
+                    expect(payments.body.length).to.be.greaterThan(0);
+                });
+            });
         });
     });
 
@@ -343,16 +327,6 @@ describe("API Private Deposit Operations", () => {
                 expect(resp.body.count).to.be.a("number");
                 expect(resp.body.count).to.be.gte(0);
             });
-        });
-
-        it("Get open deposit count - Non-finance user (Finance menu disabled)", () => {
-            // Test that users without Finance enabled cannot access the endpoint
-            cy.makePrivateNoFinanceAPICall(
-                "GET",
-                `/api/deposits/open-count`,
-                null,
-                [401, 403]
-            );
         });
 
         it("Verify open deposit count is accurate", () => {

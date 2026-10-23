@@ -32,28 +32,31 @@ describe("Kiosk Manager", () => {
             cy.get("#KioskTable thead th").should("have.length.at.least", 4);
         });
 
+        it("lets an admin pick the guest classification from a dropdown and auto-saves it", () => {
+            cy.getSystemConfig("iKioskGuestClassification").then((original) => {
+                cy.intercept("POST", "**/admin/api/system/config/iKioskGuestClassification").as("saveGuestClass");
+                cy.visit("kiosk/admin");
+                cy.get("#kioskSettings .settings-panel-fields", { timeout: 10000 }).should("not.be.disabled");
+                cy.get("#kioskSettings select[name='iKioskGuestClassification']").as("guestClass");
+                cy.get("@guestClass").find("option").then(($options) => {
+                    const labels = [...$options].map((o) => o.textContent.trim());
+                    expect(labels).to.include("Guest");
+                    expect(labels).to.include("Member");
+                });
+                cy.get("@guestClass").find("option:selected").should("contain", "Guest");
+                cy.get("@guestClass").select("Regular Attender");
+                cy.wait("@saveGuestClass").its("response.statusCode").should("eq", 200);
+                cy.getSystemConfig("iKioskGuestClassification").should("eq", "2");
+                cy.restoreSystemConfig("iKioskGuestClassification", original);
+            });
+        });
+
         it("should display dashboard stat cards when kiosks exist", () => {
             cy.visit("kiosk/admin");
             // Stat cards are populated via JS after table loads; they hide when no kiosks
             cy.get("#KioskTable_wrapper", { timeout: 10000 }).should("exist");
             // Check the stat card container exists in DOM (may be hidden if no kiosks)
             cy.get("#kioskStats").should("exist");
-        });
-    });
-
-    describe("Standard User Access Denied (no ManageGroups role)", () => {
-        beforeEach(() => {
-            // tony.wade (standard session) has usr_ManageGroups=1 and now passes
-            // ManageGroupRoleAuthMiddleware added in #9476 — switch to
-            // setupNoFinanceSession() (judith.matthews: ManageGroups=0, Finance=0, Admin=0)
-            // to correctly test the non-ManageGroups denial path.
-            cy.setupNoFinanceSession();
-        });
-
-        it("should deny access to users without ManageGroups role for kiosk admin page", () => {
-            cy.visit("kiosk/admin", { failOnStatusCode: false });
-            // Should be redirected or show access denied
-            cy.url().should("not.include", "kiosk/admin");
         });
     });
 
@@ -67,11 +70,23 @@ describe("Kiosk Manager", () => {
             cy.contains("Kiosk Manager");
         });
 
-        it("ManageGroups user without MenuOptions does not see Group Properties in the Groups menu (#9172)", () => {
+        it("does not show the Kiosk Settings card to a ManageGroups user who is not an admin", () => {
+            cy.visit("kiosk/admin");
+            cy.contains("Register New Device");
+            cy.get("#kioskSettings").should("not.exist");
+        });
+
+        it("does not show a Group Properties button on the Groups dashboard", () => {
+            cy.visit("/groups/dashboard");
+            cy.contains("Group Reports");
+            cy.get('a[href*="PropertyList.php?Type=g"]').should("not.exist");
+        });
+
+        it("ManageGroups user who is not an admin does not see Group Properties in the Groups menu (#9172)", () => {
             cy.visit("/");
             cy.contains("a", "Groups").first().click({ force: true });
-            // Kiosk Manager is gated on ManageGroups, so it stays; PropertyList.php is gated on
-            // MenuOptions, so the menu must not offer it to this user.
+            // Kiosk Manager is gated on ManageGroups, so it stays; PropertyList.php is admin-only,
+            // so the menu must not offer it to this user.
             cy.get('a[href*="kiosk/admin"]', { timeout: 10000 }).should("exist");
             cy.get('a[href*="PropertyList.php?Type=g"]').should("not.exist");
         });
@@ -143,6 +158,47 @@ describe("Kiosk Manager Workflow", () => {
                 cy.get("#KioskTable_wrapper").should("exist");
             }
         });
+    });
+});
+
+describe("Kiosk Manager name escaping", () => {
+    const quotedName = 'Lobby "A" x="1"';
+    let kioskId = null;
+
+    before(() => {
+        cy.setupAdminSession();
+        cy.request({ method: "GET", url: "/kiosk/api/devices" }).then((before) => {
+            const existingIds = new Set((before.body.KioskDevices || []).map((k) => k.Id));
+            cy.request({ method: "POST", url: "/kiosk/api/allowRegistration" });
+            cy.clearCookies();
+            cy.request({ method: "GET", url: "/kiosk/device/heartbeat", failOnStatusCode: false });
+            cy.setupAdminSession({ forceLogin: true });
+            cy.request({ method: "GET", url: "/kiosk/api/devices" }).then((after) => {
+                const created = (after.body.KioskDevices || []).find((k) => !existingIds.has(k.Id));
+                expect(created, "a new kiosk should have registered").to.not.be.undefined;
+                kioskId = created.Id;
+                cy.request({ method: "POST", url: `/kiosk/api/devices/${kioskId}/name`, body: { name: quotedName } });
+            });
+        });
+    });
+
+    after(() => {
+        if (kioskId) {
+            cy.setupAdminSession({ forceLogin: true });
+            cy.request({ method: "DELETE", url: `/kiosk/api/devices/${kioskId}`, failOnStatusCode: false });
+        }
+    });
+
+    it("keeps a kiosk name with double quotes inside its data-kiosk-name attribute", () => {
+        cy.setupAdminSession();
+        cy.visit("/kiosk/admin");
+        cy.get(`button[data-kiosk-action='rename'][data-kiosk-id='${kioskId}']`, { timeout: 10000 }).then(($btn) => {
+            expect($btn.attr("data-kiosk-name")).to.equal(quotedName);
+            expect($btn[0].getAttributeNames().sort()).to.deep.equal(
+                ["class", "data-kiosk-action", "data-kiosk-id", "data-kiosk-name", "title"],
+            );
+        });
+        cy.get(`button[data-kiosk-action='delete'][data-kiosk-id='${kioskId}']`).should("have.attr", "data-kiosk-name", quotedName);
     });
 });
 

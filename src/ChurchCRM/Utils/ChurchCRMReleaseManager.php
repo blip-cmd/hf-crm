@@ -66,6 +66,9 @@ class ChurchCRMReleaseManager
 
                 foreach ($gitHubReleases as $r) {
                     $release = new ChurchCRMRelease($r);
+                    if (!$release->hasVersion()) {
+                        continue;
+                    }
                     if ($release->isPreRelease()) {
                         if ($allowPrerelease) {
                             $eligibleReleases[] = $release;
@@ -90,8 +93,25 @@ class ChurchCRMReleaseManager
                 if (is_array($latestRelease) && !empty($latestRelease)) {
                     $release = new ChurchCRMRelease($latestRelease);
                     // Only cache stable releases; skip if latest is a prerelease
-                    if (!$release->isPreRelease()) {
+                    if ($release->hasVersion() && !$release->isPreRelease()) {
                         $eligibleReleases[] = $release;
+                    } elseif (!$release->hasVersion()) {
+                        try {
+                            $earlier = $client->repo()->releases()->all(
+                                ChurchCRMReleaseManager::GITHUB_USER_NAME,
+                                ChurchCRMReleaseManager::GITHUB_REPOSITORY_NAME
+                            );
+                        } catch (\Exception $e) {
+                            LoggerUtils::getAppLogger()->warning('Failed to fetch earlier releases from GitHub API', ['error' => $e->getMessage()]);
+                            $earlier = [];
+                        }
+                        foreach ($earlier as $r) {
+                            $candidate = new ChurchCRMRelease($r);
+                            if ($candidate->hasVersion() && !$candidate->isPreRelease()) {
+                                $eligibleReleases[] = $candidate;
+                                break;
+                            }
+                        }
                     }
                 }
             }
@@ -562,6 +582,15 @@ class ChurchCRMReleaseManager
                 FileSystemUtils::moveDir($extractedChurchCRM, $docRoot);
                 $codeDeploySuccessful = true;
                 $logger->info('Move completed.  Took:' . $executionTime->getMilliseconds());
+
+                // The move replaces every routing .htaccess with the packaged copy,
+                // which has no RewriteBase. Stamp it from $sRootPath before the
+                // database migration runs. See #10563.
+                try {
+                    HtaccessGenerator::generateAll();
+                } catch (\Throwable $e) {
+                    $logger->error('Failed to regenerate .htaccess RewriteBase', ['exception' => $e]);
+                }
             } else {
                 // ZipArchive::open() failed - log the error code and throw
                 $logger->error('Failed to open upgrade archive', [
@@ -645,7 +674,7 @@ class ChurchCRMReleaseManager
         $stableReleases = [];
         foreach ($gitHubReleases as $r) {
             $release = new ChurchCRMRelease($r);
-            if (!$release->isPreRelease()) {
+            if ($release->hasVersion() && !$release->isPreRelease()) {
                 $stableReleases[] = $release;
             }
         }

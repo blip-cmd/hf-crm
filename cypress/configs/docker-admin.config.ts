@@ -1,6 +1,7 @@
 import { defineConfig } from 'cypress'
 import { verifyDownloadTasks } from 'cy-verify-downloads';
 import { registerRowCountGuard } from './row-count-guard';
+import { dbTasks, mailTasks, exposeMailpitUrl } from './_shared'
 
 import base from './base.config'
 
@@ -27,6 +28,7 @@ export default defineConfig({
   viewportHeight: 1080,
   viewportWidth: 1920,
   projectId: 'n4qnyb',
+  allowCypressEnv: false,
   env: {
     'admin.api.key': 'ajGwpy8Pdai22XDUpqjC5Ob04v0eG7EGgb4vz2bD2juT8YDmfM',
     'user.api.key': 'JZJApQ9XOnF7nvupWZlTWBRrqMtHE9eNcWBTUzEWGqL4Sdqp6C',
@@ -45,7 +47,7 @@ export default defineConfig({
     'plainauth.api.key': 'plainAuthReadOnlyApiKeyForTesting12345678901',
     'limited.api.key': 'limitedUserApiKeyForTesting123456789012345678',
     'editrecords.api.key': 'judithMatthewsEditRecordsNoNotesApiKey1234',
-    'menuoptions.api.key': 'menuOptionsOnlyApiKeyForTesting12345678901',
+    'teamleader.api.key': 'teamLeaderApiKeyForTesting1234567890123456',
     'deceased.api.key': 'deceasedUserApiKeyForTesting1234567890123',
     'inactive.api.key': 'inactiveUserApiKeyForTesting1234567890123',
     'admin.username': 'admin',
@@ -63,12 +65,8 @@ export default defineConfig({
     // this directory so both suites can run as parallel CI matrix legs.
     specPattern: ['cypress/e2e/ui-admin/**/*.spec.js'],
     setupNodeEvents(on, config) {
-      // No-op unless SPLIT is set; CI runs this suite as a single chunk so its
-      // job summary matches the sharded UI jobs.
-      if (process.env.SPLIT) {
-        const cypressSplit = require('cypress-split');
-        cypressSplit(on, config);
-      }
+      // Narrows specPattern to this shard when CI sets SPLIT / SPLIT_INDEX (scripts/shard-specs.js).
+      require('../../scripts/shard-specs').applyShard(config);
       const installLogsPrinter = require('cypress-terminal-report/src/installLogsPrinter');
       installLogsPrinter(on, {
         outputRoot: 'cypress/logs',
@@ -79,7 +77,10 @@ export default defineConfig({
         printLogsToConsole: 'onFail',
         printLogsToFile: 'always'
       });
-      on('task', verifyDownloadTasks);
+      // dbTasks adds db:query, the direct-MySQL task specs use to assert what has
+      // no HTTP surface (#9705); mailTasks adds the Mailpit reads (#9710).
+      on('task', { ...verifyDownloadTasks, ...dbTasks, ...mailTasks });
+      exposeMailpitUrl(config);
       // Test-database drift guard (#9769) — read-only row counts, plus the
       // env flag cypress/support/e2e.js checks before arming the guard.
       registerRowCountGuard(on, config);

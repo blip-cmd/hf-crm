@@ -73,11 +73,6 @@ msgid "Use Ctrl Key to select multiple"
 msgstr "Use Ctrl Key (Mac: ⌘ ) to select multiple"
 
 #: 
-#, fuzzy
-msgid "Load Authorized"
-msgstr "Load Authorised Transactions"
-
-#: 
 msgid "Family Cell Phone"
 msgstr "Family Mobile"
 
@@ -129,10 +124,6 @@ msgstr "Customisable report with filtering by date, fund, family, and payment me
 #: 
 msgid "Customize the text that appears on tax statements (sTaxReport1, sTaxReport2, etc)."
 msgstr "Customise the text that appears on tax statements (sTaxReport1, sTaxReport2, etc)."
-
-#: 
-msgid "Reports related to member voting eligibility and organization governance."
-msgstr "Reports related to member voting eligibility and organisation governance."
 
 #: 
 msgid "Require all users to enroll in two-factor authentication"
@@ -192,10 +183,6 @@ msgstr "Failed to cancel enrolment. Please try again."
 #: 
 msgid "Foreground Color"
 msgstr "Foreground Colour"
-
-#: 
-msgid "Include Sunday School classes and enrollments"
-msgstr "Include Sunday School classes and enrolments"
 
 #: 
 msgid "Two Factor Enrollment Error"

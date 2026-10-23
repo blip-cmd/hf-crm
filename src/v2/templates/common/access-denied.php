@@ -12,10 +12,11 @@ $roleDescriptions = [
     'EditRecords' => gettext('Edit records permission'),
     'DeleteRecords' => gettext('Delete records permission'),
     'AddRecords' => gettext('Add records permission'),
-    'MenuOptions' => gettext('Menu options access'),
     'Notes' => gettext('Notes access'),
     'AddEvent' => gettext('Add event permission'),
     'Authentication' => gettext('User authentication'),
+    'ManageMinistries' => gettext('Ministry management access'),
+    'VolunteerCoordinator' => gettext('Manage My Ministries access, with a ministry or team to manage'),
 ];
 
 $roleDescription = isset($roleDescriptions[$missingRole])
