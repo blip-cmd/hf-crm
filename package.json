@@ -45,6 +45,7 @@
         "prepare": "git config core.hooksPath .githooks 2>/dev/null || true",
         "locale:lint": "node scripts/lint/locale-check.js",
         "package": "npm run build && node scripts/build/package-release.js",
+        "test:docker:local": "node -e \"process.platform === 'win32' ? require('child_process').execSync('powershell -ExecutionPolicy Bypass -File scripts/dev/test-docker-local.ps1', {stdio: 'inherit'}) : require('child_process').execSync('bash scripts/dev/test-docker-local.sh', {stdio: 'inherit'})\"",
         "test": "npx cypress run --config-file cypress/configs/docker.config.ts",
         "test:php": "node tests/php/run.js unit",
         "test:php:integration": "node tests/php/run.js integration",

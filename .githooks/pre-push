@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 #
-# ChurchCRM pre-push hook — runs `npm run lint` (Biome format and lint, tsc,
+# ChurchCRM pre-push hook - runs `npm run lint` (Biome format and lint, tsc,
 # UI/icon/Cypress/SQL conventions, locale script tests) before any push.
 #
 # Enabled automatically by `npm install` (the `prepare` script in
 # package.json points core.hooksPath at this directory). To bypass for
-# emergency hot-fixes only, run with `git push --no-verify` — but you
+# emergency hot-fixes only, run with `git push --no-verify` - but you
 # MUST justify it in the PR description.
 
 set -e
@@ -20,15 +20,37 @@ if [ ! -f package.json ]; then
     exit 0
 fi
 
-echo "→ pre-push: running lint (npm run lint)…"
+echo "-> pre-push: running lint (npm run lint)..."
 
 if ! npm run --silent lint; then
     echo ""
-    echo "✘ pre-push: lint failed."
+    echo "x pre-push: lint failed."
     echo "  Fix the errors above (or run \`npm run lint:fix\` for formatting) and try again."
     echo "  To bypass in an emergency: git push --no-verify (justify in PR)."
     exit 1
 fi
 
-echo "✓ pre-push: lint passed."
+echo "v pre-push: lint passed."
+
+# When pushing develop branch, verify local docker environment unless bypassed
+CURRENT_BRANCH=$(git symbolic-ref --short HEAD 2>/dev/null || echo "")
+if [ "$CURRENT_BRANCH" = "develop" ]; then
+    if [ "${BYPASS_AGENT_RULES:-0}" = "1" ] || [ "${SKIP_DOCKER_TEST:-0}" = "1" ]; then
+        echo "-> pre-push: BYPASS_AGENT_RULES or SKIP_DOCKER_TEST set. Skipping local docker verification."
+    else
+        echo "-> pre-push: develop branch detected. Checking local Docker test runner..."
+        if command -v docker >/dev/null 2>&1 && docker info >/dev/null 2>&1; then
+            echo "-> pre-push: running npm run test:docker:local..."
+            if ! npm run test:docker:local; then
+                echo "x pre-push: local Docker test failed."
+                echo "  To bypass: BYPASS_AGENT_RULES=1 git push (or git push --no-verify)"
+                exit 1
+            fi
+            echo "v pre-push: local Docker tests passed."
+        else
+            echo "i pre-push: Docker daemon not running locally. Skipping test:docker:local (use staging or start Docker to verify)."
+        fi
+    fi
+fi
+
 exit 0
