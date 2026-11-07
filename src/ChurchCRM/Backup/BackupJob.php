@@ -192,11 +192,16 @@ class BackupJob extends JobBase
             $this->createGZSql();
         }
         $time->end();
-        $percentExecutionTime = (($time->getMilliseconds() / 1000) / ini_get('max_execution_time')) * 100;
-        LoggerUtils::getAppLogger()->info('Completed backup job.  Took : ' . $time->getMilliseconds() . 'ms. ' . $percentExecutionTime . '% of max_execution_time');
-        if ($percentExecutionTime > 80) {
-            // if the backup took more than 80% of the max_execution_time, then write a warning to the log
-            LoggerUtils::getAppLogger()->warning('Backup task took more than 80% of max_execution_time (' . ini_get('max_execution_time') . ').  Consider increasing this time to avoid a failure');
+        $maxExecutionTime = (int) ini_get('max_execution_time');
+        if ($maxExecutionTime > 0) {
+            $percentExecutionTime = (($time->getMilliseconds() / 1000) / $maxExecutionTime) * 100;
+            LoggerUtils::getAppLogger()->info('Completed backup job.  Took : ' . $time->getMilliseconds() . 'ms. ' . $percentExecutionTime . '% of max_execution_time');
+            if ($percentExecutionTime > 80) {
+                // if the backup took more than 80% of the max_execution_time, then write a warning to the log
+                LoggerUtils::getAppLogger()->warning('Backup task took more than 80% of max_execution_time (' . $maxExecutionTime . ').  Consider increasing this time to avoid a failure');
+            }
+        } else {
+            LoggerUtils::getAppLogger()->info('Completed backup job.  Took : ' . $time->getMilliseconds() . 'ms.');
         }
         $this->BackupDownloadFileName = $this->BackupFile->getFilename();
 
