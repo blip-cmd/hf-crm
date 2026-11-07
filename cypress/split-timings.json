@@ -513,20 +513,12 @@
       "duration": 2429
     },
     {
-      "spec": "cypress/e2e/api/private/standard/private.selfedit.family-scope.spec.js",
-      "duration": 3000
-    },
-    {
       "spec": "cypress/e2e/api/private/standard/private.system.timerjobs.spec.js",
       "duration": 2617
     },
     {
       "spec": "cypress/e2e/api/private/standard/private.user-config-permissions.spec.js",
       "duration": 2449
-    },
-    {
-      "spec": "cypress/e2e/api/private/standard/private.user-current.2fa-editself.spec.js",
-      "duration": 2688
     },
     {
       "spec": "cypress/e2e/api/private/standard/private.user.settings.spec.js",
@@ -1193,10 +1185,6 @@
       "duration": 4000
     },
     {
-      "spec": "cypress/e2e/ui/finance/tax-report-pdf.spec.js",
-      "duration": 10000
-    },
-    {
       "spec": "cypress/e2e/ui/fundraiser/fundraiser.delete-operations.spec.js",
       "duration": 5000
     },
@@ -1597,7 +1585,7 @@
       "duration": 12500
     },
     {
-      "spec": "cypress/e2e/ui/reports/labels-font-select.spec.js",
+      "spec": "cypress/e2e/ui/reports/letters-and-labels.spec.js",
       "duration": 6500
     },
     {

@@ -308,6 +308,10 @@ $canSendEmail = AuthenticationManager::getCurrentUser()->isEmailEnabled() && Sys
             </div>
         </div>
 
+        <?php if ($portalSignIn !== null) : ?>
+            <?php include __DIR__ . '/partials/portal-signin-card.php'; ?>
+        <?php endif; ?>
+
         <!-- Properties Card (sidebar) -->
         <div class="card">
             <div class="card-header d-flex align-items-center">
@@ -422,6 +426,10 @@ $canSendEmail = AuthenticationManager::getCurrentUser()->isEmailEnabled() && Sys
             </div>
         </div>
         <?php } ?>
+
+        <?php if ($loginAsPersonHistory !== null) : ?>
+            <div class="mt-3"><?php include __DIR__ . '/partials/login-as-person-history.php'; ?></div>
+        <?php endif; ?>
     </div>
     <div class="col-lg-8">
         <!-- Toolbar -->
@@ -468,6 +476,16 @@ $canSendEmail = AuthenticationManager::getCurrentUser()->isEmailEnabled() && Sys
                         <a class="dropdown-item" id="activateDeactivatePerson">
                             <i class="fa-solid fa-power-off me-2"></i><?= ($person->isActive() ? gettext('Set Inactive') : gettext('Set Active')) ?>
                         </a>
+                    <?php } ?>
+                    <?php if ($loginAsPerson !== null) { ?>
+                        <div class="dropdown-divider"></div>
+                        <?php if ($loginAsPerson['refusal'] === null) { ?>
+                            <a class="dropdown-item" href="#" id="loginAsPerson" data-person-id="<?= (int) $iPersonID ?>" data-label="<?= InputUtils::escapeAttribute($loginAsPerson['label']) ?>" data-csrf-token="<?= InputUtils::escapeAttribute($loginAsPerson['csrfToken']) ?>"><i class="fa-solid fa-user-secret me-2"></i><?= InputUtils::escapeHTML($loginAsPerson['label']) ?></a>
+                        <?php } else { ?>
+                            <span class="d-block" id="loginAsPersonRefusal" tabindex="0" title="<?= InputUtils::escapeAttribute($loginAsPerson['refusal']) ?>">
+                                <span class="dropdown-item disabled" id="loginAsPerson" aria-disabled="true"><i class="fa-solid fa-user-secret me-2"></i><?= InputUtils::escapeHTML($loginAsPerson['label']) ?><span class="visually-hidden">: <?= InputUtils::escapeHTML($loginAsPerson['refusal']) ?></span></span>
+                            </span>
+                        <?php } ?>
                     <?php } ?>
                     <?php if (AuthenticationManager::getCurrentUser()->isDeleteRecordsEnabled()) { ?>
                         <div class="dropdown-divider"></div>
@@ -712,13 +730,13 @@ $canSendEmail = AuthenticationManager::getCurrentUser()->isEmailEnabled() && Sys
                     // tabs so the active experience is never ambiguous during the
                     // migration; the legacy tab keeps its id and pane id.
                     $volunteerVersion = $volunteerVersion ?? 'v1';
-                    $showVolunteerV1  = in_array($volunteerVersion, ['v1', 'both'], true);
+                    $showVolunteerV1  = $volunteerV1InUse ?? false;
                     $showVolunteerV2  = in_array($volunteerVersion, ['v2', 'both'], true);
                     ?>
                     <?php if ($showVolunteerV1) : ?>
                     <li class="nav-item">
                         <a class="nav-link" id="nav-item-volunteer" href="#volunteer" data-bs-toggle="tab">
-                            <i class="fa-solid fa-handshake-angle me-1"></i><?= $volunteerVersion === 'both' ? gettext('Volunteer (Legacy)') : gettext('Volunteer') ?>
+                            <i class="fa-solid fa-handshake-angle me-1"></i><?= $showVolunteerV2 ? gettext('Volunteer (Legacy)') : gettext('Volunteer') ?>
                         </a>
                     </li>
                     <?php endif; ?>
@@ -827,6 +845,9 @@ $canSendEmail = AuthenticationManager::getCurrentUser()->isEmailEnabled() && Sys
                     <?php if ($showVolunteerV1) : ?>
                     <div class="tab-pane" id="volunteer">
                         <?php
+                        if (!empty($volunteerV1Notice) && AuthenticationManager::getCurrentUser()->isAdmin()) {
+                            require SystemURLs::getDocumentRoot() . '/admin/views/partials/volunteer-v1-notice.php';
+                        }
                         $assignedVolIDs = [];
                         if (count($assignedVolunteerOppsData) === 0) {
                         ?>

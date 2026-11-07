@@ -21,60 +21,80 @@ on:
       - master
       - develop
       - 'hotfix/**'
-    paths-ignore:
-      # Docs-only PRs do not need an application build or Cypress rerun.
-      - '**/*.md'
-      - '.github/PULL_REQUEST_TEMPLATE.md'
-      - 'docs/**'
-      - 'LICENSE'
-      - '.gitignore'
-      - '.gitattributes'
-      - '.githooks/**'
-      - '.agents/**'
-      - '.claude/**'
-      - '.claudecode/**'
-      - '.editorconfig'
-      - '.codespellrc'
-      - '.devskim.json'
-      - 'CODEOWNERS'
-      - 'locale/terms/**'
-      - 'locale/scripts/**'
-      - 'locale/messages.po'
-      - 'locale/messages.json'
-      - '.github/FUNDING.yml'
-      - '.github/release.yml'
-      - '.github/ISSUE_TEMPLATE/**'
-      - '.github/issue-comments/**'
+    paths:
+      # Files the suite neither runs nor ships do not start it. A pull request also skips generated translations; the master push build below packages them.
+      - '**'
+      - '!**/*.md'
+      - '!.github/PULL_REQUEST_TEMPLATE.md'
+      - '!docs/**'
+      - '!LICENSE'
+      - '!.gitignore'
+      - '!.gitattributes'
+      - '!.githooks/**'
+      - '!.agents/**'
+      - '!.claude/**'
+      - '!.claudecode/**'
+      - '!.cursor/**'
+      - '!.editorconfig'
+      - '!.codespellrc'
+      - '!.devskim.json'
+      - '!CODEOWNERS'
+      - '!.coderabbit.yaml'
+      - '!playwright/**'
+      - '!locale/terms/**'
+      - '!locale/scripts/**'
+      - '!locale/messages.po'
+      - '!locale/messages.json'
+      - '!.github/FUNDING.yml'
+      - '!.github/release.yml'
+      - '!.github/dependabot.yml'
+      - '!.github/ISSUE_TEMPLATE/**'
+      - '!.github/issue-comments/**'
+      - '!.github/workflows/**'
+      - '!src/locale/i18n/**'
+      - '!src/locale/textdomain/**'
+      # Re-include: only these two workflow files run this pipeline.
+      - '.github/workflows/build-test-package.yml'
+      - '.github/workflows/build-test-nightly.yml'
   push:
     branches:
       - master
       - develop
       - 'hotfix/**'
       - 'release/**'
-    paths-ignore:
-      # Docs-only PRs do not need an application build or Cypress rerun.
-      - '**/*.md'
-      - '.github/PULL_REQUEST_TEMPLATE.md'
-      - 'docs/**'
-      - 'LICENSE'
-      - '.gitignore'
-      - '.gitattributes'
-      - '.githooks/**'
-      - '.agents/**'
-      - '.claude/**'
-      - '.claudecode/**'
-      - '.editorconfig'
-      - '.codespellrc'
-      - '.devskim.json'
-      - 'CODEOWNERS'
-      - 'locale/terms/**'
-      - 'locale/scripts/**'
-      - 'locale/messages.po'
-      - 'locale/messages.json'
-      - '.github/FUNDING.yml'
-      - '.github/release.yml'
-      - '.github/ISSUE_TEMPLATE/**'
-      - '.github/issue-comments/**'
+    paths:
+      # Translations are not skipped here: the release ZIP comes from this build.
+      - '**'
+      - '!**/*.md'
+      - '!.github/PULL_REQUEST_TEMPLATE.md'
+      - '!docs/**'
+      - '!LICENSE'
+      - '!.gitignore'
+      - '!.gitattributes'
+      - '!.githooks/**'
+      - '!.agents/**'
+      - '!.claude/**'
+      - '!.claudecode/**'
+      - '!.cursor/**'
+      - '!.editorconfig'
+      - '!.codespellrc'
+      - '!.devskim.json'
+      - '!CODEOWNERS'
+      - '!.coderabbit.yaml'
+      - '!playwright/**'
+      - '!locale/terms/**'
+      - '!locale/scripts/**'
+      - '!locale/messages.po'
+      - '!locale/messages.json'
+      - '!.github/FUNDING.yml'
+      - '!.github/release.yml'
+      - '!.github/dependabot.yml'
+      - '!.github/ISSUE_TEMPLATE/**'
+      - '!.github/issue-comments/**'
+      - '!.github/workflows/**'
+      # Re-include: only these two workflow files run this pipeline.
+      - '.github/workflows/build-test-package.yml'
+      - '.github/workflows/build-test-nightly.yml'
   workflow_dispatch:
 
 jobs:
@@ -101,8 +121,21 @@ jobs:
 
     - uses: ./.github/actions/checkout-node-npm
 
-    - name: Lint (typecheck, Biome, UI, Cypress, SQL, and locale script checks)
+    - uses: ./.github/actions/composer-install
+
+    - name: Install PHP test tooling
+      run: npm run test:php:install
+
+    - name: Lint and fast regression tests
       run: npm run lint
+
+    - name: Upload PHP test results
+      if: always()
+      uses: ./.github/actions/upload-artifact
+      with:
+        name: php-unit-${{ github.run_id }}
+        path: temp/php-tests/*.xml
+        if-no-files-found: ignore
 
   build:
     # Locale PRs only touch translations. Skip here, not in `configure`: a skipped
@@ -141,10 +174,7 @@ jobs:
       run: npm run package
 
     - name: Validate PHP syntax
-      run: npm run build:php:validate:all
-
-    - name: Run PHP error-redaction tests
-      run: npm run test:php
+      run: npm run build:php:validate -- --all
 
     - name: Build Docker images
       run: |
@@ -331,7 +361,7 @@ jobs:
         docker tag churchcrm/crm:php${{ matrix.php-version }}-test churchcrm/crm:php8-debian
 
     - name: Generate file signatures
-      run: node scripts/generate-signatures-node.js
+      run: node scripts/build/generate-signatures-node.js
 
     - name: Remove Config.php for fresh install test
       run: rm -f src/Include/Config.php

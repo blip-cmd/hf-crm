@@ -15,6 +15,7 @@ Process:
 2. Run the migration on a staging copy and smoke-test the app
 3. Back up the production DB before applying; keep a rollback script and a snapshot
 4. Apply in a maintenance window and watch for errors
+5. For every PR that adds or changes a file under `src/mysql/upgrade/`, report before-and-after per-statement timings on the repeatable large-dataset upgrade benchmark. Include the dataset sizes and database version, and identify lock duration for hot tables.
 
 Backward compatibility: add nullable columns or new tables first, populate them (background job if large), then tighten to non-null in a later step.
 
@@ -97,16 +98,25 @@ The test database creates the table from `Install.sql`. Add rows to `cypress/dat
 ```bash
 cp orm/propel.php.dist orm/propel.php     # orm/propel.php is gitignored
 npm run build:orm
-npm run build:php:validate:orm
+npm run lint
 ```
 
-`scripts/validate-orm-base-classes.js` passes silently when `Base/` is absent, so run `composer install` first.
+The ORM base-class lint passes silently when `Base/` is absent, so run `composer install` first.
+
+## How the Upgrader Runs a Script
+
+The web upgrader runs one `.sql` or `.php` file per HTTP request and records it in `database_upgrade_progress` (`started`, then `complete`). The version advances only after every file in the block completes. Details: `docs/development/upgrade-request-batches.md`.
+
+- A file that dies midway stays `started` and stops the run. Its statements already applied stay applied (DDL auto-commits), and the upgrader does not re-run it. An administrator repairs the database and the checkpoint, or restores a backup.
+- Write every file so that re-running it from the start is safe: guard each `ADD COLUMN` / `ALTER` with `information_schema` (below), and use `INSERT IGNORE` and `DROP ... IF EXISTS`. After a crash, an administrator can then reset the file's checkpoint and run it again safely.
+- Keep a file to one concern and list the files in order in `scripts`. A small file limits what a crash can leave half done.
+- `upgrade.json` has no retry metadata, and the upgrader does not retry or skip a `started` file by itself. Do not add either without a stuck-upgrade report on a released script (deferred under #10943). When a report arrives, split only that block's files, and give the split files the exact end state of the original for a fresh database.
 
 ## MySQL-Compatible SQL
 
-Supported databases are the LTS releases in `supported-databases.json`, the one place the versions are written. To change one, edit that file and run `node scripts/sync-supported-databases.js`; `npm run lint` fails when a file is out of date. The docs repo (`requirements.json`) and the website (`data/requirements.json`) mirror the file: update both. CI runs the MariaDB version, and the nightly runs the MySQL version plus `mysql:lts` and `mysql:latest`. Every `.sql` change (upgrade script, `Install.sql`, `seed.sql`) must run on both MariaDB and MySQL. Before you ask to commit, apply it to MariaDB (`docker/docker-compose.yaml`) and to a MySQL 8 container, and run it a second time where it should be idempotent. Syntax that only one server accepts fails on the other; CI finds it only in the nightly matrix.
+Supported databases are the LTS releases in `supported-databases.json`, the one place the versions are written. To change one, edit that file and run `node scripts/ci/sync-supported-databases.js`; `npm run lint` fails when a file is out of date. The docs repo (`requirements.json`) and the website (`data/requirements.json`) mirror the file: update both. CI runs the MariaDB version, and the nightly runs the MySQL version plus `mysql:lts` and `mysql:latest`. Every `.sql` change (upgrade script, `Install.sql`, `seed.sql`) must run on both MariaDB and MySQL. Before you ask to commit, apply it to MariaDB (`docker/docker-compose.yaml`) and to a MySQL 8 container, and run it a second time where it should be idempotent. Syntax that only one server accepts fails on the other; CI finds it only in the nightly matrix.
 
-Column-level `IF EXISTS` / `IF NOT EXISTS` on `ADD COLUMN`, `DROP COLUMN`, `CHANGE COLUMN`, and `MODIFY COLUMN` is MariaDB-only. MySQL rejects it with `SQLSTATE[42000] 1064`, and only the nightly MySQL matrix (`docker/docker-compose.mysql.yaml`) runs against MySQL. `scripts/validate-mysql-upgrade-syntax.js` checks this in CI (`.github/workflows/code-quality.yml`) and in `.githooks/pre-commit`.
+Column-level `IF EXISTS` / `IF NOT EXISTS` on `ADD COLUMN`, `DROP COLUMN`, `CHANGE COLUMN`, and `MODIFY COLUMN` is MariaDB-only. MySQL rejects it with `SQLSTATE[42000] 1064`, and only the nightly MySQL matrix (`docker/docker-compose.mysql.yaml`) runs against MySQL. `npm run lint` checks this, in CI and in the pre-commit hook.
 
 Use plain DDL when version gating guarantees the column's state (a script that ADDs a column runs only on installs that lack it):
 

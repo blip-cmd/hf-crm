@@ -162,8 +162,11 @@ class   SystemConfig
             'iMinPasswordLength'                   => new ConfigItem('iMinPasswordLength', 'number', '8', gettext('Minimum length a user may set their password to')),
             'iMinPasswordChange'                   => new ConfigItem('iMinPasswordChange', 'number', '4', gettext("Minimum amount that a new password must differ from the old one (# of characters changed)\nSet to zero to disable this feature")),
             'aDisallowedPasswords'                 => new ConfigItem('aDisallowedPasswords', 'text', 'password,god,jesus,church,christian', gettext('A comma-separated list of disallowed (too obvious) passwords.')),
-            'iMaxFailedLogins'                     => new ConfigItem('iMaxFailedLogins', 'number', '5', gettext("Maximum number of failed logins to allow before a user account is locked.\nOnce the maximum has been reached, an administrator must re-enable the account.\nThis feature helps to protect against automated password guessing attacks.\nSet to zero to disable this feature.")),
-            'iPDFOutputType'                       => new ConfigItem('iPDFOutputType', 'number', '1', gettext("PDF handling mode.\n1 = Save File dialog\n2 = Open in current browser window")),
+            'iMaxFailedLogins'                     => new ConfigItem('iMaxFailedLogins', 'number', '5', gettext("Maximum number of failed logins to allow before a user account is locked.\nA locked account unlocks by itself after the lockout period, or sooner when an administrator resets its failed logins.\nThis feature helps to protect against automated password guessing attacks.\nSet to zero to disable this feature.")),
+            'iLoginLockoutMinutes'                 => new ConfigItem('iLoginLockoutMinutes', 'number', '15', gettext("Lockout period in minutes\nA locked account unlocks by itself after this many minutes. Failed logins from one IP address are counted over the same period.")),
+            'iMaxFailedLoginsPerIP'                => new ConfigItem('iMaxFailedLoginsPerIP', 'number', '20', gettext("Maximum number of failed logins from one IP address\nFailed logins and password reset requests from one IP address count toward this limit within the lockout period. Once it is reached, sign-in from that address is refused until the period ends.\nSet to zero to disable this feature, for example when everyone reaches ChurchCRM through one proxy address.")),
+            'iPDFOutputType'                       => new ConfigItem('iPDFOutputType', 'choice', '1', gettext('PDF handling mode'), '', json_encode(['Choices' => [gettext('Save File dialog') . ':1', gettext('Open in browser window') . ':2']])),
+            'sPDFTempDir'                          => new ConfigItem('sPDFTempDir', 'text', '', gettext('Leave blank to use the system temporary directory. Otherwise, enter an existing writable directory protected from web access.'), '', '', false),
             'sDefaultCity'                         => new ConfigItem('sDefaultCity', 'text', '', gettext('Default City')),
             'sDefaultState'                        => new ConfigItem('sDefaultState', 'text', '', gettext('Default State - Must be 2-letter abbreviation!')),
             'sDefaultCountry'                      => new ConfigItem('sDefaultCountry', 'choice', '', '', '', json_encode(['Choices' => Countries::getNames()])),
@@ -211,8 +214,6 @@ class   SystemConfig
             'sDateFilenameFormat'                  => new ConfigItem('sDateFilenameFormat', 'text', 'Ymd-Gis'),
             'sDatePickerPlaceHolder'               => new ConfigItem('sDatePickerPlaceHolder', 'text', 'yyyy-mm-dd', gettext('For defining the date in Date-Picker, per default : yyyy-mm-dd, In French : dd/mm/yyyy for example.')),
             'sDatePickerFormat'                    => new ConfigItem('sDatePickerFormat', 'text', 'Y-m-d', gettext('For defining the date in Date-Picker, per default : Y-m-d, In French : d/m/Y for example.')),
-            'leftX'                                => new ConfigItem('leftX', 'number', '20', gettext('Left Margin (1 = 1/100th inch)')),
-            'incrementY'                           => new ConfigItem('incrementY', 'number', '4', gettext('Line Thickness (1 = 1/100th inch')),
             'sChurchName'                          => new ConfigItem('sChurchName', 'text', '', ''),
             'sChurchAddress'                       => new ConfigItem('sChurchAddress', 'text', '', ''),
             'sChurchCity'                          => new ConfigItem('sChurchCity', 'text', '', ''),
@@ -238,7 +239,8 @@ class   SystemConfig
             'sConfirmSigner'                       => new ConfigItem('sConfirmSigner', 'text', '', gettext('Database information confirmation and correction report signer')),
             'sDirectoryDisclaimer1'                => new ConfigItem('sDirectoryDisclaimer1', 'text', "Every effort was made to ensure the accuracy of this directory.  If there are any errors or omissions, please contact the church office.\n\nThis directory is for the use of the people of", gettext('Verbage for the directory report'), '', '', false),
             'sDirectoryDisclaimer2'                => new ConfigItem('sDirectoryDisclaimer2', 'text', ', and the information contained in it may not be used for business or commercial purposes.', gettext('Verbage for the directory report'), '', '', false),
-            'bDirLetterHead'                       => new ConfigItem('bDirLetterHead', 'text', '../Images/church_letterhead.jpg', gettext('Church Letterhead path and file')),
+            // Legacy path or https URL, read as a fallback when no letterhead is uploaded on Admin -> Report Settings.
+            'bDirLetterHead'                       => new ConfigItem('bDirLetterHead', 'text', '', gettext('Church Letterhead path and file')),
             'sZeroGivers'                          => new ConfigItem('sZeroGivers', 'text', 'This letter shows our record of your payments for', gettext('Verbage for top line of tax report. Dates will be appended to the end of this line.')),
             'sZeroGivers2'                         => new ConfigItem('sZeroGivers2', 'text', 'Thank you for your help in making a difference. We greatly appreciate your gift!', gettext('Verbage for bottom line of tax report.')),
             'sZeroGivers3'                         => new ConfigItem('sZeroGivers3', 'text', 'If you have any questions or corrections to make to this report, please contact the church at the above number during business hours, 9am to 4pm, M-F.', gettext('Verbage for bottom line of tax report.')),
@@ -255,6 +257,7 @@ class   SystemConfig
             'iKioskGuestClassification'            => new ConfigItem('iKioskGuestClassification', 'choice', '3', gettext('Classification given to walk-in guests registered on a kiosk')),
             'bEnableLostPassword'                  => new ConfigItem('bEnableLostPassword', 'boolean', '1', gettext('Show/Hide Lost Password Link on the login screen')),
             'sChurchWebSite'                       => new ConfigItem('sChurchWebSite', 'text', '', ''),
+            'sChurchTaxId'                         => new ConfigItem('sChurchTaxId', 'text', '', gettext('Church tax ID (EIN) printed on contribution statements')),
             // Church social media accounts. Like the other church-identity
             // items above, these are deliberately absent from
             // buildCategories() so they never appear on the System Settings
@@ -270,7 +273,6 @@ class   SystemConfig
             // admin page, Admin → Member Portal (design P9, §4).
             'sMemberPortalTheme'                   => new ConfigItem('sMemberPortalTheme', 'text', 'default', gettext('Folder name of the Member Portal theme to use, from Include/themes/. "default" is the system theme that ships with ChurchCRM.')),
             'bPortalDeveloperMode'                 => new ConfigItem('bPortalDeveloperMode', 'boolean', '0', gettext('Turn off the Member Portal template cache and print the name of each template in an HTML comment. For theme designers; leave off in normal use.')),
-            'bPortalShowCalendar'                  => new ConfigItem('bPortalShowCalendar', 'boolean', '1', gettext('Show the church calendar in the Member Portal.')),
             'bPortalShowVolunteer'                 => new ConfigItem('bPortalShowVolunteer', 'boolean', '1', gettext('Show volunteering and team pages in the Member Portal.')),
             'bPortalAllowBirthdayEdit'             => new ConfigItem('bPortalAllowBirthdayEdit', 'boolean', '0', gettext('Let members change their own and their family members\' birthdays in the Member Portal.')),
             // The calendars the Member Portal shows, as a JSON list of
@@ -282,6 +284,26 @@ class   SystemConfig
             // install starts with. Read and written through
             // ChurchCRM\Portal\PortalCalendarService, never by hand.
             'aPortalCalendars'                     => new ConfigItem('aPortalCalendars', 'json', '[]', gettext('Calendars the Member Portal shows to members, chosen on Admin -> Member Portal -> Calendars.')),
+            'bPortalShowDirectory'                 => new ConfigItem('bPortalShowDirectory', 'boolean', '0', gettext('Show the member directory in the Member Portal.')),
+            'aPortalDirectory'                     => new ConfigItem('aPortalDirectory', 'json', '{}', gettext('Who the Member Portal directory lists, who can see it and what it shows, chosen on Admin -> Member Portal -> Directory.')),
+            // Member sign-in (#10463, design §11.1, §13). No category: their home
+            // is the Admin → Member Portal → Sign-in tab.
+            'bMemberSignIn'                        => new ConfigItem('bMemberSignIn', 'boolean', '0', gettext('Let members sign in to the Member Portal with their own email address. It can only be turned on while email sending works.')),
+            'sMemberSignInFamilyRoles'             => new ConfigItem('sMemberSignInFamilyRoles', 'text', '1,2', gettext('Family roles whose members may sign in to the Member Portal, as a comma-separated list of role ids.')),
+            'sMemberSignInClassifications'         => new ConfigItem('sMemberSignInClassifications', 'text', '', gettext('Classifications whose members may sign in to the Member Portal, as a comma-separated list of classification ids.')),
+            'iMemberSignInMinAge'                  => new ConfigItem('iMemberSignInMinAge', 'number', '13', gettext('Youngest age at which a person may sign in to the Member Portal. When the birth date is unknown, only a head of household or spouse qualifies.')),
+            'iSignInLinkMinutes'                   => new ConfigItem('iSignInLinkMinutes', 'number', '120', gettext('How many minutes a Member Portal sign-in code and link stay valid.')),
+            'iMemberSignInRequestsPerIP'           => new ConfigItem('iMemberSignInRequestsPerIP', 'number', '20', gettext('How many Member Portal sign-in emails one IP address can ask for in an hour. Set to 0 for no limit, for example when everyone reaches ChurchCRM through one address.')),
+            'iPortalIdleMinutes'                   => new ConfigItem('iPortalIdleMinutes', 'number', '30', gettext('How many idle minutes end a Member Portal session.')),
+            'iRememberDeviceDays'                  => new ConfigItem('iRememberDeviceDays', 'number', '14', gettext('How many days a device stays signed in to the Member Portal after the member chooses to stay signed in. Set to 0 to remove the choice.')),
+            'bPortalPasskeys'                      => new ConfigItem('bPortalPasskeys', 'boolean', '1', gettext('Let members add passkeys and sign in to the Member Portal with them.')),
+            'sMemberSignInNotificationRecipientIDs' => new ConfigItem('sMemberSignInNotificationRecipientIDs', 'text', '', gettext('People to email when someone could not sign in to the Member Portal')),
+            'bAllowLoginAsPerson'                  => new ConfigItem('bAllowLoginAsPerson', 'boolean', '0', gettext('Let administrators open a person\'s Member Portal as that person, from the person\'s Actions menu, while member sign-in is on.')),
+            'bLoginAsPersonCanWrite'               => new ConfigItem('bLoginAsPersonCanWrite', 'boolean', '0', gettext('Allow changes while an administrator uses Login as Person. When off, Login as Person is read-only.')),
+            // Set by the 7.8.3 upgrade (design §12): how many self-service accounts it
+            // removed. The Admin Dashboard asks to turn member sign-in on while it is
+            // above 0; dismissing the notice or turning sign-in on sets it to 0.
+            'iMemberSignInFormerAccounts'          => new ConfigItem('iMemberSignInFormerAccounts', 'number', '0'),
             'sChurchLogoURL'                       => new ConfigItem('sChurchLogoURL', 'text', '', gettext('Fallback logo URL for email templates, used only when no church logo has been uploaded on the Church Information page. The application\'s own pages ignore this setting and always use the uploaded logo or the default ChurchCRM logo. Must be an absolute http(s) URL. For best rendering across email clients, use a wide banner image at roughly a 3.5:1 aspect ratio (for example 350×100 px), PNG or JPG, served over HTTPS. Leave blank or enter an invalid value to fall back to the default ChurchCRM logo.')),
             'bEnableExternalCalendarAPI'           => new ConfigItem('bEnableExternalCalendarAPI', 'boolean', '0', gettext('Allow unauthenticated reads of events from the external calendar API')),
             'sCalendarEmbedOrigins'                => new ConfigItem('sCalendarEmbedOrigins', 'text', '*', gettext('Space-separated list of origins allowed to embed the public external calendar page in an <iframe> (CSP frame-ancestors). Default "*" allows any origin. Restrict to specific origins for tighter security, e.g. "https://mysite.org https://embed.example.com".')),
@@ -315,6 +337,8 @@ class   SystemConfig
             // Volunteer Management v2 (#9704, #9710). Deliberately declared without a
             // category (2026-09-18): their one home is Admin → Ministry Settings.
             'sVolunteerVersion'                    => new ConfigItem('sVolunteerVersion', 'choice', 'v2', gettext('Which Volunteer Management experience is active. V1 is the legacy Volunteer Opportunities feature; V2 is the new scheduling and assignment workflow. "Both" shows each side by side during migration.'), '', json_encode(self::getVolunteerVersionChoices())),
+            'aVolunteerV1Conversion'               => new ConfigItem('aVolunteerV1Conversion', 'json', '{}', gettext('Which legacy Volunteer Opportunities have been converted, and the position each became.')),
+            'sVolunteerV1NoticeDismissed'          => new ConfigItem('sVolunteerV1NoticeDismissed', 'text', '', gettext('The ChurchCRM version on which an administrator dismissed the Volunteer Opportunities retirement notice.')),
             'iVolunteerReminderLeadHours'          => new ConfigItem('iVolunteerReminderLeadHours', 'number', '48', gettext('How many hours before a volunteer occurrence the reminder email is sent. Set to 0 to send no reminders at all. Delivery depends on background jobs running; see the Volunteer documentation for the recommended cron setup.')),
             'iVolunteerGapAlertLeadHours'          => new ConfigItem('iVolunteerGapAlertLeadHours', 'number', '48', gettext('How many hours before a volunteer occurrence its coordinators are told about positions still unfilled. Set to 0 to send no such alerts; reminders are not affected.')),
             'sVolunteerGapAlertBatchTime'          => new ConfigItem('sVolunteerGapAlertBatchTime', 'text', '07:00', gettext('The time of day (HH:MM, in the church\'s time zone) the daily email listing unfilled volunteer positions is sent to coordinators.')),
@@ -347,15 +371,16 @@ class   SystemConfig
             'bSearchIncludeCalendarEventsMax'      => new ConfigItem('bSearchIncludeCalendarEventsMax', 'text', '15', gettext('Maximum number of Calendar Events')),
             'bRequire2FA'                          => new ConfigItem('bRequire2FA', 'boolean', '0', gettext('Require all users to enroll in two-factor authentication')),
             'i2FAGracePeriodDays'                  => new ConfigItem('i2FAGracePeriodDays', 'number', '7', gettext('Number of days users have to enroll in 2FA after it is mandated. Set to 0 to enforce immediately. Shortening an active grace period may lock users out immediately.')),
-            's2FAApplicationName'                  => new ConfigItem('s2FAApplicationName', 'text', 'ChurchCRM', gettext('Specify the application name to be displayed in authenticator app')),
             'sTwoFASecretKey'                      => new ConfigItem('sTwoFASecretKey', 'password', '', gettext('Encryption key for storing 2FA secret keys in the database')),
             'bSendUserDeletedEmail'                => new ConfigItem('bSendUserDeletedEmail', 'boolean', '0', gettext('Send an email notifying users when their account has been deleted')),
             'sInactiveClassification'              => new ConfigItem('sInactiveClassification', 'text', '', gettext('Comma separated list of classifications that should appear as inactive')),
             'sDefaultZip'                          => new ConfigItem('sDefaultZip', 'text', '', gettext('Default Zip')),
             'sSystemID'                            => new ConfigItem('sSystemID', 'text', ''),
 
-            'sTelemetryLevel'                      => new ConfigItem('sTelemetryLevel', 'choice', 'none', gettext('Anonymous telemetry level. Controls how much anonymous diagnostic data is shared with the ChurchCRM team. No church names, member data, or personal information is ever sent.'), '', json_encode(self::getTelemetryLevelChoices())),
+            'sTelemetryLevel'                      => new ConfigItem('sTelemetryLevel', 'choice', 'none', gettext('Controls optional telemetry. Install and database upgrade failures send limited diagnostics to PostHog even when telemetry is off. These failure reports include software and environment versions and a sanitized database error, but no installation ID or SQL statement.'), '', json_encode(self::getTelemetryLevelChoices())),
+            'sInstallDataProfile'                  => new ConfigItem('sInstallDataProfile', 'choice', 'production', '', '', json_encode(['production' => 'production', 'demo' => 'demo', 'test' => 'test'])),
             'sTelemetryAskedVersion'               => new ConfigItem('sTelemetryAskedVersion', 'text', ''),
+            'sTelemetryLifecycleVersion'            => new ConfigItem('sTelemetryLifecycleVersion', 'text', ''),
         ];
     }
 
@@ -365,19 +390,22 @@ class   SystemConfig
             gettext('Quick Search')       => ['bSearchIncludePersons', 'bSearchIncludePersonsMax', 'bSearchIncludeAddresses', 'bSearchIncludeAddressesMax', 'bSearchIncludeFamilies', 'bSearchIncludeFamiliesMax', 'bSearchIncludeFamilyHOH', 'bSearchIncludeFamilyHOHMax', 'bSearchIncludeGroups', 'bSearchIncludeGroupsMax', 'bSearchIncludeDeposits', 'bSearchIncludeDepositsMax', 'bSearchIncludePayments', 'bSearchIncludePaymentsMax', 'bSearchIncludeFamilyCustomProperties', 'bSearchIncludeCalendarEvents', 'bSearchIncludeCalendarEventsMax'],
             gettext('Confession')         => ['iPersonConfessionFatherCustomField', 'iPersonConfessionDateCustomField'],
             gettext('Scheduled Tasks')    => ['iTimerJobsStaleHours', 'iTimerJobsMinIntervalMinutes'],
-            gettext('Report Settings')    => ['sQBDTSettings', 'leftX', 'incrementY', 'sTaxReport1', 'sTaxReport2', 'sTaxReport3', 'sTaxSigner', 'sReminder1', 'sReminderSigner', 'sReminderNoPledge', 'sReminderNoPayments', 'sConfirm1', 'sConfirm2', 'sConfirm3', 'sConfirm4', 'sConfirm5', 'sConfirm6', 'sDear', 'sConfirmSincerely', 'sConfirmSigner', 'sDirectoryDisclaimer1', 'sDirectoryDisclaimer2', 'bDirLetterHead', 'sZeroGivers', 'sZeroGivers2', 'sZeroGivers3', 'iPDFOutputType'],
+            gettext('Report Settings')    => ['sQBDTSettings', 'sReminder1', 'sReminderSigner', 'sReminderNoPledge', 'sReminderNoPayments', 'sConfirm1', 'sConfirm2', 'sConfirm3', 'sConfirm4', 'sConfirm5', 'sConfirm6', 'sDirectoryDisclaimer1', 'sDirectoryDisclaimer2', 'sZeroGivers', 'sZeroGivers2', 'sZeroGivers3'],
         ];
     }
 
     /**
-     * @param \ChurchCRM\model\ChurchCRM\Config[] $configs
+     * @param \ChurchCRM\model\ChurchCRM\Config[]|null $configs the stored rows
+     * @param bool $pruneUnknown delete rows no ConfigItem declares. Only Bootstrapper
+     *                           passes true, once the database is current, so an
+     *                           upgrade script can still read a retired key
      */
-    public static function init($configs = null): void
+    public static function init($configs = null, bool $pruneUnknown = false): void
     {
         self::$configs = self::buildConfigs();
         self::$categories = self::buildCategories();
         if (!empty($configs)) {
-            self::scrapeDBConfigs($configs);
+            self::scrapeDBConfigs($configs, $pruneUnknown);
         }
     }
 
@@ -397,13 +425,13 @@ class   SystemConfig
     /**
      * @param \ChurchCRM\model\ChurchCRM\Config[] $configs
      */
-    private static function scrapeDBConfigs($configs): void
+    private static function scrapeDBConfigs($configs, bool $pruneUnknown): void
     {
         foreach ($configs as $config) {
             if (isset(self::$configs[$config->getName()])) {
                 //if the current config set defined by code contains the current config retrieved from the db, then cache it
                 self::$configs[$config->getName()]->setDBConfigObject($config);
-            } else {
+            } elseif ($pruneUnknown) {
                 //there's a config item in the DB that doesn't exist in the current code.
                 //don't delete dynamic keys like plugin.* configs - they're managed by plugins
                 if (strpos($config->getName(), 'plugin.') !== 0) {

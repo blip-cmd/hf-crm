@@ -18,7 +18,7 @@ class BirthdayEmail extends BaseEmail
         $this->person = $person;
         parent::__construct($toAddresses);
         $this->setLogContext((int) $person->getId());
-        $this->mail->Subject = SystemConfig::getValue('sChurchName') . ': ' . $this->getSubSubject();
+        $this->mail->Subject = $this->getSubSubject();
         $this->mail->isHTML(true);
         $this->mail->msgHTML($this->buildMessage());
     }
@@ -35,12 +35,11 @@ class BirthdayEmail extends BaseEmail
 
     public function getTokens(): array
     {
-        $ageString = $this->person->getAge();
-        $age = ($ageString !== null && ctype_digit($ageString)) ? (int) $ageString : null;
+        $age = $this->person->getNumericAge();
 
         $body = gettext('Happy Birthday') . ', ' . $this->person->getFullName() . '!';
         $body .= "\n\n";
-        if ($age !== null) {
+        if ($age > 0) {
             $body .= sprintf(gettext('Wishing you a wonderful %d year birthday!'), $age);
         } else {
             $body .= gettext('Wishing you a wonderful birthday!');

@@ -18,6 +18,7 @@
 import { ensureCrmHelpers } from "../common/crm-helpers";
 import { formatTimeElements } from "../ministries/components/ui";
 import { formatWhat, formatWhen } from "./member-ui";
+import { reloadWhenSignedOut } from "./portal-session";
 import { type PortalToastType, portalToast, wireRenderedToasts } from "./portal-toast";
 import "./portal.scss";
 
@@ -32,6 +33,7 @@ interface PortalHomeAssignment {
   teamName: string | null;
   start: string | null;
   occurrenceDate: string | null;
+  occurrenceStatus: string | null;
   status: string;
 }
 
@@ -217,6 +219,7 @@ async function loadVolunteeringCard(): Promise<void> {
       credentials: "same-origin",
       headers: { Accept: "application/json" },
     });
+    reloadWhenSignedOut(response.status);
     if (!response.ok) {
       throw new Error(String(response.status));
     }
@@ -231,10 +234,12 @@ async function loadVolunteeringCard(): Promise<void> {
   show(loading, false);
 
   // The API returns the member's upcoming commitments soonest first. A slot they
-  // have declined, or that was cancelled or covered by somebody else, is not
-  // something they are "on for next".
-  const live = assignments.filter((row) => row.status === "pending" || row.status === "accepted");
-  const pendingCount = assignments.filter((row) => row.status === "pending").length;
+  // have declined, that was cancelled or covered by somebody else, or whose date
+  // was cancelled, is not something they are "on for next".
+  const live = assignments.filter(
+    (row) => row.occurrenceStatus !== "cancelled" && (row.status === "pending" || row.status === "accepted"),
+  );
+  const pendingCount = live.filter((row) => row.status === "pending").length;
 
   if (live.length === 0) {
     show(empty, true);
@@ -282,6 +287,7 @@ function start(): void {
   ensureCrmHelpers();
   wireNavigationToggle();
   wireAccountMenu();
+  wireSubmitOnce();
   publishToastHelper();
   wireRenderedToasts();
   formatTimeElements();
@@ -291,6 +297,33 @@ function start(): void {
   } else {
     wireLocalisedLabels();
   }
+}
+
+/** A form marked `data-submit-once` locks its submit button, showing `data-busy-label`, so a slow send is not repeated. */
+function wireSubmitOnce(): void {
+  document.querySelectorAll<HTMLFormElement>("form[data-submit-once]").forEach((form) => {
+    const button = form.querySelector<HTMLButtonElement>('button[type="submit"]');
+    if (!button) {
+      return;
+    }
+    const idleLabel = button.textContent;
+    form.addEventListener("submit", () => {
+      if (!form.checkValidity()) {
+        return;
+      }
+      window.setTimeout(() => {
+        button.disabled = true;
+        if (button.dataset.busyLabel) {
+          button.textContent = button.dataset.busyLabel;
+        }
+      }, 0);
+    });
+    // Back from the next page (bfcache): the button must work again.
+    window.addEventListener("pageshow", () => {
+      button.disabled = false;
+      button.textContent = idleLabel;
+    });
+  });
 }
 
 if (document.readyState === "loading") {

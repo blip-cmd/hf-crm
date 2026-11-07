@@ -1,6 +1,7 @@
 <?php
 
 use ChurchCRM\Authentication\AuthenticationManager;
+use ChurchCRM\Authentication\SignInThrottle;
 use ChurchCRM\dto\LocaleInfo;
 use ChurchCRM\dto\SystemConfig;
 use ChurchCRM\dto\SystemURLs;
@@ -76,7 +77,7 @@ require SystemURLs::getDocumentRoot() . '/Include/Header.php';
             $isLocked       = $user->isLocked();
             $mustChange     = $user->getNeedPasswordChange();
             $failedLogins   = $user->getFailedLogins();
-            $maxFailedLogins = SystemConfig::getIntValue('iMaxFailedLogins');
+            $maxFailedLogins = SignInThrottle::maxFailedLogins();
             ?>
             <?php $signInBlockedLabel = $user->getSignInBlockedLabel(); ?>
             <?php if ($signInBlockedLabel !== null): ?>
@@ -84,7 +85,7 @@ require SystemURLs::getDocumentRoot() . '/Include/Header.php';
               <i class="fa-solid fa-user-slash me-2 flex-shrink-0 fs-3"></i>
               <div>
                 <strong><?= InputUtils::escapeHTML($signInBlockedLabel) ?></strong>
-                <div class="small"><?= gettext('The linked person is deceased or inactive. Sign-in, sessions and the API key are blocked until the person is made active again.') ?></div>
+                <div class="small"><?= gettext('Sign-in, sessions and the API key are blocked until this is resolved on the linked person\'s record.') ?></div>
               </div>
             </div>
             <?php endif; ?>
@@ -94,6 +95,7 @@ require SystemURLs::getDocumentRoot() . '/Include/Header.php';
               <div>
                 <strong><?= gettext('Account locked') ?></strong>
                 <div class="small"><?= gettext('This account is locked because of too many failed login attempts.') ?></div>
+                <div class="small" data-cy="lockout-minutes-left"><?= sprintf(gettext('Minutes until it unlocks by itself: %d'), SignInThrottle::minutesUntilUnlock($user)) ?></div>
               </div>
             </div>
             <?php endif; ?>
@@ -409,21 +411,8 @@ require SystemURLs::getDocumentRoot() . '/Include/Header.php';
               </div>
               <p class="text-body-secondary mb-0"><?= gettext("Administrators have full access to all features and data. Individual permissions do not apply.") ?></p>
             </div>
-            <?php elseif ($user->isEditSelf()): ?>
-            <!-- Case 2: self-service user — no individual permission rows -->
-            <div class="text-center py-4">
-              <div class="mb-3">
-                <span class="badge bg-info-lt text-info px-3 py-2 fs-3">
-                  <i class="fa-solid fa-user-check me-2"></i><?= gettext("Self-service only") ?>
-                </span>
-              </div>
-              <p class="text-body-secondary mb-0"><?= gettext("This user can only review and update their own family profile. Individual permissions do not apply.") ?></p>
-              <?php if ($isOwnProfile): ?>
-              <p class="text-body-secondary mt-2 mb-0 small"><?= gettext("Contact an administrator to change your permissions.") ?></p>
-              <?php endif; ?>
-            </div>
             <?php else: ?>
-            <!-- Case 3: admin viewing another non-admin user — show full permissions -->
+            <!-- Case 2: a non-admin staff account — show full permissions -->
 
             <!-- People & Families group -->
             <div class="border rounded mb-3">
@@ -487,6 +476,12 @@ require SystemURLs::getDocumentRoot() . '/Include/Header.php';
     </div>
   </div>
 </div>
+
+<?php if ($loginAsPersonHistory !== null) : ?>
+<div class="mt-3">
+  <?php include SystemURLs::getDocumentRoot() . '/people/views/partials/login-as-person-history.php'; ?>
+</div>
+<?php endif; ?>
 
 <!-- Photo Uploader -->
 <link rel="stylesheet" href="<?= SystemURLs::assetVersioned('/skin/v2/photo-uploader.min.css') ?>">

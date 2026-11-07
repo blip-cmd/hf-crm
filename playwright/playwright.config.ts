@@ -1,7 +1,7 @@
 import { defineConfig, devices } from '@playwright/test';
 import path from 'node:path';
 
-import { BASE_URL } from './support/env';
+import { BASE_URL, LOCALE } from './support/env';
 
 const STORAGE_STATE_PATH = path.join(__dirname, '.auth', 'admin.json');
 
@@ -132,6 +132,7 @@ export default defineConfig({
       // This is 3x faster than running separate desktop/tablet/mobile projects.
       // Viewport sizes: Desktop 1440×900, iPad 1024×768, iPhone Pro Max 430×932
       name: 'screenshots',
+      grep: LOCALE === 'en' ? undefined : /@all-locales/,
       testMatch: /workflows\/.*\.spec\.ts/,
       dependencies: ['setup'],
       use: {
@@ -146,7 +147,7 @@ export default defineConfig({
       // CRM #10048 — re-applies ui.locale between capture passes against
       // the already-installed instance (see locale-set.spec.ts for why
       // this can't just be another 'setup' run). Deliberately has NO
-      // 'setup' dependency: scripts/capture-all-locales.sh runs this with
+      // 'setup' dependency: scripts/marketing/capture-all-locales.sh runs this with
       // --no-deps between locale passes, reusing the storageState the
       // one-time 'setup' run already saved to disk. No viewport-specific
       // behavior — the API call doesn't render anything — so a single

@@ -1,5 +1,7 @@
-// Pages of every MVC app that sits behind AuthMiddleware, first entry being the app's home.
-// kiosk, external, session and setup are public or use their own authentication.
+// Pages of every staff MVC app that sits behind AuthMiddleware, first entry being the app's home.
+// kiosk, external, session and setup are public or use their own authentication. portal is the
+// member's own app: its pages take a member session, and /portal/login, /portal/theme and
+// /portal/email/confirm are public.
 
 export const MVC_PAGES = {
     v2: ["/v2/dashboard", "/v2/search"],
@@ -20,7 +22,7 @@ export const MVC_PAGES = {
         "/people/to-family",
     ],
     groups: ["/groups/", "/groups/dashboard", "/groups/reports", "/groups/sundayschool/dashboard"],
-    finance: ["/finance/", "/finance/dashboard", "/finance/reports", "/finance/funds", "/finance/pledge/new"],
+    finance: ["/finance/", "/finance/dashboard", "/finance/reports", "/finance/reports/giving-statements", "/finance/reports/year-end", "/finance/funds", "/finance/pledge/new"],
     event: ["/event/", "/event/dashboard", "/event/types", "/event/audit", "/event/calendars"],
     fundraiser: ["/fundraiser/", "/fundraiser/editor"],
     ministries: ["/ministries/", "/ministries/dashboard"],
@@ -46,5 +48,4 @@ export const LEGACY_PAGES = [
     "/SystemSettings.php",
     "/LettersAndLabels.php",
     "/DirectoryReports.php",
-    "/Reports/ClassList.php",
 ];

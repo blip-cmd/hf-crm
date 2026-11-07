@@ -8,6 +8,9 @@ use ChurchCRM\dto\SystemConfig;
 use ChurchCRM\dto\SystemURLs;
 use ChurchCRM\model\ChurchCRM\ConfigQuery;
 use ChurchCRM\model\ChurchCRM\Version;
+use ChurchCRM\Portal\MemberLanguage;
+use ChurchCRM\Service\TelemetryService;
+use ChurchCRM\Utils\SQLImportException;
 use Ramsey\Uuid\Uuid;
 use ChurchCRM\Service\UpgradeService;
 use ChurchCRM\Utils\InputUtils;
@@ -21,6 +24,7 @@ use Monolog\Level;
 use Monolog\Logger;
 use Monolog\LogRecord;
 use Propel\Runtime\Connection\ConnectionManagerSingle;
+use Propel\Runtime\Connection\Exception\ConnectionException;
 use Propel\Runtime\Connection\ConnectionWrapper;
 use Propel\Runtime\Connection\DebugPDO;
 use Propel\Runtime\Propel;
@@ -48,6 +52,7 @@ class Bootstrapper
     private static ?array $allowableURLs = null;
 
     private static ?Logger $bootStrapLogger = null;
+    private static ?\mysqli $mysqli = null;
     private static ?ServiceContainerInterface $serviceContainer = null;
     private static bool $initialized = false;
 
@@ -111,18 +116,27 @@ class Bootstrapper
 
         self::$bootStrapLogger->debug("Starting ChurchCRM");
         SystemURLs::checkAllowedURL($bLockURL, $URL);
-        self::initMySQLI();
         self::initPropel();
 
         if (self::isDatabaseEmpty()) {
-            self::installChurchCRMSchema();
+            try {
+                self::installChurchCRMSchema();
+            } catch (\Throwable $e) {
+                TelemetryService::captureInstallFailure(
+                    $e::class,
+                    $e instanceof SQLImportException ? $e->getDatabaseError() : null
+                );
+                throw $e;
+            }
         }
         self::initSession();
         
         // Initialize SystemConfig with database values only once during bootstrap
-        // Fallback error handlers (testMYSQLI, systemFailure) will call init() without parameters
+        // Fallback error handlers (connectionFailure, systemFailure) will call init() without parameters.
+        // Rows of retired keys stay until the database is current, so the upgrade
+        // scripts below can still read them.
         if (!SystemConfig::isInitialized()) {
-            SystemConfig::init(ConfigQuery::create()->find());
+            SystemConfig::init(ConfigQuery::create()->find(), self::isDBCurrent());
         }
 
         self::configureLogging();
@@ -136,17 +150,38 @@ class Bootstrapper
                 if (session_status() !== PHP_SESSION_ACTIVE) {
                     @session_start();
                 }
-                if (!empty($_SESSION['dbUpgradeJustRan']) || !empty($_SESSION['dbUpgradeError'])) {
-                    // Issue 1 fix: skip retry if upgrade just ran or previously failed —
-                    // prevents infinite redirect loop when auto-upgrade throws an exception.
-                    unset($_SESSION['dbUpgradeJustRan']);
-                    self::$bootStrapLogger->info('Database auto-upgrade just ran or failed; continuing normally.');
+                if (!empty($_SESSION['dbUpgradeError'])) {
+                    // Keep a failed upgrade on the error page until an administrator repairs it.
+                    $upgradePath = SystemURLs::getRootPath() . '/external/system/db-upgrade';
+                    if (parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH) !== $upgradePath) {
+                        RedirectUtils::redirect('external/system/db-upgrade');
+                    }
+                    self::$initialized = true;
+                    return;
                 } else {
                     try {
                         self::$bootStrapLogger->info("Auto-upgrading database from $dbVersion to $softwareVersion");
-                        UpgradeService::upgradeDatabaseVersion();
+                        if (!UpgradeService::upgradeDatabaseVersion(true)) {
+                            $_SESSION['dbUpgradePending'] = true;
+                            $upgradePath = SystemURLs::getRootPath() . '/external/system/db-upgrade';
+                            if (parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH) !== $upgradePath) {
+                                RedirectUtils::redirect('external/system/db-upgrade');
+                            }
+                            // Keep requests away from application tables until the schema is current.
+                            self::$initialized = true;
+                            return;
+                        }
                         self::$bootStrapLogger->info('Database auto-upgrade completed successfully');
-                    } catch (\Exception $e) {
+                    } catch (\Throwable $e) {
+                        if ($e->getCode() === 409) {
+                            $_SESSION['dbUpgradePending'] = true;
+                            $upgradePath = SystemURLs::getRootPath() . '/external/system/db-upgrade';
+                            if (parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH) !== $upgradePath) {
+                                RedirectUtils::redirect('external/system/db-upgrade');
+                            }
+                            self::$initialized = true;
+                            return;
+                        }
                         // Issue 2 fix: log the full exception detail but store only a generic
                         // message in session — the error page is unauthenticated, so we must
                         // not expose SQL, table names, or filesystem paths.
@@ -178,6 +213,8 @@ class Bootstrapper
         if (empty(SystemConfig::getValue('sSystemID'))) {
             SystemConfig::setValue('sSystemID', Uuid::uuid4()->toString());
         }
+
+        TelemetryService::syncLifecycle();
 
         LoggerUtils::resetAppLoggerLevel();
 
@@ -274,12 +311,16 @@ class Bootstrapper
         return self::$bootStrapLogger;
     }
     /**
-     * Gets a LocaleInfo object for the currently configured system sLanguage
-     * 
-     * @return LocaleInfo Current locale information
+     * The request's language: a member session's own (MemberLanguage), else the
+     * staff account's `ui.locale` setting, else the church's `sLanguage`.
      */
     public static function getCurrentLocale(): LocaleInfo
     {
+        $memberLocale = MemberLanguage::forSession();
+        if ($memberLocale !== null) {
+            return new LocaleInfo(SystemConfig::getValue('sLanguage'), $memberLocale);
+        }
+
         $userLocale = "";
         try {
             $userLocale =  AuthenticationManager::getCurrentUser()->getSetting("ui.locale");
@@ -287,6 +328,30 @@ class Bootstrapper
             //maybe user is logged in
         }
         return new LocaleInfo(SystemConfig::getValue('sLanguage'), $userLocale);
+    }
+
+    /**
+     * Runs `$work` with gettext in `$locale`, then puts the request's locale
+     * back. For text meant for someone other than the person making the
+     * request, such as an email to a member in their own language. Catalog
+     * selection follows LocaleInfo, including its fallback for missing OS locales.
+     */
+    public static function inLocale(string $locale, callable $work): mixed
+    {
+        $previous = setlocale(LC_ALL, '0');
+        $previousLanguage = getenv('LANGUAGE');
+        if ((new LocaleInfo($locale, null))->activate() === false) {
+            LoggerUtils::getAppLogger()->warning('Failed to set locale for text in another language; using the catalog fallback', ['locale' => $locale]);
+        }
+        setlocale(LC_NUMERIC, 'C');
+        try {
+            return $work();
+        } finally {
+            putenv($previousLanguage === false ? 'LANGUAGE' : 'LANGUAGE=' . $previousLanguage);
+            if ($previous !== false) {
+                setlocale(LC_ALL, $previous);
+            }
+        }
     }
 
     /**
@@ -308,16 +373,7 @@ class Bootstrapper
             $localeInfo = self::getCurrentLocale();
             self::$bootStrapLogger->debug("Setting locale to: " . $localeInfo->getLocale());
             
-            // Set locale with fallback options
-            $localeSet = setlocale(LC_ALL, 
-                $localeInfo->getLocale(), 
-                $localeInfo->getLocale() . '.UTF-8', 
-                $localeInfo->getLocale() . '.utf8'
-            );
-            
-            if ($localeSet === false) {
-                self::$bootStrapLogger->warning("Failed to set locale: " . $localeInfo->getLocale() . ", using system default");
-            }
+            $localeInfo->activate();
 
             // Get numeric and monetary locale settings
             $aLocaleInfo = $localeInfo->getLocaleInfo();
@@ -347,64 +403,55 @@ class Bootstrapper
     }
 
     /**
-     * Initialize MySQLi connection with proper error handling
+     * The mysqli connection behind `RunQuery()` and the legacy pages. It opens the first
+     * time one of them asks, so a request the ORM serves alone holds one connection.
      */
-    private static function initMySQLI(): void
+    public static function getMysqliConnection(): \mysqli
     {
-        global $cnInfoCentral; // need to stop using this everywhere....
-        self::$bootStrapLogger->debug("Initializing MySQLi to " . self::$databaseServerName . " as " . self::$databaseUser);
-        // Due to mysqli handling connections on 'localhost' via socket only, we need to tease out this case and handle
-        // TCP/IP connections separately defaulting self::$databasePort to 3306 for the general case when self::$databasePort is not set.
-        if (self::$databaseServerName === self::LOCALHOST_IDENTIFIER) {
-            self::$bootStrapLogger->debug("Connecting to localhost with no port");
-            $cnInfoCentral = mysqli_connect(self::$databaseServerName, self::$databaseUser, self::$databasePassword);
-        } else {
-            if (!isset(self::$databasePort)) {
-                self::$bootStrapLogger->debug("MySQL connection did not specify a port. Using " . self::DEFAULT_MYSQL_PORT . " as default");
-                self::$databasePort = self::DEFAULT_MYSQL_PORT;
-            }
-            // Connect via TCP to specified port and pass a 'null' for database name.
-            // We specify the database name in a different call, ie 'mysqli_select_db()' just below here
-            self::$bootStrapLogger->debug("Connecting to " . self::$databaseServerName . " on port " . self::$databasePort . " as " . self::$databaseUser);
-            try {
-                $cnInfoCentral = mysqli_connect(self::$databaseServerName, self::$databaseUser, self::$databasePassword, null, self::$databasePort);
-            } catch (\Exception $e) {
-                self::handleBootstrapFailure($e, 'Database connection failed');
-            }
+        if (self::$mysqli instanceof \mysqli) {
+            return self::$mysqli;
         }
-        self::testMYSQLI();
-        mysqli_set_charset($cnInfoCentral, self::DEFAULT_CHARSET);
 
-        self::$bootStrapLogger->debug("Selecting database: " . self::$databaseName);
+        self::$bootStrapLogger->debug("Initializing MySQLi to " . self::$databaseServerName . " as " . self::$databaseUser);
+        $connection = false;
         try {
-            if (!mysqli_select_db($cnInfoCentral, self::$databaseName)) {
-                self::systemFailure('Could not select the MySQL database <strong>' . self::$databaseName . '</strong>. Please check the settings in <strong>Include/Config.php</strong>.<br/>MySQL Error: ' . mysqli_error($cnInfoCentral));
+            // mysqli reaches 'localhost' only through the socket, so the port applies to other hosts.
+            $connection = self::$databaseServerName === self::LOCALHOST_IDENTIFIER
+                ? mysqli_connect(self::$databaseServerName, self::$databaseUser, self::$databasePassword)
+                : mysqli_connect(self::$databaseServerName, self::$databaseUser, self::$databasePassword, null, self::$databasePort);
+        } catch (\mysqli_sql_exception $e) {
+            self::connectionFailure($e->getMessage());
+        }
+        if (!$connection instanceof \mysqli) {
+            self::connectionFailure((string) mysqli_connect_error());
+        }
+        mysqli_set_charset($connection, self::DEFAULT_CHARSET);
+
+        try {
+            if (!mysqli_select_db($connection, self::$databaseName)) {
+                self::systemFailure('Could not select the MySQL database <strong>' . InputUtils::escapeHTML(self::$databaseName) . '</strong>. Please check the settings in <strong>Include/Config.php</strong>.<br/>MySQL Error: ' . InputUtils::escapeHTML(mysqli_error($connection)));
             }
         } catch (\mysqli_sql_exception $e) {
-            self::systemFailure('Could not access the MySQL database <strong>' . self::$databaseName . '</strong>. Please verify the database name in <strong>Include/Config.php</strong>.<br/>Error: ' . $e->getMessage());
+            self::systemFailure('Could not access the MySQL database <strong>' . InputUtils::escapeHTML(self::$databaseName) . '</strong>. Please verify the database name in <strong>Include/Config.php</strong>.<br/>Error: ' . InputUtils::escapeHTML($e->getMessage()));
         }
-        self::$bootStrapLogger->debug("Database selected: " . self::$databaseName);
+
+        return self::$mysqli = $connection;
     }
-    private static function testMYSQLI(): void
+
+    /**
+     * Logs a failed database connection and shows the error page.
+     */
+    private static function connectionFailure(string $error): never
     {
-        global $cnInfoCentral; // need to stop using this everywhere....
-        // Do we have a connection to the database? If not, log it and tell the user
-        if (!$cnInfoCentral) {
-            // Sanitise the mysqli_connect_error if required.
-            $sMYSQLERROR = "none captured";
-            if (strlen(mysqli_connect_error()) > 0) {
-                $sMYSQLERROR = mysqli_connect_error();
-            }
-            // If connecting via a socket, note this for logging (don't change the port value)
-            $portDisplay = (self::$databaseServerName === self::LOCALHOST_IDENTIFIER) ? "Unix socket" : (string)self::$databasePort;
-            // Need to initialise otherwise logging etc will fail!
-            if (!SystemConfig::isInitialized()) {
-                SystemConfig::init();
-            }
-            // Log the error to the application log, and show an error page to user.
-            LoggerUtils::getAppLogger()->error("ERROR connecting to database at '" . self::$databaseServerName . "' on port '" . $portDisplay . "' as user '" . self::$databaseUser . "' -  MySQL Error: '" . $sMYSQLERROR . "'");
-            self::systemFailure('Could not connect to MySQL on <strong>' . self::$databaseServerName . '</strong> on port <strong>' . $portDisplay . '</strong> as <strong>' . self::$databaseUser . '</strong>. Please check the settings in <strong>Include/Config.php</strong>.<br/>MySQL Error: ' . $sMYSQLERROR, 'Database Connection Failure');
+        $error = $error === '' ? 'none captured' : $error;
+        $portDisplay = (self::$databaseServerName === self::LOCALHOST_IDENTIFIER) ? "Unix socket" : (string)self::$databasePort;
+        // Need to initialise otherwise logging etc will fail!
+        if (!SystemConfig::isInitialized()) {
+            SystemConfig::init();
         }
+        LoggerUtils::getAppLogger()->error("ERROR connecting to database at '" . self::$databaseServerName . "' on port '" . $portDisplay . "' as user '" . self::$databaseUser . "' -  MySQL Error: '" . $error . "'");
+        self::systemFailure('Could not connect to MySQL on <strong>' . InputUtils::escapeHTML(self::$databaseServerName) . '</strong> on port <strong>' . InputUtils::escapeHTML($portDisplay) . '</strong> as <strong>' . InputUtils::escapeHTML(self::$databaseUser) . '</strong>. Please check the settings in <strong>Include/Config.php</strong>.<br/>MySQL Error: ' . InputUtils::escapeHTML($error), 'Database Connection Failure');
+        exit;
     }
     private static function initPropel(): void
     {
@@ -437,9 +484,15 @@ class Bootstrapper
             }
             self::$bootStrapLogger->debug("Found " . count($results) . " Database tables");
             return false;
+        } catch (ConnectionException $e) {
+            $cause = $e;
+            while ($cause->getPrevious() !== null) {
+                $cause = $cause->getPrevious();
+            }
+            self::connectionFailure($cause->getMessage());
         } catch (\PDOException $e) {
             self::$bootStrapLogger->error("Database check failed: " . $e->getMessage());
-            self::systemFailure('Could not access the MySQL database <strong>' . self::$databaseName . '</strong>. Please check the settings in <strong>Include/Config.php</strong>.<br/>Error: ' . $e->getMessage());
+            self::systemFailure('Could not access the MySQL database <strong>' . InputUtils::escapeHTML(self::$databaseName) . '</strong>. Please check the settings in <strong>Include/Config.php</strong>.<br/>Error: ' . InputUtils::escapeHTML($e->getMessage()));
             return true; // This line won't be reached due to systemFailure() calling exit()
         }
     }
