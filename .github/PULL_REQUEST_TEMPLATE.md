@@ -19,7 +19,9 @@ Fixes #
 
 ## Validation
 
-<!-- Relevant tests/commands and results. Include only checks that exercise this change. -->
+<!-- Relevant tests/commands and results. Include only checks that exercise this change. For a behavior change, name the Cypress spec that covers it. -->
+
+- [ ] UI: checked light and dark at desktop, tablet (~820px) and phone width — or no visible change, because: <!-- reason; delete this line if no view, skin, webpack or Twig file changed -->
 
 ## Risk / compatibility
 

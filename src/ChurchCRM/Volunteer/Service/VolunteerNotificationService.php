@@ -19,10 +19,13 @@ use ChurchCRM\model\ChurchCRM\VolunteerNotificationQuery;
 use ChurchCRM\model\ChurchCRM\VolunteerOccurrence;
 use ChurchCRM\model\ChurchCRM\VolunteerOccurrenceQuery;
 use ChurchCRM\model\ChurchCRM\VolunteerPositionQuery;
+use ChurchCRM\model\ChurchCRM\VolunteerResponse;
+use ChurchCRM\model\ChurchCRM\VolunteerResponseQuery;
 use ChurchCRM\model\ChurchCRM\VolunteerScheduleQuery;
 use ChurchCRM\model\ChurchCRM\VolunteerSwap;
 use ChurchCRM\model\ChurchCRM\VolunteerSwapQuery;
 use ChurchCRM\model\ChurchCRM\VolunteerTeamQuery;
+use ChurchCRM\Service\EmailQueueService;
 use ChurchCRM\Service\PersonService;
 use ChurchCRM\Utils\DateTimeUtils;
 use ChurchCRM\Utils\LoggerUtils;
@@ -165,9 +168,10 @@ class VolunteerNotificationService
     /**
      * Put a row that has already been sent (or given up on) back in the queue.
      *
-     * The only caller is `POST /assignments/{id}/notify?force=1` — "send it again, I
-     * know". The row is reused rather than duplicated so the dedupe key keeps meaning
-     * what it says and the outbox never grows a second row for the same message.
+     * Callers: `POST /assignments/{id}/notify?force=1` — "send it again, I know" — and a
+     * fresh decline on a reopened assignment (`enqueueDeclineAlert()`). The row is reused
+     * rather than duplicated so the dedupe key keeps meaning what it says and the outbox
+     * never grows a second row for the same message.
      */
     public function rearm(VolunteerNotification $notification): VolunteerNotification
     {
@@ -380,6 +384,9 @@ class VolunteerNotificationService
     }
 
     /**
+     * A volunteer who signed back up keeps the same assignment row, and with it the same
+     * dedupe key, so a later decline re-arms the earlier alert rather than finding it done.
+     *
      * @param int[] $coordinatorPersonIds
      *
      * @return VolunteerNotification[]
@@ -388,7 +395,7 @@ class VolunteerNotificationService
     {
         $rows = [];
         foreach ($coordinatorPersonIds as $personId) {
-            $rows[] = $this->enqueue(
+            $row = $this->enqueue(
                 self::TYPE_DECLINE_ALERT,
                 (int) $personId,
                 (int) $assignment->getId(),
@@ -396,6 +403,7 @@ class VolunteerNotificationService
                 DateTimeUtils::getToday(),
                 $this->declineAlertKey((int) $assignment->getId(), (int) $personId)
             );
+            $rows[] = $row->getStatus() === VolunteerNotification::STATUS_PENDING ? $row : $this->rearm($row);
         }
 
         return $rows;
@@ -897,6 +905,10 @@ class VolunteerNotificationService
      * 4. retry is implicit — a row below the cap is still `pending` and still due, so the
      *    next drain picks it up. `failed` is terminal and never re-selected.
      *
+     * No delivery starts after `EmailQueueService::runSeconds()`, the limit composer
+     * email uses, so a slow mail server cannot hold the request for minutes; the rows
+     * the run does not reach stay `pending`.
+     *
      * Every row is wrapped in its own `try/catch (\Throwable)` — the per-channel
      * isolation pattern from `dto\Notification::send()` (N4) — so one unreachable SMTP
      * server, one deleted person or one malformed address cannot stop the batch. Nothing
@@ -908,6 +920,7 @@ class VolunteerNotificationService
     private function drain(int $batchSize): array
     {
         $counts = ['sent' => 0, 'skipped' => 0, 'failed' => 0];
+        $deadline = microtime(true) + EmailQueueService::runSeconds();
 
         $rows = $this->dueRowsQuery()
             ->orderByScheduledFor(Criteria::ASC)
@@ -928,6 +941,11 @@ class VolunteerNotificationService
         foreach ($rows as $row) {
             if (isset($handled[(int) $row->getId()])) {
                 continue;
+            }
+            if (microtime(true) >= $deadline) {
+                $this->logger->info('Volunteer notification outbox reached its time limit; the rest waits for the next run', $counts);
+
+                break;
             }
 
             try {
@@ -1127,8 +1145,6 @@ class VolunteerNotificationService
             return 'recipient is in the do-not-email set';
         }
 
-        // Person::getEmail() falls back to the FAMILY address, so this can legitimately
-        // be a shared inbox (Appendix C notes it; V2 cannot fix it).
         $address = (string) ($recipient->getEmail() ?? '');
         if (trim($address) === '') {
             return 'recipient has no email address';
@@ -1161,6 +1177,11 @@ class VolunteerNotificationService
         // (#10373), must not send news about an occurrence that is over.
         if ($context->hasEnded()) {
             return $this->recordSkipped($row, 'the occurrence has already ended');
+        }
+
+        if ($row->getType() === self::TYPE_DECLINE_ALERT
+            && $this->assignmentFor($row)?->getStatus() !== VolunteerAssignment::STATUS_DECLINED) {
+            return $this->recordSkipped($row, 'the volunteer is back on this position');
         }
 
         $email = $this->buildEmail($row, $recipient, $address, $context);
@@ -1454,13 +1475,16 @@ class VolunteerNotificationService
                 if ($assignment === null) {
                     return null;
                 }
+                $decline = $this->latestDecline((int) $assignment->getId());
 
                 return new VolunteerDeclineAlertEmail(
                     $to,
                     $recipientName,
                     $context,
                     $this->personName((int) $assignment->getPersonId()),
-                    $this->gapForPosition((int) $assignment->getOccurrenceId(), (int) $assignment->getPositionId())
+                    $this->gapForPosition((int) $assignment->getOccurrenceId(), (int) $assignment->getPositionId()),
+                    $decline?->getComment(),
+                    $this->assignedSince($assignment, $decline?->getResponseDate())
                 );
 
             case self::TYPE_HELP_OFFER:
@@ -1597,6 +1621,47 @@ class VolunteerNotificationService
         return (int) ($gaps[$occurrenceId]['requirements'][$positionId]['gapCount'] ?? 0);
     }
 
+    private function latestDecline(int $assignmentId): ?VolunteerResponse
+    {
+        return VolunteerResponseQuery::create()
+            ->filterByAssignmentId($assignmentId)
+            ->filterByResponse(VolunteerResponse::RESPONSE_DECLINED)
+            ->orderByResponseDate(Criteria::DESC)
+            ->orderById(Criteria::DESC)
+            ->findOne();
+    }
+
+    /**
+     * Who took the declined slot: the other live assignments on this position made at or
+     * after the decline. Both dates are to the second, so a co-volunteer assigned in the same
+     * second before the decline is listed too.
+     *
+     * @return array<int, array{name: string, accepted: bool}>
+     */
+    private function assignedSince(VolunteerAssignment $declined, ?\DateTimeInterface $declinedAt): array
+    {
+        $query = VolunteerAssignmentQuery::create()
+            ->filterByOccurrenceId((int) $declined->getOccurrenceId())
+            ->filterByPositionId((int) $declined->getPositionId())
+            ->filterById((int) $declined->getId(), Criteria::NOT_EQUAL)
+            ->filterByStatus(VolunteerAssignmentService::LIVE_STATUSES, Criteria::IN)
+            ->orderByAssignedDate()
+            ->orderById();
+        if ($declinedAt !== null) {
+            $query->filterByAssignedDate($declinedAt, Criteria::GREATER_EQUAL);
+        }
+
+        $holders = [];
+        foreach ($query->find() as $assignment) {
+            $holders[] = [
+                'name' => $this->personName((int) $assignment->getPersonId()),
+                'accepted' => $assignment->getStatus() === VolunteerAssignment::STATUS_ACCEPTED,
+            ];
+        }
+
+        return $holders;
+    }
+
     /**
      * Every position on this occurrence that is genuinely short (or only `$positionId`),
      * name → how many.
@@ -1614,7 +1679,8 @@ class VolunteerNotificationService
             if ($positionId !== null && (int) $gap['positionId'] !== $positionId) {
                 continue;
             }
-            $short[(string) $name] = (int) $gap['gapCount'];
+            // Positions on different teams may share a name; add their counts so the total stays right.
+            $short[(string) $name] = ($short[(string) $name] ?? 0) + (int) $gap['gapCount'];
         }
 
         return $short;

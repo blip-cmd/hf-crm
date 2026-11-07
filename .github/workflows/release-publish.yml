@@ -13,8 +13,7 @@ concurrency:
 # End-of-cycle one-click flow. Run it on the branch being released; the only
 # input is the version to start after it.
 #
-#   1. publish    — makes sure Build/Test/Package, the Nightly AND the marketing
-#                   capture are green on
+#   1. publish    — makes sure Build/Test/Package and the Nightly are green on
 #                   the tip of the selected branch (a green run is reused, a
 #                   pending run is waited for, a missing run is started, a
 #                   failed run stops the release), then downloads that
@@ -30,12 +29,19 @@ concurrency:
 #                   to the version you typed in `next_version` and open the
 #                   "Start <next> release" PR.
 #
-# Review the draft release + the bump PR. If happy, click "Publish release"
-# on GitHub and merge the PR.
+#   4. marketing_capture — starts marketing-capture-assets.yml on master.
+#                   It never gates the release: a failed dispatch leaves the
+#                   draft, the notes context and the next-version PR as they
+#                   are. The capture workflow publishes the visuals when that
+#                   run is on master.
+#
+# Review the draft release. If happy, click "Publish release" on GitHub. The
+# marketing capture and the bump PR never block it: merge the PR once the
+# capture has finished. Bookkeeping reads the next version from the PR's
+# build/<next> branch until then, so it needs no re-run.
 #
 # For mid-cycle re-bumps (e.g. patch → minor because a feature landed) run
-# the standalone "Start New Release" workflow directly — it remains the
-# right tool for that scope change.
+# "Release: start next version" (release-prepare.yml) directly.
 
 on:
   workflow_dispatch:
@@ -68,7 +74,7 @@ jobs:
       previous_tag: ${{ steps.previous.outputs.tag }}
       target_commit: ${{ steps.run.outputs.commit }}
     steps:
-      - name: Require green build, nightly and marketing capture on the branch tip
+      - name: Require green build and nightly on the branch tip
         id: run
         env:
           COMMIT: ${{ github.sha }}
@@ -108,9 +114,8 @@ jobs:
 
           run_id=$(resolve build-test-package.yml)
           nightly=$(resolve build-test-nightly.yml)
-          capture=$(resolve marketing-capture-assets.yml)
 
-          for id in "$run_id" "$nightly" "$capture"; do
+          for id in "$run_id" "$nightly"; do
             gh run watch "$id" --interval 60 >/dev/null || true
             conclusion=$(gh run view "$id" --json conclusion --jq .conclusion)
             if [ "$conclusion" != "success" ]; then
@@ -119,7 +124,7 @@ jobs:
             fi
           done
 
-          echo "Build run #$run_id, nightly run #$nightly and marketing capture run #$capture are green on ${COMMIT:0:12}."
+          echo "Build run #$run_id and nightly run #$nightly are green on ${COMMIT:0:12}."
           echo "run_id=$run_id" >> "$GITHUB_OUTPUT"
           echo "commit=$COMMIT" >> "$GITHUB_OUTPUT"
           echo "run_url=$(gh run view "$run_id" --json url --jq .url)" >> "$GITHUB_OUTPUT"
@@ -300,7 +305,7 @@ jobs:
           node-version-file: '.nvmrc'
 
       - name: Build release-notes context
-        run: node scripts/release-notes-context.js "$PREVIOUS_TAG" "$TARGET_COMMIT" > "release-notes-context-$TAG.md"
+        run: node scripts/release/release-notes-context.js "$PREVIOUS_TAG" "$TARGET_COMMIT" > "release-notes-context-$TAG.md"
 
       - name: Upload context
         uses: ./.github/actions/upload-artifact
@@ -338,7 +343,7 @@ jobs:
           VERSION: ${{ needs.publish.outputs.release_tag }}
           NEXT_VERSION: ${{ inputs.next_version }}
           MERGE: 'false'
-        run: ./scripts/notify-docs-release.sh
+        run: ./scripts/release/notify-docs-release.sh
 
   start_next:
     needs: publish
@@ -349,3 +354,30 @@ jobs:
     permissions:
       contents: write
       pull-requests: write
+
+  # ───────────────────────────────────────────────────────────────────
+  # Start the marketing capture for the release commit. It runs on its own
+  # and never blocks the draft, the notes context or the next-version PR.
+  # ───────────────────────────────────────────────────────────────────
+  marketing_capture:
+    needs: publish
+    if: success()
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    continue-on-error: true
+    permissions:
+      actions: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+    steps:
+      - name: Start the capture on master
+        env:
+          TARGET_COMMIT: ${{ needs.publish.outputs.target_commit }}
+        run: |
+          if gh workflow run marketing-capture-assets.yml --ref master; then
+            echo "Started marketing-capture-assets.yml on master (release commit $TARGET_COMMIT)." >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "::warning::Could not start marketing-capture-assets.yml on master for release commit $TARGET_COMMIT. Run it from the Actions tab on master."
+            exit 1
+          fi

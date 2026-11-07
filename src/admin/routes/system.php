@@ -22,6 +22,7 @@ use ChurchCRM\Slim\Middleware\CSRFMiddleware;
 use ChurchCRM\Slim\Middleware\InputSanitizationMiddleware;
 use ChurchCRM\Slim\SlimUtils;
 use ChurchCRM\Utils\ChurchCRMReleaseManager;
+use ChurchCRM\Utils\DateTimeUtils;
 use ChurchCRM\Utils\GeoUtils;
 use ChurchCRM\Utils\InputUtils;
 use ChurchCRM\Utils\VersionUtils;
@@ -85,7 +86,7 @@ $app->group('/system', function (RouteCollectorProxy $group): void {
         $renderer = new PhpRenderer(__DIR__ . '/../views/');
         $queryParams = $request->getQueryParams();
         // Mode is a simple string — use sanitizeText (no SQL context needed).
-        // Avoid legacyFilterInput which depends on the $cnInfoCentral global.
+        // legacyFilterInput would open the legacy mysqli connection for nothing.
         $mode = InputUtils::sanitizeText((string) ($queryParams['mode'] ?? ''));
 
         $customListId = (int) ($queryParams['ListID'] ?? 0);
@@ -361,6 +362,36 @@ $app->group('/system', function (RouteCollectorProxy $group): void {
         return $renderer->render($response, 'upgrade.php', $pageArgs);
     });
 
+    // Report Settings page: the letterhead PDF letters print
+    $group->get('/report-settings', function (Request $request, Response $response): Response {
+        $renderer = new PhpRenderer(__DIR__ . '/../views/');
+
+        $labels = [
+            'sDear'             => gettext('Greeting'),
+            'sConfirmSincerely' => gettext('Closing'),
+            'sConfirmSigner'    => gettext('Signer'),
+        ];
+        $letterSettings = array_map(function (array $setting) use ($labels): array {
+            $setting['label'] = $labels[$setting['name']];
+            if ($setting['tooltip'] === $setting['label']) {
+                unset($setting['tooltip']);
+            }
+
+            return $setting;
+        }, SystemConfig::getSettingsConfig(array_keys($labels)));
+
+        return $renderer->render($response, 'report-settings.php', [
+            'letterSettings' => $letterSettings,
+            'sRootPath' => SystemURLs::getRootPath(),
+            'sPageTitle' => gettext('Report Settings'),
+            'sPageSubtitle' => gettext('Set the letterhead that PDF letters print'),
+            'aBreadcrumbs' => PageHeader::breadcrumbs([
+                [gettext('Admin'), '/admin/'],
+                [gettext('Report Settings')],
+            ]),
+        ]);
+    });
+
     // Church Information page
     $group->get('/church-info', function (Request $request, Response $response): Response {
         $renderer = new PhpRenderer(__DIR__ . '/../views/');
@@ -396,6 +427,7 @@ $app->group('/system', function (RouteCollectorProxy $group): void {
             'iChurchLatitude'  => ($latFloat !== 0.0 || $lngFloat !== 0.0) ? (string) $latFloat : '',
             'iChurchLongitude' => ($latFloat !== 0.0 || $lngFloat !== 0.0) ? (string) $lngFloat : '',
             'sChurchWebSite'   => SystemConfig::getValue('sChurchWebSite'),
+            'sChurchTaxId'     => SystemConfig::getValue('sChurchTaxId'),
         ];
 
         $pageArgs = [
@@ -517,6 +549,7 @@ $app->group('/system', function (RouteCollectorProxy $group): void {
                 'iChurchLatitude'  => $rawLatInput !== '' ? $rawLatInput : (string) (float) SystemConfig::getValue('iChurchLatitude'),
                 'iChurchLongitude' => $rawLngInput !== '' ? $rawLngInput : (string) (float) SystemConfig::getValue('iChurchLongitude'),
                 'sChurchWebSite'   => $body['sChurchWebSite'] ?? '',
+                'sChurchTaxId'     => $body['sChurchTaxId'] ?? '',
             ];
 
             $pageArgs = [
@@ -584,6 +617,7 @@ $app->group('/system', function (RouteCollectorProxy $group): void {
         SystemConfig::setValue('iChurchLatitude', $latitude);
         SystemConfig::setValue('iChurchLongitude', $longitude);
         SystemConfig::setValue('sChurchWebSite', $body['sChurchWebSite'] ?? '');
+        SystemConfig::setValue('sChurchTaxId', $body['sChurchTaxId'] ?? '');
         foreach ($socialNetworks as $network) {
             SystemConfig::setValue($network['config'], $network['url']);
         }
@@ -613,6 +647,7 @@ $app->group('/system', function (RouteCollectorProxy $group): void {
         'sChurchPhone'   => 'text',
         'sChurchEmail'   => 'text',
         'sChurchWebSite'  => 'text',
+        'sChurchTaxId'    => 'text',
         'sChurchX'         => 'text',
         'sChurchYouTube'   => 'text',
         'sChurchFacebook'  => 'text',
@@ -643,7 +678,6 @@ $app->group('/system', function (RouteCollectorProxy $group): void {
             'sDateTimeFormat'        => SystemConfig::getValue('sDateTimeFormat')        ?: SystemConfig::getConfigItem('sDateTimeFormat')->getDefault(),
             'sDateFilenameFormat'    => SystemConfig::getValue('sDateFilenameFormat')    ?: SystemConfig::getConfigItem('sDateFilenameFormat')->getDefault(),
             'sDatePickerFormat'      => SystemConfig::getValue('sDatePickerFormat')      ?: SystemConfig::getConfigItem('sDatePickerFormat')->getDefault(),
-            'sDatePickerPlaceHolder' => SystemConfig::getValue('sDatePickerPlaceHolder') ?: SystemConfig::getConfigItem('sDatePickerPlaceHolder')->getDefault(),
             // Currency & Finance Formats
             'sCurrencySymbol'        => SystemConfig::getValue('sCurrencySymbol')        ?: SystemConfig::getConfigItem('sCurrencySymbol')->getDefault(),
             'sCurrencyPosition'      => SystemConfig::getValue('sCurrencyPosition')      ?: SystemConfig::getConfigItem('sCurrencyPosition')->getDefault(),
@@ -743,8 +777,11 @@ $app->group('/system', function (RouteCollectorProxy $group): void {
         // Date & Time Formats — fall back to each key's declared default when
         // empty/whitespace. An empty string passed to PHP's date() produces
         // empty output app-wide.
-        foreach (['sDateFormatLong', 'sDateFormatNoYear', 'sDateTimeFormat', 'sDateFilenameFormat', 'sDatePickerFormat', 'sDatePickerPlaceHolder'] as $key) {
+        foreach (['sDateFormatLong', 'sDateFormatNoYear', 'sDateTimeFormat', 'sDateFilenameFormat', 'sDatePickerFormat'] as $key) {
             $val = trim((string) ($body[$key] ?? ''));
+            if ($key === 'sDatePickerFormat' && !DateTimeUtils::isCompleteDateFormat($val)) {
+                $val = '';
+            }
             SystemConfig::setValue($key, $val !== '' ? $val : SystemConfig::getConfigItem($key)->getDefault());
         }
         // Phone Number Formats — same empty-value guard.
@@ -800,7 +837,6 @@ $app->group('/system', function (RouteCollectorProxy $group): void {
         'sDateTimeFormat'      => 'text',
         'sDateFilenameFormat'  => 'text',
         'sDatePickerFormat'    => 'text',
-        'sDatePickerPlaceHolder' => 'text',
         'sPhoneFormat'         => 'text',
         'sPhoneFormatWithExt'  => 'text',
         'sPhoneFormatCell'     => 'text',

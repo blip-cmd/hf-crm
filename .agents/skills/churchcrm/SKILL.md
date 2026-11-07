@@ -25,7 +25,13 @@ Load `skill-architecture.md` only when adding or editing a skill.
 | [Configuration Management](./configuration-management.md) | SystemConfig |
 | [Settings Placement](./settings-placement.md) | Where a setting lives, area admin hub |
 | [Volunteer Management v2](./volunteer-v2.md) | Ministries / Volunteer v2 (full design: `docs/design/volunteer-v2.md`) |
-| [Member Portal Design](./member-portal-design.md) | `/portal` and themes |
+| [Member Portal Design](./member-portal-design.md) | `/portal` and themes (flow, screens, data: `docs/design/member-portal.md`) |
+
+## Reports
+
+| Skill | When to Use |
+|-------|------------|
+| [Reports](./reports.md) | PDF/CSV reports, mPDF, letterhead, statement downloads |
 
 ## Database
 
@@ -76,8 +82,8 @@ Row actions: [`table-action-menu.md`](./table-action-menu.md). Settings UI: copy
 
 | Skill | When to Use |
 |-------|------------|
-| [Testing](./testing.md) | Writing tests |
-| [Cypress Testing](./cypress-testing.md) | E2E |
+| [Cypress Testing](./cypress-testing.md) | Writing and running specs, permission (gate) tests |
+| [CI & Test Infrastructure](./ci-test-infrastructure.md) | PHP/Nette test packages, test stack, red CI, shards, test database and seed, cleanup guard |
 | [Marketing Visual-Media Pipeline](./marketing-visuals-pipeline.md) | Playwright captures |
 
 ## MVC / PHP
@@ -100,6 +106,8 @@ Community feedback policy (Feature Proposals and RFC Reviews Discussions): [`doc
 | [Release Management](./release-management.md) | Release preparation and verification |
 | [Maintainer Review Gates](./maintainer-review-gates.md) | Review a PR |
 | [PR Review](./pr-review.md) | Standards checklist |
+| [Church Review](./church-review.md) | Review an issue from the church user's workflow |
+| [Stale Issue Triage](./stale-issue-triage.md) | Re-triage stale-closed issues |
 | [Dependabot PR Review](./dependabot-review.md) | `/dependabot-review <PR>`: npm or Composer upgrade review |
 | [PR Review Fix](../pr-review-fix.md) | Address review comments |
 | [Skill architecture](./skill-architecture.md) | Edit a skill |
@@ -110,5 +118,6 @@ Community feedback policy (Feature Proposals and RFC Reviews Discussions): [`doc
 ## Example Workflows
 
 - **Review a PR**: `maintainer-review-gates.md` → `pr-review.md`. Draft only.
+- **Church-review an issue**: `church-review.md`. Draft only.
 - **Address PR comments**: `../pr-review-fix.md` → `git-workflow.md`
 - **Add UI text**: `i18n-localization.md`. `locale:build` runs on merge to `master`.

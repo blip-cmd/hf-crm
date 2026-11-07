@@ -8,11 +8,14 @@ use ChurchCRM\model\ChurchCRM\ListOptionQuery;
 use ChurchCRM\model\ChurchCRM\Person;
 use ChurchCRM\model\ChurchCRM\PersonQuery;
 use ChurchCRM\Plugin\PluginManager;
+use ChurchCRM\Portal\Auth\EmailChangeChannel;
+use ChurchCRM\Portal\Auth\SignInEmailPolicy;
 use ChurchCRM\Service\KioskGuestService;
 use ChurchCRM\Slim\SlimUtils;
 use ChurchCRM\Utils\DateTimeUtils;
 use ChurchCRM\Utils\InputUtils;
 use ChurchCRM\Utils\LoggerUtils;
+use ChurchCRM\Utils\MiscUtils;
 use Propel\Runtime\ActiveQuery\Criteria;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
@@ -108,8 +111,9 @@ function getAdultFamilyMembers(Person $person): array
             $birthDate = DateTimeUtils::createDateTime(
                 sprintf('%04d-%02d-%02d', (int) $birthYear, $birthMonth, $birthDay)
             );
-            if ($today->diff($birthDate)->y < 18) {
-                continue; // Under 18
+            $birthAge = MiscUtils::ageOn($birthDate, $today);
+            if ($birthAge === null || $birthAge->y < 18) {
+                continue; // Under 18, or a birth date in the future
             }
         } else {
             // No complete birth date: fall back to role-based adult check
@@ -343,8 +347,7 @@ $app->group('/device', function (RouteCollectorProxy $group) use ($getKioskFromC
             $age = null;
             if (!empty($birthYear) && $birthMonth > 0 && $birthDay > 0) {
                 $birthDate = DateTimeUtils::createDateTime("$birthYear-$birthMonth-$birthDay");
-                $ageInterval = $today->diff($birthDate);
-                $age = $ageInterval->y;
+                $age = MiscUtils::ageOn($birthDate, $today)?->y;
             }
 
             $birthdayThisMonth = ($birthMonth > 0 && $birthMonth === $currentMonth);
@@ -663,6 +666,7 @@ $app->group('/device', function (RouteCollectorProxy $group) use ($getKioskFromC
         }
 
         (new KioskGuestService())->registerAndCheckIn($person, $event);
+        (new SignInEmailPolicy())->recordChange($person, null, EmailChangeChannel::REGISTRATION, null);
 
         LoggerUtils::getAppLogger()->info('registerGuest: Walk-in guest registered and checked in', [
             'personId'  => $person->getId(),

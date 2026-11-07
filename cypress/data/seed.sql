@@ -28,8 +28,8 @@ DELETE FROM `userconfig_ucfg`;
 DELETE FROM `user_settings`;
 DELETE FROM `user_usr`;
 
-ALTER TABLE `person_custom` ADD COLUMN `c1` mediumint(9) DEFAULT NULL, ADD COLUMN `c2` varchar(50) DEFAULT NULL, ADD COLUMN `c3` varchar(100) DEFAULT NULL, ADD COLUMN `c4` tinyint(4) DEFAULT NULL;
-ALTER TABLE `family_custom` ADD COLUMN `c1` mediumint(9) DEFAULT NULL, ADD COLUMN `c2` varchar(30) DEFAULT NULL, ADD COLUMN `c3` enum('winter','spring','summer','fall') DEFAULT NULL, ADD COLUMN `c4` tinyint(4) DEFAULT NULL;
+ALTER TABLE `person_custom` ADD COLUMN `c1` mediumint(9) DEFAULT NULL, ADD COLUMN `c2` varchar(50) DEFAULT NULL, ADD COLUMN `c3` varchar(100) DEFAULT NULL, ADD COLUMN `c4` tinyint(4) DEFAULT NULL, ADD COLUMN `c5` varchar(100) DEFAULT NULL, ADD COLUMN `c6` date DEFAULT NULL, ADD COLUMN `c7` text DEFAULT NULL, ADD COLUMN `c8` year(4) DEFAULT NULL, ADD COLUMN `c9` enum('false','true') DEFAULT NULL, ADD COLUMN `c10` enum('winter','spring','summer','fall') DEFAULT NULL, ADD COLUMN `c11` int(11) DEFAULT NULL, ADD COLUMN `c12` decimal(10,2) DEFAULT NULL, ADD COLUMN `c13` varchar(30) DEFAULT NULL;
+ALTER TABLE `family_custom` ADD COLUMN `c1` mediumint(9) DEFAULT NULL, ADD COLUMN `c2` varchar(30) DEFAULT NULL, ADD COLUMN `c3` enum('winter','spring','summer','fall') DEFAULT NULL, ADD COLUMN `c4` tinyint(4) DEFAULT NULL, ADD COLUMN `c5` varchar(100) DEFAULT NULL, ADD COLUMN `c6` decimal(10,2) DEFAULT NULL, ADD COLUMN `c7` text DEFAULT NULL, ADD COLUMN `c8` year(4) DEFAULT NULL, ADD COLUMN `c9` enum('false','true') DEFAULT NULL, ADD COLUMN `c10` int(11) DEFAULT NULL, ADD COLUMN `c11` date DEFAULT NULL;
 
 CREATE TABLE `groupprop_2` (
   `per_ID` mediumint(8) unsigned NOT NULL DEFAULT 0,
@@ -141,6 +141,7 @@ INSERT INTO `calendars` (`calendar_id`, `name`, `accesstoken`, `foregroundColor`
 (6,'Youth Ministry',NULL,'FFFFFF','795548',NULL);
 
 INSERT INTO `config_cfg` (`cfg_name`, `cfg_value`) VALUES ('bAllowPrereleaseUpgrade',''),
+('sInstallDataProfile','test'),
 ('bEnableExternalCalendarAPI',''),
 ('bEnableNonDeductible',''),
 ('bEnableSelfRegistration','1'),
@@ -158,6 +159,8 @@ INSERT INTO `config_cfg` (`cfg_name`, `cfg_value`) VALUES ('bAllowPrereleaseUpgr
 ('bUseScannedChecks',''),
 ('iChurchLatitude','39.1111974'),
 ('iChurchLongitude','-94.5838009'),
+('iMaxFailedLoginsPerIP','1000'),
+('iMemberSignInRequestsPerIP','1000'),
 ('IncludeDataInNewPersonNotifications',''),
 ('plugin.external-backup.enabled','0'),
 ('plugin.holidays.categories','official,religious'),
@@ -168,9 +171,15 @@ INSERT INTO `config_cfg` (`cfg_name`, `cfg_value`) VALUES ('bAllowPrereleaseUpgr
 ('sChurchCity','Kansas City'),
 ('sChurchCountry','United States'),
 ('sChurchEmail','demo@churchcrm.io'),
+('sChurchFacebook','https://www.facebook.com/getChurchCRM'),
+('sChurchInstagram','https://www.instagram.com/getchurchcrm/'),
 ('sChurchName','Main St. Cathedral'),
 ('sChurchPhone','555 123 4234'),
 ('sChurchState','MO'),
+('sChurchTaxId','47-3829156'),
+('sChurchWebSite','https://churchcrm.io'),
+('sChurchX','https://x.com/getChurchCRM'),
+('sChurchYouTube','https://www.youtube.com/@getChurchCRM'),
 ('sChurchZip','64106'),
 ('sConfirmSigner','Elder Joe Smith'),
 ('sDefaultCity','Kansas City'),
@@ -223,7 +232,10 @@ INSERT INTO `email_log_eml` (`eml_ID`, `eml_per_ID`, `eml_fam_ID`, `eml_usr_ID`,
 (6,2,NULL,1,'mathew.campbell@example.com','composer','Oldest message','<p>Dear Mathew,</p><p>This is the sixth and oldest seeded message.</p>','sent',NULL,'<seed-6@churchcrm.test>','2026-02-01 08:00:00',NULL,1,NULL),
 (7,3,NULL,NULL,'tony.wade@example.com','account.reset-token','Reset your ChurchCRM password',NULL,'sent',NULL,'<seed-7@churchcrm.test>','2026-07-04 12:00:00',NULL,1,NULL),
 (8,100,NULL,1,'lena.walker@example.com','composer','Seeded failed message for Lena','<p>Dear Lena,</p><p>This one never went out.</p>','failed','SMTP Error: Could not connect to SMTP host.',NULL,'2026-03-01 09:00:00',NULL,1,NULL),
-(9,100,NULL,NULL,'lena.walker@example.com','birthday','Seeded skipped birthday greeting for Lena',NULL,'skipped',NULL,NULL,'2026-03-02 06:00:00',NULL,0,NULL);
+(9,100,NULL,NULL,'lena.walker@example.com','birthday','Seeded skipped birthday greeting for Lena',NULL,'skipped',NULL,NULL,'2026-03-02 06:00:00',NULL,0,NULL),
+(10,3,NULL,NULL,'kind@example.com','volunteerassignment','Seeded volunteer assignment',NULL,'skipped',NULL,NULL,'2000-01-01 00:00:00',NULL,0,NULL),
+(11,3,NULL,NULL,'kind@example.com','volunteerhelpoffer','Seeded offer to help',NULL,'skipped',NULL,NULL,'2000-01-01 00:00:00',NULL,0,NULL),
+(12,3,NULL,NULL,'kind@example.com','email','Seeded email of no known kind',NULL,'skipped',NULL,NULL,'2000-01-01 00:00:00',NULL,0,NULL);
 
 INSERT INTO `event_attend` (`attend_id`, `event_id`, `person_id`, `checkin_date`, `checkin_id`, `checkout_date`, `checkout_id`) VALUES (1,3,104,'2017-04-15 17:23:46',26,NULL,NULL);
 
@@ -278,6 +290,20 @@ INSERT INTO `family_custom_master` (`fam_custom_Order`, `fam_custom_Field`, `fam
 (3,'c3','Vacation Season',NULL,1,7),
 (4,'c4','Family Custom Drop Down List',25,1,12);
 
+-- Mixed-type, mixed-security custom fields for permission tests. FieldSec options (list 5):
+-- 1 bAll, 2 bAdmin, 4 bEditRecords, 7 bManageGroups, 8 bFinance, 9 bNotes.
+INSERT INTO `family_custom_master` (`fam_custom_Order`, `fam_custom_Field`, `fam_custom_Name`, `fam_custom_Special`, `fam_custom_FieldSec`, `type_ID`) VALUES
+(5,'c5','Envelope Audit Note',NULL,8,4),
+(6,'c6','Pledge Campaign Amount',NULL,8,10),
+(7,'c7','Home Visit Notes',NULL,9,5),
+(8,'c8','Family Since Year',NULL,1,6),
+(9,'c9','Newsletter By Mail',NULL,7,1),
+(10,'c10','Housing Support Level',NULL,2,8),
+(11,'c11','Last Home Visit',NULL,4,2);
+INSERT INTO `family_custom` (`fam_ID`, `c5`, `c6`, `c7`, `c8`, `c9`, `c10`, `c11`) VALUES
+(1,'Envelope audit 2026',600.00,'Home visit due in spring.',2001,'true',2,'2026-03-15')
+ON DUPLICATE KEY UPDATE `c5`=VALUES(`c5`), `c6`=VALUES(`c6`), `c7`=VALUES(`c7`), `c8`=VALUES(`c8`), `c9`=VALUES(`c9`), `c10`=VALUES(`c10`), `c11`=VALUES(`c11`);
+
 INSERT INTO `family_fam` (`fam_ID`, `fam_Name`, `fam_Address1`, `fam_Address2`, `fam_City`, `fam_State`, `fam_Zip`, `fam_Country`, `fam_SecondAddress1`, `fam_SecondAddress2`, `fam_SecondCity`, `fam_SecondState`, `fam_SecondZip`, `fam_SecondCountry`, `fam_SecondIsMailing`, `fam_HomePhone`, `fam_Email`, `fam_WeddingDate`, `fam_DateEntered`, `fam_DateLastEdited`, `fam_EnteredBy`, `fam_EditedBy`, `fam_scanCheck`, `fam_scanCredit`, `fam_SendNewsLetter`, `fam_DateDeactivated`, `fam_Latitude`, `fam_Longitude`, `fam_Envelope`, `fam_NeedsReview`) VALUES (1,'Campbell','3259 Daisy Dr','','Denton','AR','','United States',NULL,NULL,NULL,NULL,NULL,NULL,0,'(728) 139-0768','',NULL,'2009-12-25 07:19:06','2016-11-19 15:50:57',1,1,NULL,NULL,'FALSE',NULL,33.174318,-97.0673599,0,0),
 (2,'Hart','4878 Valley View Ln','','Grand Rapids','ND','','United States',NULL,NULL,NULL,NULL,NULL,NULL,0,'(042) 989-4488','',NULL,'2009-04-13 01:17:12','2016-11-19 15:53:10',1,1,NULL,NULL,'FALSE',NULL,47.9132828,-97.0864844,0,0),
 (3,'Lewis','2379 Northaven Rd','','Detroit','WV','','United States',NULL,NULL,NULL,NULL,NULL,NULL,0,'(609) 441-0871','','2010-02-10','2007-11-19 10:08:41','2017-04-15 17:21:40',1,1,NULL,NULL,'FALSE',NULL,NULL,NULL,0,0),
@@ -297,7 +323,7 @@ INSERT INTO `family_fam` (`fam_ID`, `fam_Name`, `fam_Address1`, `fam_Address2`, 
 (19,'Kennedy','9481 Wycliff Ave','','Long Beach','KY','','United States',NULL,NULL,NULL,NULL,NULL,NULL,0,'(306) 408-4342','',NULL,'2014-11-23 09:17:25','2016-11-19 15:53:40',1,1,NULL,NULL,'FALSE',NULL,37.8393332,-84.2700179,0,0),
 (20,'Black','4307 Avondale Ave','','Shiloh','CT','','United States',NULL,NULL,NULL,NULL,NULL,NULL,0,'(828) 463-5829','',NULL,'2014-05-10 06:07:19','2016-11-19 15:50:25',1,1,NULL,NULL,'FALSE',NULL,33.4250486,-112.3982715,0,0),
 (21,'Smith','123 Main St.','','Seattle','WA','98121','US',NULL,NULL,NULL,NULL,NULL,NULL,0,'(206) 555-5555','',NULL,'2017-04-15 17:19:26','2021-04-25 09:45:44',-1,1,NULL,NULL,'FALSE',NULL,NULL,NULL,0,1),
-(23,'Turner','4590 Maple Ave',NULL,'Austin','TX','78701','US',NULL,NULL,NULL,NULL,NULL,NULL,0,'(512) 555-0148','turner.family@example.com',NULL,'2021-04-25 10:50:11',NULL,-1,0,NULL,NULL,'FALSE',NULL,NULL,NULL,0,1),
+(23,'Turner','4590 Maple Ave',NULL,'Austin','TX','78701','US',NULL,NULL,NULL,NULL,NULL,NULL,0,'(512) 555-0148',NULL,NULL,'2021-04-25 10:50:11',NULL,-1,0,NULL,NULL,'FALSE',NULL,NULL,NULL,0,1),
 (42,'Master','123 Main St.',NULL,'Kansas City','MO','98001','US',NULL,NULL,NULL,NULL,NULL,NULL,0,'',NULL,NULL,'2021-04-25 21:52:35','2025-01-01 00:00:00',-1,0,NULL,NULL,'FALSE',NULL,NULL,NULL,0,1);
 
 INSERT INTO `fundraiser_fr` (`fr_ID`, `fr_date`, `fr_title`, `fr_description`, `fr_EnteredBy`, `fr_EnteredDate`, `fr_EndDate`, `fr_Status`, `fr_GoalAmount`, `fr_Type`, `fr_fund_ID`) VALUES (1,'2016-11-19','2016 Car Wash','Youth Car Wash',1,'2016-11-19',NULL,'Active',NULL,'Auction',NULL),
@@ -307,6 +333,31 @@ INSERT INTO `fundraiser_fr` (`fr_ID`, `fr_date`, `fr_title`, `fr_description`, `
 (5,'2026-07-15','Summer Harvest Raffle','Ten-day raffle for a handmade quilt, drawn at the summer picnic.',1,'2026-07-15','2026-07-25','Active',1200.00,'Raffle',NULL),
 (6,'2026-10-24','Fall Festival Gala','Formal fall fundraising gala with dinner and dancing.',1,'2026-10-24',NULL,'Planning',15000.00,'Gala',2),
 (7,'2026-12-05','Christmas Bazaar','Two-day holiday bazaar mixing craft sales, a raffle table, and a bake sale.',1,'2026-12-05','2026-12-06','Planning',4000.00,'Mixed',3);
+
+INSERT INTO `donateditem_di` (`di_ID`, `di_item`, `di_FR_ID`, `di_donor_ID`, `di_buyer_ID`, `di_multibuy`, `di_title`, `di_description`, `di_sellprice`, `di_estprice`, `di_minimum`, `di_materialvalue`, `di_EnteredBy`, `di_EnteredDate`, `di_picture`) VALUES
+(1,'A1',3,2,6,0,'Weekend at the church cabin','Two nights at the cabin the church keeps for retreats.',275.00,400.00,150.00,0.00,1,'2026-03-02',NULL),
+(2,'A2',3,4,7,0,'Handmade quilt','A queen quilt stitched by the quilting circle.',180.00,250.00,75.00,80.00,1,'2026-03-02',NULL),
+(3,'B1',3,5,14,0,'Pie assortment','Four pies baked for the auction dinner.',40.00,60.00,20.00,18.00,1,'2026-03-04',NULL),
+(4,'B3',3,5,7,0,'Sunday casserole','A family casserole, delivered the Sunday after the auction.',25.00,30.00,15.00,12.00,1,'2026-03-04',NULL),
+(5,'R1',5,4,0,0,'Harvest quilt','The quilt drawn at the Thanksgiving potluck.',0.00,300.00,0.00,80.00,1,'2026-10-01',NULL),
+(6,'G1',6,5,0,0,'Table centerpiece','A seasonal centerpiece for the gala tables.',0.00,75.00,40.00,25.00,1,'2026-09-20',NULL),
+(7,'G2',6,2,0,0,'Welcome gift basket','Coffee, jam, and a church cookbook.',0.00,50.00,25.00,20.00,1,'2026-09-20',NULL),
+(8,'C1',7,4,0,1,'Handmade ornaments','Boxed glass ornaments from the youth craft sale.',8.00,12.00,5.00,3.00,1,'2026-11-02',NULL),
+(9,'C2',7,5,6,0,'Cocoa mix','A jar of homemade cocoa mix.',12.00,15.00,8.00,4.00,1,'2026-11-02',NULL),
+(10,'D1',7,2,0,0,'Nativity print','A framed print of the church nativity window.',0.00,45.00,20.00,15.00,1,'2026-11-02',NULL);
+
+INSERT INTO `paddlenum_pn` (`pn_ID`, `pn_fr_ID`, `pn_Num`, `pn_per_ID`) VALUES
+(1,3,101,6),
+(2,3,102,7),
+(3,3,103,14),
+(4,3,104,2),
+(5,6,12,6),
+(6,6,18,14),
+(7,7,7,6),
+(8,7,8,7);
+
+INSERT INTO `multibuy_mb` (`mb_ID`, `mb_per_ID`, `mb_item_ID`, `mb_count`) VALUES
+(1,6,8,4);
 
 INSERT INTO `group_grp` (`grp_ID`, `grp_Type`, `grp_RoleListID`, `grp_DefaultRole`, `grp_Name`, `grp_Description`, `grp_hasSpecialProps`, `grp_active`, `grp_include_email_export`, `grp_ministry_id`) VALUES (1,4,13,2,'Angels class',NULL,0,1,1,NULL),
 (2,4,14,2,'Class 1-3',NULL,0,1,1,NULL),
@@ -1501,6 +1552,20 @@ INSERT INTO `person_custom_master` (`custom_Order`, `custom_Field`, `custom_Name
 (3,'c3','Highest Degree Received',NULL,1,4),
 (4,'c4','My Custom Drop Down List',24,1,12);
 
+INSERT INTO `person_custom_master` (`custom_Order`, `custom_Field`, `custom_Name`, `custom_Special`, `custom_FieldSec`, `type_ID`) VALUES
+(5,'c5','Giving Review Note',NULL,8,4),
+(6,'c6','Tithe Start Date',NULL,8,2),
+(7,'c7','Pastoral Care Notes',NULL,9,5),
+(8,'c8','Baptism Year',NULL,1,6),
+(9,'c9','Background Check Cleared',NULL,7,1),
+(10,'c10','Preferred Season',NULL,4,7),
+(11,'c11','Household Size',NULL,5,8),
+(12,'c12','Annual Pledge Amount',NULL,8,10),
+(13,'c13','Backup Phone',NULL,3,11);
+INSERT INTO `person_custom` (`per_ID`, `c2`, `c5`, `c6`, `c7`, `c8`, `c9`, `c10`, `c11`, `c12`, `c13`) VALUES
+(2,'Spiritual director note','Pledge reviewed 2026','2024-01-07','Hospital visit scheduled; keep confidential.',2009,'true','fall',4,1250.00,'(555) 010-1313')
+ON DUPLICATE KEY UPDATE `c2`=VALUES(`c2`), `c5`=VALUES(`c5`), `c6`=VALUES(`c6`), `c7`=VALUES(`c7`), `c8`=VALUES(`c8`), `c9`=VALUES(`c9`), `c10`=VALUES(`c10`), `c11`=VALUES(`c11`), `c12`=VALUES(`c12`), `c13`=VALUES(`c13`);
+
 INSERT INTO `person_per` (`per_ID`, `per_Title`, `per_FirstName`, `per_MiddleName`, `per_LastName`, `per_Suffix`, `per_Address1`, `per_Address2`, `per_City`, `per_State`, `per_Zip`, `per_Country`, `per_HomePhone`, `per_WorkPhone`, `per_CellPhone`, `per_Email`, `per_WorkEmail`, `per_BirthMonth`, `per_BirthDay`, `per_BirthYear`, `per_MembershipDate`, `per_DateDeceased`, `per_Gender`, `per_fmr_ID`, `per_cls_ID`, `per_fam_ID`, `per_Envelope`, `per_DateLastEdited`, `per_DateEntered`, `per_EnteredBy`, `per_EditedBy`, `per_FriendDate`, `per_Flags`, `per_Facebook`, `per_Twitter`, `per_LinkedIn`, `per_DateDeactivated`, `per_NeedsReview`, `per_grd_ID`) VALUES (1,NULL,'Church',NULL,'Admin',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,0,0,0,NULL,NULL,0,0,0,0,NULL,NULL,'2004-08-25 18:00:00',1,0,NULL,0,NULL,NULL,NULL,NULL,0,NULL),
 (2,'Mr','Mathew','','Campbell','','3259 Daisy Dr','','Denton','AR','','USA','(728)-139-0768','','(003)-025-4087','mathew.campbell@example.com',NULL,6,15,1970,NULL,NULL,1,1,1,1,NULL,NULL,'2009-12-25 07:19:06',1,0,NULL,0,NULL,NULL,NULL,NULL,0,NULL),
 (3,'Mr','Tony','','Campbell','','9889 Lone Wolf Trail','','Worcester','ME','','USA','(221) 294-5282','','(820) 203-5704','tony.wade@example.com','',3,3,1945,NULL,NULL,1,0,2,0,0,'2016-11-19 16:07:39','2006-05-18 08:07:27',1,1,NULL,0,NULL,NULL,NULL,NULL,0,NULL),
@@ -1663,7 +1728,8 @@ INSERT INTO `pledge_plg` (`plg_plgID`, `plg_FamID`, `plg_FYID`, `plg_date`, `plg
 (31,0,25,'2021-04-25',1000.00,'Once','CHECK','','2021-04-25',1,'Payment',1,5,111,NULL,'',0,0,0,0.00,'111|9|0|1|2021-04-25'),
 (32,0,25,'2021-04-25',1000.00,'Once','CHECK','','2021-04-25',1,'Payment',1,5,111,NULL,'',0,0,0,0.00,'111|10|0|1|2021-04-25'),
 (33,0,25,'2021-04-25',1000.00,'Once','CHECK','','2021-04-25',1,'Payment',1,5,111,NULL,'',0,0,0,0.00,'111|11|0|1|2021-04-25'),
-(34,0,25,'2021-04-25',1000.00,'Once','CHECK','','2021-04-25',1,'Payment',1,5,111,NULL,'',0,0,0,0.00,'111|12|0|1|2021-04-25');
+(34,0,25,'2021-04-25',1000.00,'Once','CHECK','','2021-04-25',1,'Payment',1,5,111,NULL,'',0,0,0,0.00,'111|12|0|1|2021-04-25'),
+(35,20,21,'2017-06-11',200.00,'Once','CHECK','Dinner tickets','2017-06-11',1,'Payment',1,2,2041,NULL,'',0,0,0,50.00,'2041|2|20|1|2017-06-11');
 
 INSERT INTO `property_pro` (`pro_ID`, `pro_Class`, `pro_prt_ID`, `pro_Name`, `pro_Description`, `pro_Prompt`) VALUES (1,'p',1,'Disabled','has a disability.','What is the nature of the disability?'),
 (2,'f',2,'Single Parent','is a single-parent household.',''),
@@ -1699,6 +1765,9 @@ INSERT INTO `property_pro` (`pro_ID`, `pro_Class`, `pro_prt_ID`, `pro_Name`, `pr
 INSERT INTO `propertytype_prt` (`prt_ID`, `prt_Class`, `prt_Name`, `prt_Description`) VALUES (1,'p','General','General Person Properties'),
 (2,'f','General','General Family Properties'),
 (3,'g','General','General Group Properties');
+
+-- locked.user (7) stays locked until 2100: the hash is SHA-256 of '7'.
+INSERT INTO `rate_limit_rlm` (`rlm_ID`, `rlm_Bucket`, `rlm_KeyHash`, `rlm_Hits`, `rlm_ResetAt`) VALUES (1,'signin.lockout','7902699be42c8a8e46fbbb4501726517e86b22c56a189f7625a6da49081b2451',1,4102444800);
 
 INSERT INTO `record2property_r2p` (`r2p_pro_ID`, `r2p_record_ID`, `r2p_Value`) VALUES (4,7,''),
 (4,8,''),
@@ -1771,14 +1840,11 @@ INSERT INTO `user_settings` (`user_id`, `setting_name`, `setting_value`) VALUES 
 
 INSERT INTO `user_usr` (`usr_per_ID`, `usr_Password`, `usr_NeedPasswordChange`, `usr_LastLogin`, `usr_LoginCount`, `usr_FailedLogins`, `usr_AddRecords`, `usr_EditRecords`, `usr_DeleteRecords`, `usr_ManageGroups`, `usr_Finance`, `usr_ManageFundraisers`, `usr_ManageMinistries`, `usr_ManageMyMinistries`, `usr_Notes`, `usr_Admin`, `usr_SearchLimit`, `usr_Style`, `usr_showPledges`, `usr_showPayments`, `usr_showSince`, `usr_defaultFY`, `usr_currentDeposit`, `usr_UserName`, `usr_apiKey`, `usr_EditSelf`, `usr_CalStart`, `usr_CalEnd`, `usr_CalNoSchool1`, `usr_CalNoSchool2`, `usr_CalNoSchool3`, `usr_CalNoSchool4`, `usr_CalNoSchool5`, `usr_CalNoSchool6`, `usr_CalNoSchool7`, `usr_CalNoSchool8`, `usr_SearchFamily`, `usr_TwoFactorAuthSecret`, `usr_TwoFactorAuthLastKeyTimestamp`, `usr_TwoFactorAuthRecoveryCodes`, `usr_TwoFactorAuthGracePeriodStart`, `usr_LastPortalActivity`, `usr_PortalCalendarToken`, `usr_PortalCalendarSelection`) VALUES (1,'$2y$12$e3o8rmvWUYdgzUNB/AAMK.pRvT9rwsIZx4wYB0brOmVPB1UL.HA5S',0,'2026-04-10 12:28:02',375,0,0,0,0,0,0,0,0,0,0,1,10,'skin-red',1,1,'2016-01-01',23,1,'Admin','ajGwpy8Pdai22XDUpqjC5Ob04v0eG7EGgb4vz2bD2juT8YDmfM',0,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,0,NULL,NULL,NULL,NULL,NULL,NULL,NULL),
 (3,'$2y$12$uWQcp6KU7C4JCTaVH.0hiekfpga36yBVhXG8.M/w9u3MmvHt/NWi2',0,'2025-11-30 02:08:31',2,0,1,1,1,1,1,1,0,1,1,0,10,'skin-yellow-light',0,0,'2016-01-01',26,0,'tony.wade@example.com','JZJApQ9XOnF7nvupWZlTWBRrqMtHE9eNcWBTUzEWGqL4Sdqp6C',0,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),
-(4,'$2y$12$e3o8rmvWUYdgzUNB/AAMK.pRvT9rwsIZx4wYB0brOmVPB1UL.HA5S',0,'2016-01-01 00:00:00',0,0,0,0,0,0,0,0,0,0,0,0,10,'skin-blue',0,0,'2016-01-01',26,0,'limited.user','limitedUserApiKeyForTesting123456789012345678',1,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),
 (7,'$2y$12$e3o8rmvWUYdgzUNB/AAMK.pRvT9rwsIZx4wYB0brOmVPB1UL.HA5S',0,'2016-01-01 00:00:00',0,99,1,1,0,0,0,0,0,0,0,0,10,'skin-blue',0,0,'2016-01-01',26,0,'locked.user',NULL,0,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),
 (8,'$2y$12$e3o8rmvWUYdgzUNB/AAMK.pRvT9rwsIZx4wYB0brOmVPB1UL.HA5S',1,'2016-01-01 00:00:00',0,0,1,1,0,0,0,0,0,0,0,0,10,'skin-blue',0,0,'2016-01-01',26,0,'mustchange.user',NULL,0,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),
 (27,'$2y$12$e3o8rmvWUYdgzUNB/AAMK.pRvT9rwsIZx4wYB0brOmVPB1UL.HA5S',0,'2016-01-01 00:00:00',0,0,0,0,0,0,0,0,0,0,0,0,10,'skin-blue',0,0,'2016-01-01',26,0,'twofa_user',NULL,0,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'def50200923f831141edcddb9e69c79f4ef68b1f0cdd9acf4223f286f2c6ab7e0f09d397cabc831fdaa5bee117f409a50090ae4ea6ff51203508d29b59869396f303d5fd3cf14fe76cf85dba9c85735750aa4f312e1ab29caa60a15bb1b76aecb4a7be50423d2867e49a69ec',NULL,NULL,NULL,NULL,NULL,NULL),
 (95,'$2y$12$7R0MqgyidzOqzXPrGbYdkO.y/decFpwSJM..fznzzvT4wiZqaJE4q',0,'2022-12-29 21:01:30',0,0,1,1,0,0,0,0,0,1,0,0,10,'skin-blue',0,0,'2016-01-01',26,0,'judith.matthews@example.com','judithMatthewsEditRecordsNoNotesApiKey1234',0,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),
 (96,'$2y$12$e3o8rmvWUYdgzUNB/AAMK.pRvT9rwsIZx4wYB0brOmVPB1UL.HA5S',0,'2016-01-01 00:00:00',0,0,0,0,1,0,1,0,0,0,0,0,10,'skin-blue',0,0,'2016-01-01',26,0,'finance.nofundraiser','financeNoFundraiserApiKeyForTesting12345',0,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),
-(99,'$2y$12$cGFZFitpCTIFEVwcsvNRZOOXuebt8Tl6smvKCBNJnp9YRci31OJHG',0,'2025-12-01 20:26:05',0,0,0,0,0,0,0,0,0,0,0,0,10,'skin-blue',0,0,'2016-01-01',29,0,'amanda.black@example.com','amandaBlackEditSelfOnlyApiKey12345678901',1,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),
-(100,'$2y$12$e3o8rmvWUYdgzUNB/AAMK.pRvT9rwsIZx4wYB0brOmVPB1UL.HA5S',0,'2024-01-01 00:00:00',0,0,0,0,0,0,0,0,0,0,1,0,10,'skin-blue',0,0,'2016-01-01',26,0,'lena.black.editself.notes@example.com','editSelfPlusNotesApiKeyForTesting12345678901',1,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),
 (900,'$2y$12$e3o8rmvWUYdgzUNB/AAMK.pRvT9rwsIZx4wYB0brOmVPB1UL.HA5S',0,'2024-01-01 00:00:00',0,0,0,0,0,0,0,0,0,0,1,0,10,'skin-blue',0,0,'2016-01-01',26,0,'john.plainauth@example.com','plainAuthReadOnlyApiKeyForTesting12345678901',0,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),
 (901,'$2y$12$e3o8rmvWUYdgzUNB/AAMK.pRvT9rwsIZx4wYB0brOmVPB1UL.HA5S',0,'2024-01-01 00:00:00',0,0,0,0,0,0,0,0,0,0,0,0,10,'skin-blue',0,0,'2016-01-01',26,0,'noperm.user','noPermUserApiKeyForTesting123456789012345678',0,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),
 (902,'$2y$12$e3o8rmvWUYdgzUNB/AAMK.pRvT9rwsIZx4wYB0brOmVPB1UL.HA5S',0,'2024-01-01 00:00:00',0,0,0,0,0,0,0,0,0,0,0,0,10,'skin-blue',0,0,'2016-01-01',26,0,'teamleader.user','teamLeaderApiKeyForTesting1234567890123456',0,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),
@@ -1892,11 +1958,15 @@ INSERT INTO `version_ver` (`ver_ID`, `ver_version`, `ver_update_start`, `ver_upd
 (91,'7.7.1','2026-09-19 05:49:02','2026-09-19 05:49:02'),
 (92,'7.8.0','2026-09-26 19:44:44','2026-09-26 19:44:44'),
 (93,'7.8.1','2026-10-10 20:13:31','2026-10-10 20:13:31'),
-(94,'7.8.2','2026-10-18 23:31:54','2026-10-18 23:31:54');
+(94,'7.8.2','2026-10-18 23:31:54','2026-10-18 23:31:54'),(95,'7.8.3','2026-10-25 17:26:57','2026-10-25 17:26:57'),(96,'7.8.4','2026-11-05 23:50:03','2026-11-05 23:50:03');
 
 -- Next ids. family_custom and person_custom keep rows past the last family and person, so a
 -- counter left at max+1 hands a new family an id that table already holds.
 ALTER TABLE `calendars` AUTO_INCREMENT = 95;
+ALTER TABLE `donateditem_di` AUTO_INCREMENT = 11;
+ALTER TABLE `fundraiser_fr` AUTO_INCREMENT = 8;
+ALTER TABLE `multibuy_mb` AUTO_INCREMENT = 2;
+ALTER TABLE `paddlenum_pn` AUTO_INCREMENT = 9;
 ALTER TABLE `donationfund_fun` AUTO_INCREMENT = 5;
 ALTER TABLE `eventcountnames_evctnm` AUTO_INCREMENT = 8;
 ALTER TABLE `events_event` AUTO_INCREMENT = 5;

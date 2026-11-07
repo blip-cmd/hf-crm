@@ -90,7 +90,6 @@ module.exports = {
     'photo-uploader': './webpack/photo-uploader-entry',
     'root-dashboard': './webpack/root-dashboard',
     setup: './webpack/setup',
-    'family-register': './webpack/family-register',
     'family-verify': './webpack/family-verify',
     'upgrade-wizard': './webpack/upgrade-wizard',
     'locale-loader': './webpack/locale-loader',
@@ -100,8 +99,11 @@ module.exports = {
     'admin-dashboard': './webpack/admin-dashboard',
     // Admin → Member Portal (#9864): theme picker, portal settings, statistics.
     'admin-member-portal': './webpack/admin-member-portal.ts',
+    // Admin → Convert Volunteer Opportunities (#10606).
+    'admin-volunteer-conversion': './webpack/admin-volunteer-conversion.ts',
     'get-started': './webpack/get-started',
     'church-info': './webpack/church-info',
+    'report-settings': './webpack/report-settings',
     'email-settings': './webpack/email-settings',
     localization: './webpack/localization',
     'system-settings-panel': './webpack/system-settings-panel',
@@ -118,11 +120,14 @@ module.exports = {
     'people-map-neighbors': './webpack/people/map-neighbors',
     'people-self-register': './webpack/people/self-register',
     'people-labels-modal': './webpack/people/labels-modal',
+    'people-sign-in-email': './webpack/people/sign-in-email.ts',
     'email-history-modal': './webpack/people/email-history-modal',
     'email-delete-queue': './webpack/people/email-delete-queue',
     'email-log-table': './webpack/people/email-log-table',
     'error': './webpack/error',
     'feature-toggles': './webpack/feature-toggles',
+    'finance-report-options': './webpack/finance-report-options',
+    'finance-year-end': './webpack/finance-year-end',
     'groups-group-view': './webpack/groups/group-view',
     'groups-sundayschool-dashboard': './webpack/groups-sundayschool-dashboard',
     'groups-sundayschool-class-view': './webpack/groups-sundayschool-class-view',
@@ -154,9 +159,12 @@ module.exports = {
     // Member Portal calendar (#9866): FullCalendar for /portal/calendar. Its own
     // entry so the tiny `portal` bundle every page loads stays tiny.
     'portal-calendar': './webpack/portal/portal-calendar.ts',
+    'portal-directory': './webpack/portal/portal-directory.ts',
     // My Teams (#9868): the team page's four tabs, drawn by the shared ministries
     // components. The occurrence page reuses `ministries-occurrence` unchanged.
     'portal-teams': './webpack/portal/teams.ts',
+    // Passkeys (member sign-in #10463): adding one, and signing in with one.
+    'portal-passkeys': './webpack/portal/portal-passkeys.ts',
     'telemetry': './webpack/telemetry',
     'debug': './webpack/debug',
     'finance-deposit-editor': './webpack/finance-deposit-editor',

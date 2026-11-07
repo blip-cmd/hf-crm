@@ -5,9 +5,11 @@ use ChurchCRM\model\ChurchCRM\CalendarQuery;
 use ChurchCRM\model\ChurchCRM\EventTypeQuery;
 use ChurchCRM\model\ChurchCRM\GroupQuery;
 use ChurchCRM\Service\EventService;
+use ChurchCRM\Service\RecurrenceDateGenerator;
 use ChurchCRM\Slim\Middleware\Request\Auth\AddEventsRoleAuthMiddleware;
 use ChurchCRM\Utils\DateTimeUtils;
 use ChurchCRM\Utils\InputUtils;
+use ChurchCRM\Utils\LoggerUtils;
 use ChurchCRM\view\PageHeader;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
@@ -103,6 +105,7 @@ $app->post('/repeat-editor', function (Request $request, Response $response) {
     $sRecurDOW    = InputUtils::legacyFilterInput($body['RecurDOW'] ?? 'Sunday');
     $iRecurDOM    = InputUtils::filterInt($body['RecurDOM'] ?? 1);
     $sRecurDOY    = InputUtils::legacyFilterInput($body['RecurDOY'] ?? '01-01');
+    $iRecurWOM    = InputUtils::filterInt($body['RecurWOM'] ?? 0);
     $sRangeStart  = InputUtils::legacyFilterInput($body['RangeStart'] ?? '');
     $sRangeEnd    = InputUtils::legacyFilterInput($body['RangeEnd'] ?? '');
     $iLinkedGroup = InputUtils::filterInt($body['LinkedGroupId'] ?? 0);
@@ -113,29 +116,28 @@ $app->post('/repeat-editor', function (Request $request, Response $response) {
         }
     }
 
-    $validRecurTypes = ['weekly', 'monthly', 'yearly'];
     $errorMsg = '';
 
     // Strict YYYY-MM-DD validation — comparing two arbitrary strings with > can
     // produce wrong results, and an unparseable date would later throw inside
     // EventService::createRepeatEvents() (caught as InvalidArgumentException
     // there now, but better to validate up front and give a clear error here).
-    $startParsed = !empty($sRangeStart) ? \DateTimeImmutable::createFromFormat('!Y-m-d', $sRangeStart) : false;
-    $endParsed = !empty($sRangeEnd) ? \DateTimeImmutable::createFromFormat('!Y-m-d', $sRangeEnd) : false;
+    $startIso = DateTimeUtils::parseIsoDate($sRangeStart);
+    $endIso = DateTimeUtils::parseIsoDate($sRangeEnd);
 
     if (empty($iTypeID)) {
         $errorMsg = gettext('You must select an event type.');
     } elseif (empty($sTitle)) {
         $errorMsg = gettext('Event title is required.');
-    } elseif (!in_array($sRecurType, $validRecurTypes, true)) {
+    } elseif (!in_array($sRecurType, RecurrenceDateGenerator::SUPPORTED_RECUR_TYPES, true)) {
         $errorMsg = gettext('You must select a valid recurrence pattern.');
     } elseif (empty($sRangeStart) || empty($sRangeEnd)) {
         $errorMsg = gettext('You must specify a date range.');
-    } elseif ($startParsed === false || $startParsed->format('Y-m-d') !== $sRangeStart) {
+    } elseif ($startIso === '') {
         $errorMsg = gettext('Range start must be a valid YYYY-MM-DD date.');
-    } elseif ($endParsed === false || $endParsed->format('Y-m-d') !== $sRangeEnd) {
+    } elseif ($endIso === '') {
         $errorMsg = gettext('Range end must be a valid YYYY-MM-DD date.');
-    } elseif ($startParsed > $endParsed) {
+    } elseif ($startIso > $endIso) {
         $errorMsg = gettext('Range start must be before range end.');
     }
 
@@ -163,6 +165,7 @@ $app->post('/repeat-editor', function (Request $request, Response $response) {
             'recurDOW'        => $sRecurDOW,
             'recurDOM'        => $iRecurDOM,
             'recurDOY'        => $sRecurDOY,
+            'recurWOM'        => $iRecurWOM,
             'rangeStart'      => $sRangeStart,
             'rangeEnd'        => $sRangeEnd,
             'pinnedCalendars' => $pinnedCalendars,
@@ -177,6 +180,10 @@ $app->post('/repeat-editor', function (Request $request, Response $response) {
         $_SESSION['sGlobalMessageClass'] = 'success';
     } catch (\InvalidArgumentException $e) {
         $_SESSION['sGlobalMessage'] = $e->getMessage();
+        $_SESSION['sGlobalMessageClass'] = 'danger';
+    } catch (\Throwable $e) {
+        LoggerUtils::getAppLogger()->error('Repeat event creation failed', ['exception' => $e->getMessage(), 'trace' => $e->getTraceAsString()]);
+        $_SESSION['sGlobalMessage'] = gettext('Repeat events could not be created. Check the application log for details.');
         $_SESSION['sGlobalMessageClass'] = 'danger';
     }
 

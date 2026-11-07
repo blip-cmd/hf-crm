@@ -436,10 +436,6 @@ msgid "Family Cell Phone"
 msgstr "Mobitel obitelji"
 
 #: 
-msgid "Family Email"
-msgstr "E-pošta obitelji"
-
-#: 
 msgid "Personal Home Phone"
 msgstr "Osobni kućni telefon"
 
@@ -921,20 +917,8 @@ msgid "Voting Members"
 msgstr "Glasajući članovi"
 
 #: 
-msgid "Giving Report (Tax Statements)"
-msgstr "Izvještaj o darovima (porezne izjave)"
-
-#: 
 msgid "Zero Givers"
 msgstr "Nema darivatelja"
-
-#: 
-msgid "Individual Deposit Report"
-msgstr "Individualni izvještaj o uplati"
-
-#: 
-msgid "Advanced Deposit Report"
-msgstr "Napredni izvještaj o uplati"
 
 #: 
 msgid "Next"
@@ -957,10 +941,6 @@ msgid "Apply Report Dates To"
 msgstr "Primijeni datume izvještaja na"
 
 #: 
-msgid "Deposit Date (Default)"
-msgstr "Datum uplate (zadano)"
-
-#: 
 msgid "Payment Date"
 msgstr "Datum plaćanja"
 
@@ -981,10 +961,6 @@ msgid "Filter by Payment Type"
 msgstr "Filtriraj po vrsti plaćanja"
 
 #: 
-msgid "All Methods"
-msgstr "Sve metode"
-
-#: 
 msgid "Check"
 msgstr "Ček"
 
@@ -995,10 +971,6 @@ msgstr "Gotovina"
 #: 
 msgid "Bank Draft"
 msgstr "Bankovni nalog"
-
-#: 
-msgid "0 - No Minimum"
-msgstr "0 - Bez minimuma"
 
 #: 
 msgid "Other Settings"
@@ -1259,10 +1231,6 @@ msgstr "Potvrdi naljepnice podataka"
 #: 
 msgid "Invalid login or password"
 msgstr "Nevažeće korisničko ime ili lozinka"
-
-#: 
-msgid "Too many failed logins: your account has been locked.  Please contact an administrator."
-msgstr "Previše neuspjelih prijava: vaš račun je zaključan. Molim kontaktirajte administratora."
 
 #: 
 msgid "Email/Username"
@@ -1642,10 +1610,6 @@ msgid "Properties"
 msgstr "Svojstva"
 
 #: 
-msgid "Pledge Reminder Report"
-msgstr "Izvještaj podsjetnika za zavjete"
-
-#: 
 msgid "Restore Database"
 msgstr "Obnovi bazu podataka"
 
@@ -1712,14 +1676,6 @@ msgstr "Dozvola"
 #: 
 msgid "System Settings"
 msgstr "Sistemske postavke"
-
-#: 
-msgid "Tax Report"
-msgstr "Porezni izvještaj"
-
-#: 
-msgid "Calendar Year"
-msgstr "Kalendarska godina"
 
 #: 
 msgid "User Editor"
@@ -1995,20 +1951,8 @@ msgid "Liaison"
 msgstr "Veza"
 
 #: 
-msgid "City, State, Zip"
-msgstr "Grad, Županija, Poštanski broj"
-
-#: 
 msgid "Send Newsletter"
 msgstr "Pošalji bilten"
-
-#: 
-msgid "Member Name"
-msgstr "Ime člana"
-
-#: 
-msgid "Adult/Child"
-msgstr "Odrasli/Dijete"
 
 #: 
 msgid "Cell Phone"
@@ -2017,10 +1961,6 @@ msgstr "Mobitel"
 #: 
 msgid "Member/Friend"
 msgstr "Član/Prijatelj"
-
-#: 
-msgid "This option requires at least version 3.22 of MySQL!  Hit browser back button to return to ChurchCRM."
-msgstr "Ova opcija zahtijeva barem verziju 3.22 MySQL-a! Pritisnite gumb za povratak za povratak u ChurchCRM."
 
 #: 
 msgid "Work"
@@ -2131,24 +2071,12 @@ msgid "Classes"
 msgstr "Razredi"
 
 #: 
-msgid "Sunday School Reports"
-msgstr "Izvještaji nedjeljne škole"
-
-#: 
 msgid "Students not in a Sunday School Class"
 msgstr "Učenici koji nisu u razredu nedjeljne škole"
 
 #: 
-msgid "At least one group must be selected to make class lists or attendance sheets."
-msgstr "Mora biti odabrana barem jedna skupini za kreiranje popisa razreda ili listova za prisutnost."
-
-#: 
 msgid "Report Details"
 msgstr "Detalji izvještaja"
-
-#: 
-msgid "List all Roles (unchecked will list Teacher/Student roles only)"
-msgstr "Popis svih uloga (neoznačeno će prikazati samo uloge učitelja/učenika)"
 
 #: 
 msgid "First Sunday"
@@ -2169,10 +2097,6 @@ msgstr "Dodatni učenici"
 #: 
 msgid "Extra Teachers"
 msgstr "Dodatni učitelji"
-
-#: 
-msgid "Create Class List"
-msgstr "Kreiraj popis razreda"
 
 #: 
 msgid "Create Attendance Sheet"
@@ -2461,14 +2385,6 @@ msgstr "Jedinica za mjerenje udaljenosti, milje ili km."
 #: 
 msgid "Enable non-deductible payments"
 msgstr "Omogući neodbatljiva plaćanja"
-
-#: 
-msgid "Left Margin (1 = 1/100th inch)"
-msgstr "Lijeva margina (1 = 1/100 inča)"
-
-#: 
-msgid "Line Thickness (1 = 1/100th inch"
-msgstr "Debljina linije (1 = 1/100 inča"
 
 #: 
 msgid "Verbage for top line of tax report. Dates will be appended to the end of this line."
@@ -3956,10 +3872,6 @@ msgid "Oops! Page not found."
 msgstr "Ups! Stranica nije pronađena."
 
 #: 
-msgid "Family Registration"
-msgstr "Registracija obitelji"
-
-#: 
 msgid "Please enter the following to start your family's verification"
 msgstr "Unesite sljedeće za početak provjere vaše obitelji"
 
@@ -4578,14 +4490,6 @@ msgid "PhotoBook"
 msgstr "Fotoalbum"
 
 #: 
-msgid "With Photos"
-msgstr "S fotografijama"
-
-#: 
-msgid "Create PhotoBook"
-msgstr "Kreiraj fotoalbum"
-
-#: 
 msgid "SSE"
 msgstr "JJI"
 
@@ -4728,10 +4632,6 @@ msgstr "Godišnjice"
 #: 
 msgid "View User"
 msgstr "Prikaži korisnika"
-
-#: 
-msgid "not found or user without an email"
-msgstr "nije pronađeno ili korisnik nema e-poštu"
 
 #: 
 msgid "UserName not set"
@@ -4928,24 +4828,6 @@ msgstr "Minimalni iznos u kojem se nova lozinka mora razlikovati od stare (# pro
 "Postavite na nulu za onemogućavanje."
 
 #: 
-msgid "Maximum number of failed logins to allow before a user account is locked.\n"
-"Once the maximum has been reached, an administrator must re-enable the account.\n"
-"This feature helps to protect against automated password guessing attacks.\n"
-"Set to zero to disable this feature."
-msgstr "Maksimalni broj dozvoljenih neuspjelih prijava prije zaključavanja korisničkog računa.\n"
-"Nakon dostizanja maksimuma, administrator mora ponovo omogućiti račun.\n"
-"Ova značajka pomaže zaštiti od automatiziranih napada pogađanjem lozinke.\n"
-"Postavite na nulu za onemogućavanje."
-
-#: 
-msgid "PDF handling mode.\n"
-"1 = Save File dialog\n"
-"2 = Open in current browser window"
-msgstr "Način upravljanja PDF-om.\n"
-"1 = Dijaloški okvir za spremanje datoteke\n"
-"2 = Otvori u trenutnom prozoru preglednika"
-
-#: 
 msgid "Verify People"
 msgstr "Provjeri vjernike"
 
@@ -5003,10 +4885,6 @@ msgstr "Resetiraj bazu podataka"
 #: 
 msgid "Portuguese - Portugal"
 msgstr "Portugalski - Portugal"
-
-#: 
-msgid "Specify the application name to be displayed in authenticator app"
-msgstr "Navedite naziv aplikacije koji će se prikazivati u autentifikacijskoj aplikaciji"
 
 #: 
 msgid "Review"
@@ -5137,10 +5015,6 @@ msgstr "Prikaži stranicu obitelji"
 #: 
 msgid "View Person Page"
 msgstr "Prikaži stranicu osobe"
-
-#: 
-msgid "Verify"
-msgstr "Provjeri"
 
 #: 
 msgid "Family has no emails to use"
@@ -5389,24 +5263,8 @@ msgid "Email address"
 msgstr "Adresa e-pošte"
 
 #: 
-msgid "Enter family name"
-msgstr "Unesite obiteljsko ime"
-
-#: 
 msgid "Family name is required"
 msgstr "Obiteljsko ime je obavezno"
-
-#: 
-msgid "First name"
-msgstr "Ime"
-
-#: 
-msgid "Home phone number"
-msgstr "Kućni broj telefona"
-
-#: 
-msgid "Last name"
-msgstr "Prezime"
 
 #: 
 msgid "Next Member"
@@ -5439,10 +5297,6 @@ msgstr "Ulica i kućni broj"
 #: 
 msgid "Submit Registration"
 msgstr "Pošalji registraciju"
-
-#: 
-msgid "A new password has been generated and sent to your email address."
-msgstr "Generirana je nova lozinka i poslana na vašu adresu e-pošte."
 
 #: 
 msgid "Apply Update Now"
@@ -5489,20 +5343,12 @@ msgid "Login Name is required"
 msgstr "Korisničko ime je obavezno"
 
 #: 
-msgid "Once you receive the email, you can log in with your temporary password and change it to something you prefer."
-msgstr "Nakon što primite e-poruku, možete se prijaviti privremenom lozinkom i promijeniti je u nešto što vam odgovara."
-
-#: 
 msgid "Password Reset Error"
 msgstr "Greška resetiranja lozinke"
 
 #: 
 msgid "Password Reset Successful"
 msgstr "Resetiranje lozinke uspješno"
-
-#: 
-msgid "Please check your email (including spam/junk folder) for your temporary password."
-msgstr "Molim provjerite svoju e-poštu (uključujući mapu neželjene pošte) za privremenu lozinku."
 
 #: 
 msgid "Please do not close this window or refresh the page."
@@ -5587,10 +5433,6 @@ msgstr "Obriši odabrano"
 #: 
 msgid "Funds"
 msgstr "Fondovi"
-
-#: 
-msgid "Generate Report"
-msgstr "Generiraj izvještaj"
 
 #: 
 msgid "Payments"
@@ -6288,14 +6130,6 @@ msgid "Current Deposit"
 msgstr "Trenutna uplata"
 
 #: 
-msgid "Customizable report with filtering by date, fund, family, and payment method."
-msgstr "Prilagodljivi izvještaj s filtriranjem prema datumu, fondu, obitelji i načinu plaćanja."
-
-#: 
-msgid "Customize the text that appears on tax statements (sTaxReport1, sTaxReport2, etc)."
-msgstr "Prilagodite tekst koji se prikazuje na poreznim izjavama (sTaxReport1, sTaxReport2, itd.)."
-
-#: 
 msgid "Day"
 msgstr "Dan"
 
@@ -6306,10 +6140,6 @@ msgstr "Pro"
 #: 
 msgid "Deposit Statistics"
 msgstr "Statistika uplata"
-
-#: 
-msgid "Detailed breakdown of a single deposit slip."
-msgstr "Detaljni pregled jedne uplatnice."
 
 #: 
 msgid "Detailed breakdown of pledges and payments by family."
@@ -6376,20 +6206,12 @@ msgid "Generate"
 msgstr "Generiraj"
 
 #: 
-msgid "Generate Tax Statements"
-msgstr "Generiraj porezne izjave"
-
-#: 
 msgid "Generate annual tax-deductible giving statements for donors. Can be printed or emailed."
 msgstr "Generirajte godišnje porezno odbatljive izjave o darivanju za darivatelje. Mogu se ispisati ili poslati e-poštom."
 
 #: 
 msgid "Generate reminder letters for families with outstanding pledges."
 msgstr "Generirajte pisma podsjetnika za obitelji s neplaćenim zavjetima."
-
-#: 
-msgid "Generate reports for tax statements, pledge tracking, and financial analysis."
-msgstr "Generirajte izvještaje za porezne izjave, praćenje zavjeta i financijsku analizu."
 
 #: 
 msgid "ID"
@@ -6418,10 +6240,6 @@ msgstr "Lip"
 #: 
 msgid "Let's get your system set up and ready to use"
 msgstr "Pripremimo vaš sustav za upotrebu"
-
-#: 
-msgid "List members eligible to vote based on giving history and membership criteria."
-msgstr "Popis članova koji imaju pravo glasa na temelju povijesti darivanja i kriterija članstva."
 
 #: 
 msgid "Location"
@@ -6572,10 +6390,6 @@ msgid "System Info"
 msgstr "Informacije o sustavu"
 
 #: 
-msgid "Tax & Giving Reports"
-msgstr "Izvještaji o porezu i darivanju"
-
-#: 
 msgid "Tax Report Verbiage"
 msgstr "Tekst poreznog izvještaja"
 
@@ -6602,10 +6416,6 @@ msgstr "Nadogradnja"
 #: 
 msgid "User must be an Admin or have Finance permission"
 msgstr "Korisnik mora biti administrator ili imati dozvolu za financije"
-
-#: 
-msgid "Verify church name, address, and contact info appears on tax statements."
-msgstr "Provjerite da se naziv župe, adresa i kontaktni podaci prikazuju na poreznim izjavama."
 
 #: 
 msgid "Verify fund names and descriptions are accurate for statements."
@@ -9116,16 +8926,8 @@ msgid "Generate phone directory"
 msgstr "Generiraj telefonski imenik"
 
 #: 
-msgid "Generate pledge reminder letters"
-msgstr "Generiraj pisma podsjetnika za zavjete"
-
-#: 
 msgid "Generate reports on group membership and activities"
 msgstr "Generiraj izvještaje o članstvu u skupinama i aktivnostima"
-
-#: 
-msgid "Generate tax statement documents for donors"
-msgstr "Generiraj porezne izjave za darivatelje"
 
 #: 
 msgid "Get Your Data Into ChurchCRM"
@@ -9874,10 +9676,6 @@ msgid "View transaction details for a pledge payment"
 msgstr "Prikaži detalje transakcije za plaćanje zavjeta"
 
 #: 
-msgid "Voting members must have made a donation within this many years (0 to not require a donation)"
-msgstr "Glasajući članovi moraju biti napravili donaciju unutar ovog broja godina (0 znači da donacija nije potrebna)"
-
-#: 
 msgid "We could not find the family you were looking for."
 msgstr "Nismo mogli pronaći obitelj koju ste tražili."
 
@@ -9900,10 +9698,6 @@ msgstr "Nismo mogli obraditi vaš zahtjev za resetiranje lozinke."
 #: 
 msgid "We'll use this to keep in touch and send church updates."
 msgstr "Koristit ćemo ovo za ostavljanje u kontaktu i slanje župnih ažuriranja."
-
-#: 
-msgid "We're so glad you're here! Register your family in just 3 easy steps."
-msgstr "Tako smo dragi što ste ovdje! Registrirajte vašu obitelj u samo 3 jednostavna koraka."
 
 #: 
 msgid "Welcome Back!"
@@ -10068,10 +9862,6 @@ msgstr "Prisili ponovnu instalaciju?"
 #: 
 msgid "Full Path"
 msgstr "Puni put"
-
-#: 
-msgid "Generate class lists, attendance sheets, and photo books"
-msgstr "Generirajte popise razreda, listove za prisutnost i fotoalbume"
 
 #: 
 msgid "Installed"
@@ -12328,10 +12118,6 @@ msgid "Email is disabled. Configure email before resetting passwords, or use Cha
 msgstr "E-pošta je onemogućena. Konfigurirajte e-poštu prije resetiranja lozinki ili koristite Promijeni lozinku."
 
 #: 
-msgid "Enter one of your backup recovery codes"
-msgstr "Unesite jedan od vaših rezervnih kodova za oporavak"
-
-#: 
 msgid "Enter one of your backup recovery codes to access your account"
 msgstr "Unesite jedan od vaših rezervnih kodova za oporavak za pristup vašem računu"
 
@@ -13889,10 +13675,6 @@ msgid "Generate new code"
 msgstr "Generiraj novi kod"
 
 #: 
-msgid "Go to homepage"
-msgstr "Idi na početnu stranicu"
-
-#: 
 msgid "Group added to cart"
 msgstr "Skupini dodana u košaricu"
 
@@ -13915,10 +13697,6 @@ msgstr "Pripremite vašu autentifikacijsku aplikaciju (Google Authenticator, Mic
 #: 
 msgid "Hide advanced options"
 msgstr "Sakrij napredne opcije"
-
-#: 
-msgid "Home phone is required"
-msgstr "Kućni telefon je obavezan"
 
 #: 
 msgid "ICS URL"
@@ -14593,10 +14371,6 @@ msgid "Warnings"
 msgstr "Upozorenja"
 
 #: 
-msgid "We're so glad your family has joined us!"
-msgstr "Tako smo dragi što nam se vaša obitelj pridružila!"
-
-#: 
 msgid "Welcome to the Family!"
 msgstr "Dobrodošli u obitelj!"
 
@@ -14651,10 +14425,6 @@ msgstr "Jezična preferencija vašeg preglednika se razlikuje od vaše regionaln
 #: 
 msgid "Your database already contains data"
 msgstr "Vaša baza podataka već sadrži podatke"
-
-#: 
-msgid "Your registration has been received. Our team will be in touch soon to personally welcome you."
-msgstr "Vaša registracija je primljena. Naš tim će vas uskoro kontaktirati za osobni pozdrav."
 
 #: 
 msgid "Zip code is required"
@@ -14733,10 +14503,6 @@ msgid "open rate"
 msgstr "stopa otvaranja"
 
 #: 
-msgid "our church"
-msgstr "naša župa"
-
-#: 
 msgid "payment(s)?"
 msgstr "uplata/uplate?"
 
@@ -14775,14 +14541,6 @@ msgstr "god."
 #: 
 msgid "yrs"
 msgstr "god."
-
-#: 
-msgid "Account options"
-msgstr "Opcije računa"
-
-#: 
-msgid "Register"
-msgstr "Registriraj se"
 
 #. Context: locales
 #: 
@@ -14845,10 +14603,6 @@ msgid "Date Picker Format"
 msgstr "Format birača datuma"
 
 #: 
-msgid "Date Picker Placeholder"
-msgstr "Zamjenski tekst birača datuma"
-
-#: 
 msgid "Date Without Year"
 msgstr "Datum bez godine"
 
@@ -14879,10 +14633,6 @@ msgstr "Format datuma naziva datoteke"
 #: 
 msgid "Fully translated."
 msgstr "Potpuno prevedeno."
-
-#: 
-msgid "Hint text shown in date inputs. Default: yyyy-mm-dd"
-msgstr "Tekst naputka prikazan u unosima datuma. Zadano: gggg-mm-dd"
 
 #: 
 msgid "Home/Work Phone Format"
@@ -15066,16 +14816,8 @@ msgid "Always granted"
 msgstr "Uvijek dodijeljena"
 
 #: 
-msgid "Can only review and verify their own family. No other access."
-msgstr "Može pregledati i potvrditi samo vlastitu obitelj. Bez drugog pristupa."
-
-#: 
 msgid "Choose specific permissions below."
 msgstr "Odaberite specifične dozvole u nastavku."
-
-#: 
-msgid "Contact an administrator to change your permissions."
-msgstr "Obratite se administratoru za promjenu vaših dozvola."
 
 #: 
 msgid "Custom permissions"
@@ -15090,20 +14832,8 @@ msgid "People &amp; Families"
 msgstr "Osobe i obitelji"
 
 #: 
-msgid "Self-service"
-msgstr "Samousluga"
-
-#: 
-msgid "Self-service only"
-msgstr "Samo samousluga"
-
-#: 
 msgid "The note you are trying to edit no longer exists."
 msgstr "Bilješka koju pokušavate urediti više ne postoji."
-
-#: 
-msgid "This user can only review and update their own family profile. Individual permissions do not apply."
-msgstr "Ovaj korisnik može pregledati i ažurirati samo vlastiti obiteljski profil. Pojedinačne dozvole se ne primjenjuju."
 
 #: 
 msgid "User List"
@@ -15952,10 +15682,6 @@ msgid "Please confirm your family information"
 msgstr "Molimo potvrdite podatke o svojoj obitelji"
 
 #: 
-msgid "Please mail you next gift to %s"
-msgstr "Molimo pošaljite sljedeći dar na %s"
-
-#: 
 msgid "Please select another family with whom to associate these donations"
 msgstr "Molimo odaberite drugu obitelj s kojom ćete povezati ove donacije"
 
@@ -16026,10 +15752,6 @@ msgstr "Valjani primjeri"
 #: 
 msgid "What this plugin does"
 msgstr "Što ovaj dodatak radi"
-
-#: 
-msgid "for all funds"
-msgstr "za sve fondove"
 
 #: 
 msgid "for fund"
@@ -16332,10 +16054,6 @@ msgid "Anonymous Telemetry"
 msgstr "Anonimna telemetrija"
 
 #: 
-msgid "Anonymous telemetry level. Controls how much anonymous diagnostic data is shared with the ChurchCRM team. No church names, member data, or personal information is ever sent."
-msgstr "Razina anonimne telemetrije. Kontrolira koliko se anonimnih dijagnostičkih podataka dijeli s timom ChurchCRM. Nikada se ne šalju nazivi župa, podaci o vjernicima ni osobni podaci."
-
-#: 
 msgid "Are you sure you want to permanently delete this payment record?"
 msgstr "Jeste li sigurni da želite trajno izbrisati ovaj zapis o uplati?"
 
@@ -16394,10 +16112,6 @@ msgstr "Broji jedinstvene instalacije"
 #: 
 msgid "Data"
 msgstr "Podaci"
-
-#: 
-msgid "Data is processed by PostHog on EU infrastructure."
-msgstr "Podatke obrađuje PostHog na EU infrastrukturi."
 
 #: 
 msgid "Date is required"
@@ -16632,10 +16346,6 @@ msgid "Sending to"
 msgstr "Šaljem na"
 
 #: 
-msgid "Share anonymous usage statistics with the ChurchCRM team so we know which features and languages to prioritise. No church names, member data, or personal information is ever sent."
-msgstr "Dijelite anonimnu statistiku korištenja s timom ChurchCRM kako bismo znali kojim značajkama i jezicima dati prednost. Nikada se ne šalju nazivi župa, podaci o vjernicima ni osobni podaci."
-
-#: 
 msgid "Test email sent to"
 msgstr "Testna e-poruka poslana na"
 
@@ -16680,10 +16390,6 @@ msgid "What is sent"
 msgstr "Što se šalje"
 
 #: 
-msgid "What we collect"
-msgstr "Što prikupljamo"
-
-#: 
 msgid "Wishing you a wonderful %d year birthday!"
 msgstr "Želimo vam prekrasan %d. rođendan!"
 
@@ -16706,10 +16412,6 @@ msgstr "samo potpuno"
 #: 
 msgid "is thinking of you today."
 msgstr "misli na vas danas."
-
-#: 
-msgid "page routes, active locale, CRM version, PHP version, OS family, and a random installation ID. Nothing else. Data is stored in the EU."
-msgstr "rute stranica, aktivna lokalizacija, verzija CRM-a, PHP verzija, OS obitelj i nasumični ID instalacije. Ništa drugo. Podaci se pohranjuju u EU."
 
 #: 
 msgid "% Paid"
@@ -17989,14 +17691,6 @@ msgid "{{minutes}} min left"
 msgstr "Preostalo {{minutes}} min"
 
 #: 
-msgid "%d tax document emailed to the family successfully."
-msgstr "%d porezni dokument uspješno poslan po e-pošti obitelji."
-
-#: 
-msgid "%s %d Giving Statement"
-msgstr "Izjava o darivanju %s %d"
-
-#: 
 msgid "All classifications"
 msgstr "Sve klasifikacije"
 
@@ -18029,28 +17723,8 @@ msgid "Columns per Page"
 msgstr "Stupci po stranici"
 
 #: 
-msgid "Dear %s Family,\n"
-"\n"
-"Please find your %d giving statement from %s attached to this email.\n"
-"\n"
-"If you have any questions, please contact the church office.\n"
-"\n"
-"Thank you for your generosity."
-msgstr "Poštovana obitelj %s,\n"
-"\n"
-"Molimo vas pronađite vašu izjavu o darivanju %d od %s u prilogu ovog e-maila.\n"
-"\n"
-"Ako imate bilo kakvih pitanja, molimo vas kontaktirajte ured crkve.\n"
-"\n"
-"Hvala vam na vašoj velikodušnosti."
-
-#: 
 msgid "Download CSV"
 msgstr "Preuzmite CSV"
-
-#: 
-msgid "Email %d Tax Doc"
-msgstr "Pošalji e-mail %d porezni dokument"
 
 #: 
 msgid "Enable or disable the Finance module and sidebar menu."
@@ -18153,10 +17827,6 @@ msgid "Pledged"
 msgstr "Obećano"
 
 #: 
-msgid "Print %d Tax Doc"
-msgstr "Ispis %d porezni dokument"
-
-#: 
 msgid "Recent Friends"
 msgstr "Nedavni prijatelji"
 
@@ -18181,24 +17851,8 @@ msgid "Single Pages"
 msgstr "Pojedinostalne stranice"
 
 #: 
-msgid "Tax Documents"
-msgstr "Porezni dokumenti"
-
-#: 
-msgid "Tax document email failed to send. Please check your email server settings."
-msgstr "Neuspješan prijenos e-pošte s poreznim dokumentom. Molimo provjerite postavke e-poštnog poslužitelja."
-
-#: 
 msgid "Two half-size pages side by side on each landscape sheet, in booklet order. Print double-sided with \"flip on short edge\", then fold the stack in half. Columns are counted per half page."
 msgstr "Dvije stranice polovične veličine jedna do druge na svakom listu u širokom formatu, redoslijed brošure. Ispis na obje strane s \"prebacivanjem na kratkom rubu\", zatim presavijte grupu na pola. Stupci se broje po pola stranice."
-
-#: 
-msgid "Unable to email tax document: no payment data found for that year."
-msgstr "Nemoguće poslati porezni dokument e-poštom: nisu pronađeni podaci o plaćanju za tu godinu."
-
-#: 
-msgid "Unable to email tax document: this family has no email address on file."
-msgstr "Nemoguće poslati porezni dokument e-poštom: ova obitelj nema e-mail adresu u datoteci."
 
 #: 
 msgid "Unable to resolve OpenLP server hostname. Check the address and your network connection."
@@ -18449,16 +18103,8 @@ msgid "Second Home"
 msgstr "Drugi dom"
 
 #: 
-msgid "The linked person is deceased or inactive. Sign-in, sessions and the API key are blocked until the person is made active again."
-msgstr "Povezana osoba je umrla ili neaktivna. Prijava, sesije i API ključ su blokirani dok se osoba ne reaktivatira."
-
-#: 
 msgid "This is the mailing address"
 msgstr "Ovo je adresa za slanje pošte"
-
-#: 
-msgid "This person is deceased or inactive, so this account cannot sign in"
-msgstr "Ova osoba je umrla ili neaktivna, pa se ovaj račun ne može prijaviti"
 
 #: 
 msgid "Only an administrator can delete a person who has a login."
@@ -18659,10 +18305,6 @@ msgstr "Nije moguće kopirati adresu crkve."
 #: 
 msgid "Could not match the church country."
 msgstr "Nije moguće uskladiti državu crkve."
-
-#: 
-msgid "Class lists, attendance sheets, and photo books"
-msgstr "Popisi razreda, liste prisutnosti i foto knjige"
 
 #: 
 msgid "Group membership lists and Sunday School class reports"
@@ -18871,25 +18513,11 @@ msgstr[1] "%d zadana volontera dodijeljena"
 msgstr[2] "%d zadanih volontera dodijeljeno"
 
 #: 
-msgid "%d more volunteer is still needed for this position. Open the occurrence to fill the gap."
-msgid_plural "%d more volunteers are still needed for this position. Open the occurrence to fill the gap."
-msgstr[0] "Za ovu poziciju još je potreban %d volonter. Otvorite termin da popunite prazninu."
-msgstr[1] "Za ovu poziciju još su potrebna %d volontera. Otvorite termin da popunite prazninu."
-msgstr[2] "Za ovu poziciju još je potrebno %d volontera. Otvorite termin da popunite prazninu."
-
-#: 
 msgid "%d new occurrence"
 msgid_plural "%d new occurrences"
 msgstr[0] "%d novi termin"
 msgstr[1] "%d nova termina"
 msgstr[2] "%d novih termina"
-
-#: 
-msgid "%d volunteer is still needed for an upcoming occurrence."
-msgid_plural "%d volunteers are still needed for an upcoming occurrence."
-msgstr[0] "Za nadolazeći termin još je potreban %d volonter."
-msgstr[1] "Za nadolazeći termin još su potrebna %d volontera."
-msgstr[2] "Za nadolazeći termin još je potrebno %d volontera."
 
 #: 
 msgid "%s Calendar"
@@ -19173,10 +18801,6 @@ msgid "Account unlocked"
 msgstr "Račun otključan"
 
 #: 
-msgid "Accounts"
-msgstr "Računi"
-
-#: 
 msgid "Active must be true or false"
 msgstr "Aktivno mora biti istina ili laž"
 
@@ -19369,10 +18993,6 @@ msgid "Author"
 msgstr "Autor"
 
 #: 
-msgid "Authority is given to the person, not to a login, so it can be granted before they have one. A person whose login is self-service only keeps seeing just their own schedule until an administrator widens their account."
-msgstr "Ovlaštenje se dodjeljuje osobi, a ne prijavi, pa se može dodijeliti prije nego što osoba ima prijavu. Osoba čija je prijava samo za samoposluživanje i dalje vidi samo vlastiti raspored dok administrator ne proširi njezin račun."
-
-#: 
 msgid "Automatic"
 msgstr "Automatski"
 
@@ -19495,10 +19115,6 @@ msgstr "Odaberite razred"
 #: 
 msgid "Choose a day of the month from 1 to 31"
 msgstr "Odaberite dan u mjesecu od 1 do 31"
-
-#: 
-msgid "Choose a new photo"
-msgstr "Odaberite novu fotografiju"
 
 #: 
 msgid "Choose a person"
@@ -20199,10 +19815,6 @@ msgid "How often"
 msgstr "Koliko često"
 
 #: 
-msgid "How to correct this"
-msgstr "Kako to ispraviti"
-
-#: 
 msgid "I can't"
 msgstr "Ne mogu"
 
@@ -20273,10 +19885,6 @@ msgstr "Posljednjih 7 dana"
 #: 
 msgid "Last attempt"
 msgstr "Posljednji pokušaj"
-
-#: 
-msgid "Last check"
-msgstr "Posljednja provjera"
 
 #: 
 msgid "Last date"
@@ -20505,10 +20113,6 @@ msgstr "Članovima još nije podijeljen nijedan kalendar."
 #: 
 msgid "No calendar is open to this ministry, so the events will not show on any calendar."
 msgstr "Nijedan kalendar nije otvoren za ovu službu pa se događaji neće prikazati ni u jednom kalendaru."
-
-#: 
-msgid "No calendar is shared with members."
-msgstr "Nijedan kalendar nije podijeljen s članovima."
 
 #: 
 msgid "No class"
@@ -20964,10 +20568,6 @@ msgid "Open the occurrence"
 msgstr "Otvori termin"
 
 #: 
-msgid "Open the occurrence to assign the people you need."
-msgstr "Otvorite termin i dodijelite ljude koji su vam potrebni."
-
-#: 
 msgid "Open this team"
 msgstr "Otvori ovaj tim"
 
@@ -21049,14 +20649,6 @@ msgstr "Javite nam možete li doći prihvaćanjem ili odbijanjem u svom volonter
 #: 
 msgid "Please tell us what needs changing."
 msgstr "Recite nam što treba promijeniti."
-
-#: 
-msgid "Portal settings"
-msgstr "Postavke portala"
-
-#: 
-msgid "Portal theme"
-msgstr "Tema portala"
 
 #: 
 msgid "Position"
@@ -21275,10 +20867,6 @@ msgid "SMTP test"
 msgstr "SMTP test"
 
 #: 
-msgid "Save calendars"
-msgstr "Spremi kalendare"
-
-#: 
 msgid "Save changes"
 msgstr "Spremi promjene"
 
@@ -21289,10 +20877,6 @@ msgstr "Spremljeno – ova služba više ne traži pomoć"
 #: 
 msgid "Saved — this ministry is now asking for help"
 msgstr "Spremljeno – ova služba sada traži pomoć"
-
-#: 
-msgid "Saved. Members see the calendars switched on above."
-msgstr "Spremljeno. Članovi vide kalendare uključene gore."
 
 #: 
 msgid "Schedule \"{{name}}\" created."
@@ -21397,10 +20981,6 @@ msgid "Self-assignable must be true or false"
 msgstr "Samododjela mora biti istina ili laž"
 
 #: 
-msgid "Self-service accounts"
-msgstr "Računi za samoposluživanje"
-
-#: 
 msgid "Send"
 msgstr "Pošalji"
 
@@ -21471,18 +21051,6 @@ msgid "Show past events"
 msgstr "Prikaži prošle događaje"
 
 #: 
-msgid "Show the church calendar"
-msgstr "Prikaži kalendar crkve"
-
-#: 
-msgid "Show the church calendar in the Member Portal."
-msgstr "Prikaži kalendar crkve u Portalu članova."
-
-#: 
-msgid "Show the church calendar section in the Member Portal."
-msgstr "Prikaži odjeljak kalendara crkve u Portalu članova."
-
-#: 
 msgid "Show the next"
 msgstr "Prikaži sljedećih"
 
@@ -21525,10 +21093,6 @@ msgstr "Prijavljen"
 #: 
 msgid "Signed up"
 msgstr "Prijavljen/a"
-
-#: 
-msgid "Sincerely"
-msgstr "S poštovanjem"
 
 #: 
 msgid "Some of your details could not be saved. Please check the highlighted fields."
@@ -21893,10 +21457,6 @@ msgstr "Polje %s mora biti cijeli broj minuta"
 #: 
 msgid "The %s must be within %d minutes of the event"
 msgstr "Polje %s mora biti unutar %d minuta od događaja"
-
-#: 
-msgid "The Member Portal calendars were saved."
-msgstr "Kalendari Portala članova su spremljeni."
 
 #: 
 msgid "The Member Portal could not finish what you asked for. Please try again in a few minutes."
@@ -22347,10 +21907,6 @@ msgid "These needs come from the schedule. Saving here changes this occurrence o
 msgstr "Te potrebe dolaze iz rasporeda. Spremanje ovdje mijenja samo ovaj termin."
 
 #: 
-msgid "These numbers count self-service accounts only: people whose login can reach the Member Portal and nothing else."
-msgstr "Ovi brojevi uključuju samo račune za samoposluživanje: osobe čija se prijava može koristiti samo za Portal članova i ništa drugo."
-
-#: 
 msgid "These people are still assigned, but the position they hold is no longer part of this date's staffing plan."
 msgstr "Ti su ljudi još uvijek dodijeljeni, ali pozicija koju obnašaju više nije dio plana popune za ovaj datum."
 
@@ -22437,14 +21993,6 @@ msgid "This is not a valid theme folder name."
 msgstr "Ovo nije valjan naziv mape teme."
 
 #: 
-msgid "This is not one of your team's dates."
-msgstr "Ovo nije jedan od datuma vašeg tima."
-
-#: 
-msgid "This is not one of your teams."
-msgstr "Ovo nije jedan od vaših timova."
-
-#: 
 msgid "This is where the church sends post and who it calls about your household."
 msgstr "Ovdje crkva šalje poštu i koga zove u vezi s vašim kućanstvom."
 
@@ -22503,10 +22051,6 @@ msgstr "Ova stranica nije dio vašeg računa. Ako mislite da bi trebala biti, ob
 #: 
 msgid "This page was not found"
 msgstr "Ova stranica nije pronađena"
-
-#: 
-msgid "This part of the Member Portal is for volunteer team leaders."
-msgstr "Ovaj dio Portala članova namijenjen je voditeljima volonterskih timova."
 
 #: 
 msgid "This position is assigned by its team leader or coordinator, not by signing up"
@@ -24179,16 +23723,8 @@ msgid "{{name}} assigned and recorded as accepted"
 msgstr "{{name}} dodijeljen i zabilježen kao prihvaćen"
 
 #: 
-msgid "Ask an administrator to change your sign-in email."
-msgstr "Zamolite administratora da promijeni vašu e-poštu za prijavu."
-
-#: 
 msgid "Email changed by an administrator from %1$s to %2$s"
 msgstr "Administrator je promijenio e-poštu s %1$s na %2$s"
-
-#: 
-msgid "Only an administrator can change the email of a person with a user account."
-msgstr "Samo administrator može promijeniti e-poštu osobe s korisničkim računom."
 
 #: 
 msgid "Fund totals appear here once payments are added."
@@ -24657,4 +24193,2988 @@ msgstr "Mjesec u kojem svi koji imaju razred prelaze jedan razred više. Isklju�
 #: 
 msgid "Through Grade"
 msgstr "Do razreda"
+
+#: 
+msgid "Invalid setting name or value"
+msgstr "Nevažeći naziv ili vrijednost postavke"
+
+#: 
+msgid "The geocoding service did not answer — try again later"
+msgstr "Usluga geokodiranja nije odgovorila — pokušajte ponovno kasnije"
+
+#: 
+msgid "Only the email you sent is shown."
+msgstr "Prikazuje se samo e-pošta koju ste poslali."
+
+#: 
+msgid "Repeat events could not be created. Check the application log for details."
+msgstr "Ponavljajući događaji nisu mogli biti stvoreni. Provjerite zapisnik aplikacije za detalje."
+
+#: 
+msgid "Confirm Password"
+msgstr "Potvrdi lozinku"
+
+#: 
+msgid "Your password has been changed. You can now sign in with your new password."
+msgstr "Vaša lozinka je promijenjena. Sada se možete prijaviti novom lozinkom."
+
+#: 
+msgid "1st"
+msgstr "1."
+
+#: 
+msgid "2nd"
+msgstr "2."
+
+#: 
+msgid "3rd"
+msgstr "3."
+
+#: 
+msgid "4th"
+msgstr "4."
+
+#: 
+msgid "5th"
+msgstr "5."
+
+#: 
+msgid "Can't remove administrator access from the only administrator who can sign in"
+msgstr "Nije moguće ukloniti administratorski pristup jedinom administratoru koji se može prijaviti"
+
+#: 
+msgid "Choose the week of the month, from 1st to 5th"
+msgstr "Odaberite tjedan mjeseca, od 1. do 5."
+
+#: 
+msgid "Creates {{total}} events, on the {{week}} {{day}} of each month from {{first}} to {{last}}"
+msgstr "Stvara {{total}} događaja, na {{week}} {{day}} svakog mjeseca od {{first}} do {{last}}"
+
+#: 
+msgid "Invalid day of the week"
+msgstr "Nevažeći dan u tjednu"
+
+#: 
+msgid "Monthly, on a weekday"
+msgstr "Mjesečno, na radni dan"
+
+#: 
+msgid "Months without a 5th one are skipped."
+msgstr "Mjeseci bez 5. tjedna se preskaču."
+
+#: 
+msgid "RecurWOM must be a whole number from 1 to 5"
+msgstr "RecurWOM mora biti cijeli broj od 1 do 5"
+
+#: 
+msgid "Week of the month"
+msgstr "Tjedan mjeseca"
+
+#: 
+msgid "Week of the month must be from 1 to 5"
+msgstr "Tjedan mjeseca mora biti od 1 do 5"
+
+#: 
+msgid "%s through %s"
+msgstr "%s do %s"
+
+#: 
+msgid "Church tax ID (EIN) printed on contribution statements"
+msgstr "Porezni identifikacijski broj crkve (EIN) ispisano na izjavama o doprinosima"
+
+#: 
+msgid "Contribution statements are issued to the adults of a household. Please contact the church office if you need one."
+msgstr "Izjave o doprinosima izdaju se odraslima u kućanstvu. Kontaktirajte crkveni ured ako vam treba jedna."
+
+#: 
+msgid "Download statement"
+msgstr "Preuzmi izjavu"
+
+#: 
+msgid "Generated"
+msgstr "Generirano"
+
+#: 
+msgid "Goods and services"
+msgstr "Roba i usluge"
+
+#: 
+msgid "My Giving"
+msgstr "Moji darovi"
+
+#: 
+msgid "No contributions"
+msgstr "Nema doprinosa"
+
+#: 
+msgid "No contributions were recorded for this period."
+msgstr "Za ovo razdoblje nisu zabilježeni doprinosi."
+
+#: 
+msgid "No goods or services were provided in exchange for these contributions, other than intangible religious benefits."
+msgstr "U zamjenu za ove doprinose nisu pružene robe ili usluge, osim nematerijalnih vjerskih pogodnosti."
+
+#: 
+msgid "Optional. Printed on contribution statements."
+msgstr "Neobavezno. Ispisano na izjavama o doprinosima."
+
+#: 
+msgid "Tax ID"
+msgstr "Porezni ID"
+
+#: 
+msgid "Tax ID (EIN)"
+msgstr "Porezni ID (EIN)"
+
+#: 
+msgid "Tax-deductible amount"
+msgstr "Iznos koji se može odbiti od poreza"
+
+#: 
+msgid "This is the household statement. It includes gifts for your family."
+msgstr "Ovo je izjava kućanstva. Uključuje darove za vašu obitelj."
+
+#: 
+msgid "Total contributions"
+msgstr "Ukupni doprinosi"
+
+#: 
+msgid "Year-end statement"
+msgstr "Izjava na kraju godine"
+
+#: 
+msgid "%d giving statement emailed to the family successfully."
+msgstr "%d izjava o darovima uspješno poslana e-poštom obitelji."
+
+#: 
+msgid "%s Giving Statement"
+msgstr "Izjava o darovima %s"
+
+#: 
+msgid "Customize the text that appears on giving statements (sTaxReport1, sTaxReport2, etc)."
+msgstr "Prilagodite tekst koji se pojavljuje na izjavama o darovima (sTaxReport1, sTaxReport2 itd.)."
+
+#: 
+msgid "Dear %s Family,\n"
+"\n"
+"Please find your %s giving statement from %s attached to this email.\n"
+"\n"
+"If you have any questions, please contact the church office.\n"
+"\n"
+"Thank you for your generosity."
+msgstr "Draga obitelj %s,\n"
+"\n"
+"U privitku ovog e-maila nalazi se vaša izjava o darovima %s za %s.\n"
+"\n"
+"Ako imate pitanja, kontaktirajte crkveni ured.\n"
+"\n"
+"Hvala na vašoj velikodušnosti."
+
+#: 
+msgid "Email %s Giving Statement"
+msgstr "Pošalji izjavu o darovima %s e-poštom"
+
+#: 
+msgid "Envelope Numbers"
+msgstr "Brojevi omotnica"
+
+#: 
+msgid "Generate Giving Statements"
+msgstr "Generiraj izjave o darovima"
+
+#: 
+msgid "Generate reports for giving statements, pledge tracking, and financial analysis."
+msgstr "Generiraj izvješća za izjave o darovima, praćenje obećanja i financijsku analizu."
+
+#: 
+msgid "Giving Reports"
+msgstr "Izvješća o darovima"
+
+#: 
+msgid "Giving Statement"
+msgstr "Izjava o darovima"
+
+#: 
+msgid "Giving Statements"
+msgstr "Izjave o darovima"
+
+#: 
+msgid "Giving statement email failed to send. Please check your email server settings."
+msgstr "Slanje e-pošte s izjavom o darovima nije uspjelo. Provjerite postavke poslužitelja e-pošte."
+
+#: 
+msgid "Please mail your next gift to %s"
+msgstr "Pošaljite svoj sljedeći dar poštom na %s"
+
+#: 
+msgid "Print %s Giving Statement"
+msgstr "Ispiši izjavu o darovima %s"
+
+#: 
+msgid "Unable to email giving statement: no payment data found for that year."
+msgstr "Nije moguće poslati izjavu o darovima e-poštom: nisu pronađeni podaci o plaćanjima za tu godinu."
+
+#: 
+msgid "Unable to email giving statement: this family has no email address on file."
+msgstr "Nije moguće poslati izjavu o darovima e-poštom: ova obitelj nema registriranu e-mail adresu."
+
+#: 
+msgid "Undesignated"
+msgstr "Neoznačeno"
+
+#: 
+msgid "Verify church name, address, and contact info appears on giving statements."
+msgstr "Provjerite da se naziv crkve, adresa i kontakt podaci pojavljuju na izjavama o darovima."
+
+#: 
+msgid "The position is now assigned to %s, who has accepted it."
+msgstr "Pozicija je sada dodijeljena %s, koji ju je prihvatio."
+
+#: 
+msgid "The position is now assigned to %s, who has not yet accepted it."
+msgstr "Pozicija je sada dodijeljena %s, koji je još nije prihvatio."
+
+#: 
+msgid "Their reason: %s"
+msgstr "Njihov razlog: %s"
+
+#: 
+msgid "View Assignments"
+msgstr "Prikaži dodjele"
+
+#: 
+msgid "Volunteers still needed for this occurrence: %d"
+msgstr "Volonteri su još potrebni za ovu priliku: %d"
+
+#: 
+msgid "Volunteers still needed for this position: %d"
+msgstr "Volonteri su još potrebni za ovu poziciju: %d"
+
+#: 
+msgid "A weekly sign-in grid for each class. Class lists and photo books are on the Sunday School dashboard and each class page."
+msgstr "Tjedna mreža prijave za svaki razred. Popisi razreda i fotoalbumi nalaze se na nadzornoj ploči nedjeljne škole i na stranici svakog razreda."
+
+#: 
+msgid "A weekly sign-in grid for the school year, one column for each Sunday"
+msgstr "Tjedna mreža prijave za školsku godinu, jedan stupac za svaku nedjelju"
+
+#: 
+msgid "Age %d"
+msgstr "Dob %d"
+
+#: 
+msgid "At least one group must be selected to make an attendance sheet."
+msgstr "Mora se odabrati najmanje jedna grupa za izradu lista nazočnosti."
+
+#: 
+msgid "Attendance Sheet"
+msgstr "List nazočnosti"
+
+#: 
+msgid "Class List"
+msgstr "Popis razreda"
+
+#: 
+msgid "Download PDF"
+msgstr "Preuzmi PDF"
+
+#: 
+msgid "Lockout period in minutes\n"
+"A locked account unlocks by itself after this many minutes. Failed logins from one IP address are counted over the same period."
+msgstr "Razdoblje zaključavanja u minutama\n"
+"Zaključani račun se sam otključava nakon ovog broja minuta. Neuspješne prijave s jedne IP adrese broje se tijekom istog razdoblja."
+
+#: 
+msgid "Maximum number of failed logins from one IP address\n"
+"Failed logins and password reset requests from one IP address count toward this limit within the lockout period. Once it is reached, sign-in from that address is refused until the period ends.\n"
+"Set to zero to disable this feature, for example when everyone reaches ChurchCRM through one proxy address."
+msgstr "Maksimalan broj neuspješnih prijava s jedne IP adrese\n"
+"Neuspješne prijave i zahtjevi za resetiranje lozinke s jedne IP adrese broje se prema ovoj granici unutar razdoblja zaključavanja. Nakon što se dostigne, prijava s te adrese se odbija do kraja razdoblja.\n"
+"Postavite na nulu za onemogućavanje ove značajke, na primjer kada svi pristupaju ChurchCRM-u putem jedne proxy adrese."
+
+#: 
+msgid "Maximum number of failed logins to allow before a user account is locked.\n"
+"A locked account unlocks by itself after the lockout period, or sooner when an administrator resets its failed logins.\n"
+"This feature helps to protect against automated password guessing attacks.\n"
+"Set to zero to disable this feature."
+msgstr "Maksimalan broj neuspješnih prijava dopuštenih prije zaključavanja korisničkog računa.\n"
+"Zaključani račun se sam otključava nakon razdoblja zaključavanja ili ranije kada administrator resetira neuspješne prijave.\n"
+"Ova značajka pomaže u zaštiti od automatiziranih napada pogađanja lozinki.\n"
+"Postavite na nulu za onemogućavanje ove značajke."
+
+#: 
+msgid "Minutes until it unlocks by itself: %d"
+msgstr "Minuta do samootključavanja: %d"
+
+#: 
+msgid "Sunday School Attendance Sheet"
+msgstr "List nazočnosti nedjeljne škole"
+
+#: 
+msgid "Sundays with no class are left off the sheet."
+msgstr "Nedjelje bez nastave izostavljene su s lista."
+
+#: 
+msgid "Database Upgrade"
+msgstr "Nadogradnja baze podataka"
+
+#: 
+msgid "Your database is being updated. Please keep this page open until the upgrade finishes."
+msgstr "Vaša baza podataka se ažurira. Ostavite ovu stranicu otvorenu dok nadogradnja ne završi."
+
+#: 
+msgid "Family Labels"
+msgstr "Obiteljske oznake"
+
+#: 
+msgid "%s – Total"
+msgstr "%s – Ukupno"
+
+#: 
+msgid "Bill"
+msgstr "Novčanica"
+
+#: 
+msgid "Choose a deposit or enter both report dates."
+msgstr "Odaberite depozit ili unesite oba datuma izvješća."
+
+#: 
+msgid "Choose one deposit to review its payments or print its bank slip. A selected deposit overrides the date range."
+msgstr "Odaberite jedan depozit za pregled njegovih plaćanja ili ispis bankovnog potvrde. Odabrani depozit nadjačava raspon datuma."
+
+#: 
+msgid "Coin"
+msgstr "Kovanica"
+
+#: 
+msgid "Deposit Report"
+msgstr "Izvješće o depozitu"
+
+#: 
+msgid "Download Report"
+msgstr "Preuzmi izvješće"
+
+#: 
+msgid "Enter valid report dates."
+msgstr "Unesite valjane datume izvješća."
+
+#: 
+msgid "Invalid report filters."
+msgstr "Nevažeći filtri izvješća."
+
+#: 
+msgid "Invalid report options."
+msgstr "Nevažeće opcije izvješća."
+
+#: 
+msgid "Leave filters empty to include all payments. These settings apply to the report, not the bank slip."
+msgstr "Ostavite filtre prazne za uključivanje svih plaćanja. Ove postavke primjenjuju se na izvješće, a ne na bankovnu potvrdu."
+
+#: 
+msgid "No records were returned. Adjust your filters and try again."
+msgstr "Nisu vraćeni zapisi. Prilagodite filtre i pokušajte ponovno."
+
+#: 
+msgid "Prepare for the Bank"
+msgstr "Pripremi za banku"
+
+#: 
+msgid "Preview Totals"
+msgstr "Pregled ukupnih iznosa"
+
+#: 
+msgid "Print Bank Slip"
+msgstr "Ispiši bankovnu potvrdu"
+
+#: 
+msgid "Print the selected deposit in full, with cash and check totals, count sheets and witness lines. Report filters are ignored. Electronic payments stay in the summary and are excluded from the physical bank ticket total."
+msgstr "Ispišite odabrani depozit u cijelosti, s ukupnim iznosima gotovine i čekova, listovima brojanja i linijama svjedoka. Filtri izvješća se zanemaruju. Elektronička plaćanja ostaju u sažetku i isključena su iz ukupnog fizičkog bankovnog tiketa."
+
+#: 
+msgid "Review Payments"
+msgstr "Pregled plaćanja"
+
+#: 
+msgid "Review payments for a period, or prepare one deposit for the bank."
+msgstr "Pregledajte plaćanja za razdoblje ili pripremite jedan depozit za banku."
+
+#: 
+msgid "Review payments, download PDF or CSV, or print a bank slip for one deposit."
+msgstr "Pregledajte plaćanja, preuzmite PDF ili CSV ili ispišite bankovnu potvrdu za jedan depozit."
+
+#: 
+msgid "Select a valid deposit."
+msgstr "Odaberite valjani depozit."
+
+#: 
+msgid "Select one deposit to print a bank slip."
+msgstr "Odaberite jedan depozit za ispis bankovne potvrde."
+
+#: 
+msgid "The report end date must be on or after the start date."
+msgstr "Datum završetka izvješća mora biti na ili nakon datuma početka."
+
+#: 
+msgid "Total Cash"
+msgstr "Ukupno gotovina"
+
+#: 
+msgid "Total Coin"
+msgstr "Ukupno kovanice"
+
+#: 
+msgid "Witness"
+msgstr "Svjedok"
+
+#: 
+msgid "%d gifts have no family. They cannot be on a statement."
+msgstr "%d darova nema obitelj. Ne mogu biti na potvrdi."
+
+#: 
+msgid "%d open deposits dated in this year. Close them so every gift is final before statements go out."
+msgstr "%d otvorenih pologa ima datum u ovoj godini. Zatvorite ih kako bi svaki dar bio konačan prije slanja potvrda."
+
+#: 
+msgid "%d payments are not on any deposit yet."
+msgstr "%d uplata još nije ni na jednom pologu."
+
+#: 
+msgid "Can be emailed"
+msgstr "Može se poslati e-poštom"
+
+#: 
+msgid "Closing line"
+msgstr "Završni redak"
+
+#: 
+msgid "Every deposit dated in this year is closed."
+msgstr "Svaki polog s datumom u ovoj godini je zatvoren."
+
+#: 
+msgid "Every gift belongs to a family."
+msgstr "Svaki dar pripada nekoj obitelji."
+
+#: 
+msgid "Every payment in this year is on a deposit."
+msgstr "Svaka uplata u ovoj godini je na pologu."
+
+#: 
+msgid "Generate Tax Statements"
+msgstr "Izradi porezne potvrde"
+
+#: 
+msgid "Giving Report (Tax Statements)"
+msgstr "Izvještaj o darovima (porezne potvrde)"
+
+#: 
+msgid "Opening line"
+msgstr "Uvodni redak"
+
+#: 
+msgid "Print and mail"
+msgstr "Ispiši i pošalji poštom"
+
+#: 
+msgid "Qty"
+msgstr "Kol."
+
+#: 
+msgid "Review the year, then print or email giving statements."
+msgstr "Pregledajte godinu, zatim ispišite ili e-poštom pošaljite potvrde o darovima."
+
+#: 
+msgid "Signed by"
+msgstr "Potpisao"
+
+#: 
+msgid "Thank-you line"
+msgstr "Redak zahvale"
+
+#: 
+msgid "Verify church name, address, and contact info appears on tax statements."
+msgstr "Provjerite pojavljuju li se naziv crkve, adresa i podaci za kontakt na poreznim potvrdama."
+
+#: 
+msgid "Year-End Giving"
+msgstr "Darovi na kraju godine"
+
+#: 
+msgid "As of: %s"
+msgstr "Stanje na dan: %s"
+
+#: 
+msgid "At least one positive family payment in the selected %d fiscal years, through the review date: %s"
+msgstr "Barem jedna pozitivna obiteljska uplata u odabranih %d fiskalnih godina, do datuma pregleda: %s"
+
+#: 
+msgid "Baptism, electoral-roll applications, residence, communicant status, attendance, good standing, and local exceptions must be checked separately where your bylaws require them. Membership duration is not proof of attendance."
+msgstr "Krštenje, prijave na birački popis, prebivalište, status pričesnika, pohađanje, dobar ugled i lokalne iznimke moraju se provjeriti zasebno ondje gdje to zahtijevaju vaši statuti. Trajanje članstva nije dokaz pohađanja."
+
+#: 
+msgid "Choose an existing classification."
+msgstr "Odaberite postojeću klasifikaciju."
+
+#: 
+msgid "Choose at least one classification to review."
+msgstr "Odaberite barem jednu klasifikaciju za pregled."
+
+#: 
+msgid "Choose the classifications your church uses. No classification is assumed to confer voting rights."
+msgstr "Odaberite klasifikacije koje vaša crkva koristi. Nijedna klasifikacija sama po sebi ne daje pravo glasa."
+
+#: 
+msgid "Church leadership must confirm eligibility under the church bylaws. This list only shows people matching the selected filters."
+msgstr "Crkveno vodstvo mora potvrditi ispunjavanje uvjeta prema crkvenim statutima. Ovaj popis prikazuje samo osobe koje odgovaraju odabranim filtrima."
+
+#: 
+msgid "Classifications to review"
+msgstr "Klasifikacije za pregled"
+
+#: 
+msgid "Classifications: %s"
+msgstr "Klasifikacije: %s"
+
+#: 
+msgid "Deceased people, inactive people and classifications, and inactive or pending-review families and people are excluded."
+msgstr "Isključene su preminule osobe, neaktivne osobe i klasifikacije te neaktivne obitelji i osobe ili one koje čekaju pregled."
+
+#: 
+msgid "Download Review List"
+msgstr "Preuzmi popis za pregled"
+
+#: 
+msgid "Enter a valid review date between 1900 and 2200."
+msgstr "Unesite valjan datum pregleda između 1900. i 2200."
+
+#: 
+msgid "Enter whole numbers within the displayed limits."
+msgstr "Unesite cijele brojeve unutar prikazanih granica."
+
+#: 
+msgid "Fiscal years to check (0–100; 0 means no giving requirement)"
+msgstr "Fiskalne godine za provjeru (0–100; 0 znači da nema uvjeta darivanja)"
+
+#: 
+msgid "Giving is recorded by family, not individual. Enable this only when your bylaws allow a family payment to satisfy this criterion. This does not prove that each person donated. The window includes the selected fiscal year and ends no later than the review date."
+msgstr "Darovi se bilježe po obitelji, ne po osobi. Uključite ovo samo ako vaši statuti dopuštaju da obiteljska uplata zadovolji ovaj uvjet. To ne dokazuje da je svaka osoba darovala. Razdoblje obuhvaća odabranu fiskalnu godinu i završava najkasnije na datum pregleda."
+
+#: 
+msgid "Last fiscal year to include"
+msgstr "Zadnja fiskalna godina koju treba uključiti"
+
+#: 
+msgid "Minimum age (0–120)"
+msgstr "Najmanja dob (0–120)"
+
+#: 
+msgid "Minimum age: %d"
+msgstr "Najmanja dob: %d"
+
+#: 
+msgid "Minimum membership duration in months (0–1200)"
+msgstr "Najkraće trajanje članstva u mjesecima (0–1200)"
+
+#: 
+msgid "Minimum membership duration: %d months"
+msgstr "Najkraće trajanje članstva: %d mjeseci"
+
+#: 
+msgid "No donation requirement."
+msgstr "Nema uvjeta darivanja."
+
+#: 
+msgid "No people match these filters. Check missing birth or membership dates and adjust your criteria."
+msgstr "Nijedna osoba ne odgovara ovim filtrima. Provjerite nedostajuće datume rođenja ili članstva i prilagodite kriterije."
+
+#: 
+msgid "Optional family giving requirement"
+msgstr "Neobavezan uvjet obiteljskog darivanja"
+
+#: 
+msgid "People matching filters"
+msgstr "Osobe koje odgovaraju filtrima"
+
+#: 
+msgid "People omitted because required dates are missing"
+msgstr "Osobe izostavljene jer nedostaju obavezni datumi"
+
+#: 
+msgid "Prepare a list for church review using classifications and optional age, membership, and family giving filters."
+msgstr "Pripremite popis za crkveni pregled pomoću klasifikacija i neobaveznih filtara dobi, članstva i obiteljskog darivanja."
+
+#: 
+msgid "Prepare a list for church review using your bylaws."
+msgstr "Pripremite popis za crkveni pregled prema vašim statutima."
+
+#: 
+msgid "Review date"
+msgstr "Datum pregleda"
+
+#: 
+msgid "Use your church bylaws to choose the filters, then have authorized church leadership review the list. Matching these filters does not establish voting eligibility. This report does not record eligibility or conduct an election."
+msgstr "Prema statutima crkve odaberite filtre, a zatim neka ovlašteno crkveno vodstvo pregleda popis. Podudaranje s ovim filtrima ne utvrđuje pravo glasa. Ovaj izvještaj ne bilježi ispunjavanje uvjeta niti provodi izbor."
+
+#: 
+msgid "Voting Members — Review List"
+msgstr "Članovi s pravom glasa — popis za pregled"
+
+#: 
+msgid "Zero disables an optional requirement. Age requires a complete birth date; membership duration requires a membership date. People missing required dates are omitted and counted separately. Deceased people, inactive people and classifications, and inactive or pending-review families and people are always excluded; current classification and status are used, not historical status."
+msgstr "Nula isključuje neobavezan uvjet. Za dob je potreban potpun datum rođenja, a za trajanje članstva datum članstva. Osobe kojima nedostaju obavezni datumi izostavljaju se i broje zasebno. Preminule osobe, neaktivne osobe i klasifikacije te neaktivne obitelji i osobe ili one koje čekaju pregled uvijek su isključene. Koriste se trenutačna klasifikacija i status, a ne povijesni status."
+
+#: 
+msgid "Amount due for %s: %s"
+msgstr "Dospjeli iznos za %s: %s"
+
+#: 
+msgid "Cannot create private PDF temporary storage in the selected directory."
+msgstr "Nije moguće stvoriti privatnu privremenu pohranu PDF-a u odabranom direktoriju."
+
+#: 
+msgid "Leave blank to use the system temporary directory. Otherwise, enter an existing writable directory protected from web access."
+msgstr "Ostavite prazno da biste koristili privremeni direktorij sustava. Inače unesite postojeći direktorij u koji se može pisati i koji je zaštićen od pristupa putem weba."
+
+#: 
+msgid "PDF Temporary Directory"
+msgstr "Privremeni direktorij za PDF"
+
+#: 
+msgid "PDF temporary storage must be private and writable."
+msgstr "Privremena pohrana PDF-a mora biti privatna i u nju se mora moći pisati."
+
+#: 
+msgid "Reporting"
+msgstr "Izvještavanje"
+
+#: 
+msgid "The PDF temporary directory does not exist or is not accessible."
+msgstr "Privremeni direktorij za PDF ne postoji ili mu se ne može pristupiti."
+
+#: 
+msgid "The PDF temporary directory must be an absolute directory path."
+msgstr "Privremeni direktorij za PDF mora biti apsolutna putanja direktorija."
+
+#: 
+msgid "Church Tax ID (EIN)"
+msgstr "Porezni broj crkve (EIN)"
+
+#: 
+msgid "Closing Line"
+msgstr "Završni redak"
+
+#: 
+msgid "Controls optional telemetry. Install and database upgrade failures send limited diagnostics to PostHog even when telemetry is off. These failure reports include software and environment versions and a sanitized database error, but no installation ID or SQL statement."
+msgstr "Upravlja neobaveznom telemetrijom. Neuspjeli instalacijski postupci i nadogradnje baze podataka šalju ograničenu dijagnostiku u PostHog čak i kad je telemetrija isključena. Ta izvješća o neuspjehu sadrže verzije softvera i okruženja te očišćenu pogrešku baze, ali ne i identifikator instalacije ni SQL naredbu."
+
+#: 
+msgid "Diagnose failed installs and database upgrades"
+msgstr "Dijagnosticiraj neuspjele instalacije i nadogradnje baze podataka"
+
+#: 
+msgid "Install and upgrade failure details"
+msgstr "Pojedinosti o neuspjehu instalacije i nadogradnje"
+
+#: 
+msgid "Open in browser window"
+msgstr "Otvori u prozoru preglednika"
+
+#: 
+msgid "Opening Line"
+msgstr "Uvodni redak"
+
+#: 
+msgid "Optional usage telemetry is sent only when enabled. Install and database upgrade failures always send a limited diagnostic to help the community, even if you choose No thanks. Failure reports include software and environment versions and a sanitized database error, without an installation ID or SQL statement."
+msgstr "Neobavezna telemetrija uporabe šalje se samo kad je uključena. Neuspjeli instalacijski postupci i nadogradnje baze podataka uvijek šalju ograničenu dijagnostiku kako bi se pomoglo zajednici, čak i ako odaberete Ne, hvala. Izvješća o neuspjehu sadrže verzije softvera i okruženja te očišćenu pogrešku baze, bez identifikatora instalacije i SQL naredbe."
+
+#: 
+msgid "PDF Handling"
+msgstr "Rukovanje PDF-om"
+
+#: 
+msgid "PDF Output"
+msgstr "PDF ispis"
+
+#: 
+msgid "PDF handling mode"
+msgstr "Način rukovanja PDF-om"
+
+#: 
+msgid "Questions Line"
+msgstr "Redak s pitanjima"
+
+#: 
+msgid "Save File dialog"
+msgstr "Dijalog Spremi datoteku"
+
+#: 
+msgid "Signer"
+msgstr "Potpisnik"
+
+#: 
+msgid "Statement Settings"
+msgstr "Postavke potvrde"
+
+#: 
+msgid "Statement Wording"
+msgstr "Tekst potvrde"
+
+#: 
+msgid "Tax Information"
+msgstr "Porezni podaci"
+
+#: 
+msgid "Telemetry is sent to PostHog in the United States. Install and upgrade failure reports are sent even when optional telemetry is disabled."
+msgstr "Telemetrija se šalje u PostHog u Sjedinjenim Američkim Državama. Izvješća o neuspjehu instalacije i nadogradnje šalju se i kad je neobavezna telemetrija isključena."
+
+#: 
+msgid "This date was cancelled. Nothing more is needed from you."
+msgstr "Ovaj termin je otkazan. Od vas više ništa nije potrebno."
+
+#: 
+msgid "always sent"
+msgstr "uvijek se šalje"
+
+#: 
+msgid "Failed to remove letterhead"
+msgstr "Uklanjanje zaglavlja nije uspjelo"
+
+#: 
+msgid "Failed to store the letterhead"
+msgstr "Spremanje zaglavlja nije uspjelo"
+
+#: 
+msgid "Failed to upload letterhead"
+msgstr "Prijenos zaglavlja nije uspio"
+
+#: 
+msgid "Greeting"
+msgstr "Pozdrav"
+
+#: 
+msgid "Letter greeting and signature"
+msgstr "Pozdrav i potpis pisma"
+
+#: 
+msgid "Letterhead"
+msgstr "Zaglavlje"
+
+#: 
+msgid "PNG, JPG, GIF or WebP. A wide banner works best, for example 2000x300."
+msgstr "PNG, JPG, GIF ili WebP. Najbolje odgovara široki natpis, na primjer 2000x300."
+
+#: 
+msgid "Printed at the top of PDF letters that use a graphic letterhead, such as giving statements. Without one, letters print the church name and address."
+msgstr "Ispisuje se na vrhu PDF pisama koja koriste slikovno zaglavlje, poput potvrda o darovima. Bez njega pisma ispisuju naziv i adresu crkve."
+
+#: 
+msgid "Remove the letterhead? Letters will print the church name and address."
+msgstr "Ukloniti zaglavlje? Pisma će ispisivati naziv i adresu crkve."
+
+#: 
+msgid "Set the letterhead that PDF letters print"
+msgstr "Postavite zaglavlje koje PDF pisma ispisuju"
+
+#: 
+msgid "Using the church name and address"
+msgstr "Koristi se naziv i adresa crkve"
+
+#: 
+msgid "Using the letterhead path set in System Settings"
+msgstr "Koristi se putanja zaglavlja postavljena u postavkama sustava"
+
+#: 
+msgid "Wording, tax ID and PDF handling for giving statements"
+msgstr "Tekst, porezni broj i rukovanje PDF-om za potvrde o darovima"
+
+#: 
+msgid "%1$s as %2$s"
+msgstr "%1$s kao %2$s"
+
+#: 
+msgid "%s is now your email address. You can use it to sign in to the Member Portal."
+msgstr "%s je sada vaša adresa e-pošte. Njome se možete prijaviti u Članski portal."
+
+#: 
+msgid "+{{total}} more"
+msgstr "+{{total}} više"
+
+#: 
+msgid "A change of your email address was requested"
+msgstr "Zatražena je promjena vaše adrese e-pošte"
+
+#: 
+msgid "A family"
+msgstr "Obitelj"
+
+#: 
+msgid "A group"
+msgstr "Grupa"
+
+#: 
+msgid "A ministry"
+msgstr "Služba"
+
+#: 
+msgid "A new address changes only after you use the link we send to it."
+msgstr "Nova adresa mijenja se tek nakon što upotrijebite poveznicu koju na nju pošaljemo."
+
+#: 
+msgid "A passkey can be added only within %d minutes of signing in with your email address. Sign out, sign in again with your email, then come back here."
+msgstr "Pristupni ključ može se dodati samo unutar %d minuta od prijave adresom e-pošte. Odjavite se, ponovno se prijavite e-poštom, pa se vratite ovdje."
+
+#: 
+msgid "A passkey signs you in with Face ID, a fingerprint or your device PIN, without an email code."
+msgstr "Pristupni ključ vas prijavljuje pomoću Face ID-a, otiska prsta ili PIN-a uređaja, bez koda iz e-pošte."
+
+#: 
+msgid "A passkey was added to your Member Portal sign-in"
+msgstr "Pristupni ključ dodan je vašoj prijavi u Članski portal"
+
+#: 
+msgid "A passkey was added to your Member Portal sign-in at %1$s on %2$s, from %3$s."
+msgstr "Pristupni ključ dodan je vašoj prijavi u Članski portal u %1$s dana %2$s, s adrese %3$s."
+
+#: 
+msgid "A passkey was added to your Member Portal sign-in at %1$s on %2$s."
+msgstr "Pristupni ključ dodan je vašoj prijavi u Članski portal u %1$s dana %2$s."
+
+#: 
+msgid "A person who loses it then has no email of their own: mail sent to them alone, such as a group email, is skipped, and the email composer says so."
+msgstr "Osoba koja je izgubi tada nema vlastitu adresu e-pošte: pošta upućena samo njoj, poput e-pošte grupe, preskače se, a sastavljač e-pošte to navodi."
+
+#: 
+msgid "A person whose record hides their age never shows a birth year."
+msgstr "Osoba čiji zapis skriva dob nikad ne prikazuje godinu rođenja."
+
+#: 
+msgid "A row is not in the expected form."
+msgstr "Redak nije u očekivanom obliku."
+
+#: 
+msgid "A team"
+msgstr "Tim"
+
+#: 
+msgid "Add a passkey"
+msgstr "Dodaj pristupni ključ"
+
+#: 
+msgid "Add a passkey only on your own phone or computer, never on a shared or public one."
+msgstr "Pristupni ključ dodajte samo na vlastitom telefonu ili računalu, nikad na dijeljenom ili javnom."
+
+#: 
+msgid "Add an email"
+msgstr "Dodaj adresu e-pošte"
+
+#: 
+msgid "Added %s"
+msgstr "Dodano %s"
+
+#: 
+msgid "Admin overrides"
+msgstr "Administratorska izuzeća"
+
+#: 
+msgid "Adult of the %s family"
+msgstr "Odrasla osoba obitelji %s"
+
+#: 
+msgid "Adult of the family"
+msgstr "Odrasla osoba obitelji"
+
+#: 
+msgid "All events"
+msgstr "Svi događaji"
+
+#: 
+msgid "Allow Login as Person"
+msgstr "Dopusti prijavu kao osoba"
+
+#: 
+msgid "Allow changes during Login as Person"
+msgstr "Dopusti promjene tijekom prijave kao osoba"
+
+#: 
+msgid "Allow changes while an administrator uses Login as Person. When off, Login as Person is read-only."
+msgstr "Dopustite promjene dok administrator koristi prijavu kao osoba. Kad je isključeno, prijava kao osoba je samo za čitanje."
+
+#: 
+msgid "Already held by a family member"
+msgstr "Već je zadržava član obitelji"
+
+#: 
+msgid "Also used by"
+msgstr "Također koristi"
+
+#: 
+msgid "An administrator can give any permission to one person on that person's page. \"Admin overrides\" then shows here, with the number of people who were given it."
+msgstr "Administrator može jednoj osobi dati bilo koje dopuštenje na stranici te osobe. „Administratorska izuzeća” tada se prikazuju ovdje, s brojem osoba kojima je dano."
+
+#: 
+msgid "Another person already uses this address"
+msgstr "Druga osoba već koristi ovu adresu"
+
+#: 
+msgid "Applies to"
+msgstr "Odnosi se na"
+
+#: 
+msgid "Approve or decline substitute requests for a volunteer team."
+msgstr "Odobrite ili odbijte zamolbe za zamjenu u volonterskom timu."
+
+#: 
+msgid "Ask for a new email"
+msgstr "Zatraži novu e-poštu"
+
+#: 
+msgid "Authority is given to the person, not to a login, so it can be granted before they have one. A person who signs in only to the Member Portal keeps seeing just their own schedule until an administrator gives them a staff account."
+msgstr "Ovlast se daje osobi, a ne prijavi, pa se može dodijeliti i prije nego što je osoba ima. Osoba koja se prijavljuje samo u Članski portal i dalje vidi samo vlastiti raspored dok joj administrator ne da račun osoblja."
+
+#: 
+msgid "Awaiting review"
+msgstr "Čeka pregled"
+
+#: 
+msgid "Back to sign-in"
+msgstr "Natrag na prijavu"
+
+#: 
+msgid "Browse the full directory"
+msgstr "Pregledaj cijeli imenik"
+
+#: 
+msgid "Can sign in to the Member Portal"
+msgstr "Može se prijaviti u Članski portal"
+
+#: 
+msgid "Can sign in?"
+msgstr "Može li se prijaviti?"
+
+#: 
+msgid "Can't disable sign-in for the only administrator who can sign in."
+msgstr "Nije moguće onemogućiti prijavu jedinom administratoru koji se može prijaviti."
+
+#: 
+msgid "Cannot sign in"
+msgstr "Ne može se prijaviti"
+
+#: 
+msgid "Change family details"
+msgstr "Promijeni podatke o obitelji"
+
+#: 
+msgid "Change the family address and contact details, and add a family member for review."
+msgstr "Promijenite adresu i podatke za kontakt obitelji te dodajte člana obitelji na pregled."
+
+#: 
+msgid "Change their own name, contact details and photo."
+msgstr "Mijenjati vlastito ime, podatke za kontakt i fotografiju."
+
+#: 
+msgid "Changed"
+msgstr "Promijenjeno"
+
+#: 
+msgid "Changed after the person signed in"
+msgstr "Promijenjeno nakon što se osoba prijavila"
+
+#: 
+msgid "Changed by an import after the person signed in"
+msgstr "Promijenjeno uvozom nakon što se osoba prijavila"
+
+#: 
+msgid "Changed by staff after the person signed in"
+msgstr "Promijenjeno od osoblja nakon što se osoba prijavila"
+
+#: 
+msgid "Changed through the API after the person signed in"
+msgstr "Promijenjeno putem API-ja nakon što se osoba prijavila"
+
+#: 
+msgid "Changes are turned off during Login as Person."
+msgstr "Promjene su isključene tijekom prijave kao osoba."
+
+#: 
+msgid "Changes needed"
+msgstr "Potrebne su promjene"
+
+#: 
+msgid "Changes save as you make them."
+msgstr "Promjene se spremaju dok ih unosite."
+
+#: 
+msgid "Check your email"
+msgstr "Provjerite e-poštu"
+
+#: 
+msgid "Choose a permission"
+msgstr "Odaberite dopuštenje"
+
+#: 
+msgid "Choose a permission, what it is for and its last day, and say why."
+msgstr "Odaberite dopuštenje, čemu služi i njegov zadnji dan te navedite zašto."
+
+#: 
+msgid "Choose a photo or take a selfie"
+msgstr "Odaberite fotografiju ili snimite selfie"
+
+#: 
+msgid "Choose a theme"
+msgstr "Odaberite temu"
+
+#: 
+msgid "Choose at least one row."
+msgstr "Odaberite barem jedan redak."
+
+#: 
+msgid "Choose at most %d rows at a time."
+msgstr "Odaberite najviše %d redaka odjednom."
+
+#: 
+msgid "Choose how dates are shown from the list."
+msgstr "S popisa odaberite kako se prikazuju datumi."
+
+#: 
+msgid "Choose the last day of this permission."
+msgstr "Odaberite zadnji dan ovog dopuštenja."
+
+#: 
+msgid "Choose what the permission is for."
+msgstr "Odaberite čemu dopuštenje služi."
+
+#: 
+msgid "Choose yes or no."
+msgstr "Odaberite da ili ne."
+
+#: 
+msgid "Church Office"
+msgstr "Crkveni ured"
+
+#: 
+msgid "Church country"
+msgstr "Država crkve"
+
+#: 
+msgid "Church default: %s"
+msgstr "Zadano za crkvu: %s"
+
+#: 
+msgid "Church leader sign-in"
+msgstr "Prijava crkvenog voditelja"
+
+#: 
+msgid "Classifications whose members may sign in to the Member Portal, as a comma-separated list of classification ids."
+msgstr "Klasifikacije čiji se članovi smiju prijaviti u Članski portal, kao popis identifikatora klasifikacija odvojenih zarezom."
+
+#: 
+msgid "Clear selection"
+msgstr "Očisti odabir"
+
+#: 
+msgid "Codes, sessions and devices"
+msgstr "Kodovi, sesije i uređaji"
+
+#: 
+msgid "Confirm Email Address"
+msgstr "Potvrdite adresu e-pošte"
+
+#: 
+msgid "Confirm email address"
+msgstr "Potvrdi adresu e-pošte"
+
+#: 
+msgid "Confirm family details"
+msgstr "Potvrdi podatke o obitelji"
+
+#: 
+msgid "Confirm selected"
+msgstr "Potvrdi odabrano"
+
+#: 
+msgid "Confirm this email only after checking, in person or by phone, that it is this person's own address. Once confirmed, it can be used to sign in to the Member Portal."
+msgstr "Ovu adresu e-pošte potvrdite tek nakon što osobno ili telefonom provjerite da je to vlastita adresa te osobe. Nakon potvrde može se koristiti za prijavu u Članski portal."
+
+#: 
+msgid "Confirm your email address"
+msgstr "Potvrdite svoju adresu e-pošte"
+
+#: 
+msgid "Confirm your new email address"
+msgstr "Potvrdite svoju novu adresu e-pošte"
+
+#: 
+msgid "Confirmed"
+msgstr "Potvrđeno"
+
+#: 
+msgid "Dates must be written as YYYY-MM-DD."
+msgstr "Datumi se moraju pisati kao YYYY-MM-DD."
+
+#: 
+msgid "Decide substitute requests"
+msgstr "Odluči o zamolbama za zamjenu"
+
+#: 
+msgid "Device"
+msgstr "Uređaj"
+
+#: 
+msgid "Device remembered"
+msgstr "Uređaj je zapamćen"
+
+#: 
+msgid "Devices and passkeys"
+msgstr "Uređaji i pristupni ključevi"
+
+#: 
+msgid "Directory classifications"
+msgstr "Klasifikacije imenika"
+
+#: 
+msgid "Directory section"
+msgstr "Odjeljak imenika"
+
+#: 
+msgid "Disable sign-in"
+msgstr "Onemogući prijavu"
+
+#: 
+msgid "Do not show"
+msgstr "Ne prikazuj"
+
+#: 
+msgid "Each of them also needs their own email that nobody else uses."
+msgstr "Svakoj od njih potrebna je i vlastita adresa e-pošte koju nitko drugi ne koristi."
+
+#: 
+msgid "Each sign-in email works once, for a limited time, and a newer email replaces it."
+msgstr "Svaka poruka za prijavu vrijedi jednom, ograničeno vrijeme, a novija poruka zamjenjuje prethodnu."
+
+#: 
+msgid "Edit my details"
+msgstr "Uredi moje podatke"
+
+#: 
+msgid "Email address changed"
+msgstr "Adresa e-pošte je promijenjena"
+
+#: 
+msgid "Email address typed: %s"
+msgstr "Upisana adresa e-pošte: %s"
+
+#: 
+msgid "Email addresses to confirm: {{total}}"
+msgstr "Adrese e-pošte za potvrdu: {{total}}"
+
+#: 
+msgid "Email changed"
+msgstr "E-pošta je promijenjena"
+
+#: 
+msgid "Email code"
+msgstr "Kod iz e-pošte"
+
+#: 
+msgid "Email confirmed"
+msgstr "E-pošta je potvrđena"
+
+#: 
+msgid "Email link"
+msgstr "Poveznica iz e-pošte"
+
+#: 
+msgid "Email me a code"
+msgstr "Pošalji mi kod e-poštom"
+
+#: 
+msgid "Email me a confirmation link"
+msgstr "Pošalji mi poveznicu za potvrdu"
+
+#: 
+msgid "Email needs attention"
+msgstr "E-pošta zahtijeva pažnju"
+
+#: 
+msgid "Email problem"
+msgstr "Problem s e-poštom"
+
+#: 
+msgid "Emailed sign-in code and link cancelled"
+msgstr "Kod i poveznica za prijavu poslani e-poštom su otkazani"
+
+#: 
+msgid "Emailed verification link"
+msgstr "Poveznica za provjeru poslana e-poštom"
+
+#: 
+msgid "Emails confirmed: {{total}}"
+msgstr "Potvrđene adrese e-pošte: {{total}}"
+
+#: 
+msgid "Enable sign-in"
+msgstr "Omogući prijavu"
+
+#: 
+msgid "End every Member Portal session of this person and forget their remembered devices? Their passkeys stay, so they can sign in again."
+msgstr "Završiti svaku sesiju Članskog portala ove osobe i zaboraviti njezine zapamćene uređaje? Pristupni ključevi ostaju, pa se može ponovno prijaviti."
+
+#: 
+msgid "Ended %s"
+msgstr "Završeno %s"
+
+#: 
+msgid "Ended by a change to their sign-in"
+msgstr "Završeno zbog promjene njezine prijave"
+
+#: 
+msgid "Ended when member sign-in was turned off"
+msgstr "Završeno kad je isključena prijava članova"
+
+#: 
+msgid "Enter a whole number from %1$d to %2$d."
+msgstr "Unesite cijeli broj od %1$d do %2$d."
+
+#: 
+msgid "Enter your email address."
+msgstr "Unesite svoju adresu e-pošte."
+
+#: 
+msgid "Every kind"
+msgstr "Svaka vrsta"
+
+#: 
+msgid "Every member sign-in, refusal and change to sign-in, newest first. It never holds a code, link or passkey."
+msgstr "Svaka prijava člana, odbijanje i promjena prijave, od najnovijeg. Nikad ne sadrži kod, poveznicu ni pristupni ključ."
+
+#: 
+msgid "Everyone listed, A to Z, with a search box."
+msgstr "Svi navedeni, od A do Ž, s okvirom za pretraživanje."
+
+#: 
+msgid "Everyone the sign-in rules let in can then sign in to the Member Portal with their own email."
+msgstr "Svi koje pravila prijave puštaju mogu se zatim prijaviti u Članski portal vlastitom adresom e-pošte."
+
+#: 
+msgid "Everyone who signed in to the Member Portal in the last 30 days, newest first."
+msgstr "Svi koji su se prijavili u Članski portal u zadnjih 30 dana, od najnovijeg."
+
+#: 
+msgid "Everywhere"
+msgstr "Posvuda"
+
+#: 
+msgid "Families a member confirmed in the last 30 days, from the Member Portal or the emailed verification link."
+msgstr "Obitelji koje je član potvrdio u zadnjih 30 dana, iz Članskog portala ili poveznicom za provjeru iz e-pošte."
+
+#: 
+msgid "Families confirmed, last 30 days"
+msgstr "Potvrđene obitelji, zadnjih 30 dana"
+
+#: 
+msgid "Family details confirmed"
+msgstr "Podaci o obitelji su potvrđeni"
+
+#: 
+msgid "Family email"
+msgstr "Obiteljska e-pošta"
+
+#: 
+msgid "Family emails not moved"
+msgstr "Obiteljske adrese e-pošte nisu premještene"
+
+#: 
+msgid "Family roles whose members may sign in to the Member Portal, as a comma-separated list of role ids."
+msgstr "Obiteljske uloge čiji se članovi smiju prijaviti u Članski portal, kao popis identifikatora uloga odvojenih zarezom."
+
+#: 
+msgid "Find someone"
+msgstr "Pronađi nekoga"
+
+#: 
+msgid "Fix by hand"
+msgstr "Ispravi ručno"
+
+#: 
+msgid "Fix shared emails"
+msgstr "Ispravi dijeljene adrese e-pošte"
+
+#: 
+msgid "From a staff sign-in"
+msgstr "Iz prijave osoblja"
+
+#: 
+msgid "Give a permission"
+msgstr "Dodijeli dopuštenje"
+
+#: 
+msgid "Give a portal permission"
+msgstr "Dodijeli dopuštenje portala"
+
+#: 
+msgid "Give each person their own email"
+msgstr "Svakoj osobi dajte vlastitu adresu e-pošte"
+
+#: 
+msgid "Give permission"
+msgstr "Dodijeli dopuštenje"
+
+#: 
+msgid "Given by %1$s until %2$s"
+msgstr "Dodijelio %1$s do %2$s"
+
+#: 
+msgid "Given by %s"
+msgstr "Dodijelio %s"
+
+#: 
+msgid "Given to"
+msgstr "Dodijeljeno"
+
+#: 
+msgid "Given to Everyone"
+msgstr "Dodijeljeno svima"
+
+#: 
+msgid "Given, but not in effect"
+msgstr "Dodijeljeno, ali nije na snazi"
+
+#: 
+msgid "Go to sign in"
+msgstr "Idi na prijavu"
+
+#: 
+msgid "Go to the Member Portal"
+msgstr "Idi u Članski portal"
+
+#: 
+msgid "Has signed in"
+msgstr "Prijavio se"
+
+#: 
+msgid "Has signed in: their sessions and devices end"
+msgstr "Prijavio se: njegove sesije i uređaji završavaju"
+
+#: 
+msgid "Here is your code to sign in to the Member Portal. Type it on the sign-in page, in the browser where you asked for it. Or press the button to sign in on this device."
+msgstr "Ovo je vaš kod za prijavu u Članski portal. Upišite ga na stranici za prijavu, u pregledniku u kojem ste ga zatražili. Ili pritisnite gumb da biste se prijavili na ovom uređaju."
+
+#: 
+msgid "Hide Permissions"
+msgstr "Sakrij dopuštenja"
+
+#: 
+msgid "How"
+msgstr "Kako"
+
+#: 
+msgid "How many Member Portal sign-in emails one IP address can ask for in an hour. Set to 0 for no limit, for example when everyone reaches ChurchCRM through one address."
+msgstr "Koliko poruka za prijavu u Članski portal jedna IP adresa smije zatražiti u satu. Postavite 0 za bez ograničenja, na primjer kad svi dolaze u ChurchCRM preko jedne adrese."
+
+#: 
+msgid "How many days a device stays signed in to the Member Portal after the member chooses to stay signed in. Set to 0 to remove the choice."
+msgstr "Koliko dana uređaj ostaje prijavljen u Članski portal nakon što član odabere ostanak prijavljenim. Postavite 0 da biste uklonili taj izbor."
+
+#: 
+msgid "How many idle minutes end a Member Portal session."
+msgstr "Nakon koliko minuta neaktivnosti završava sesija Članskog portala."
+
+#: 
+msgid "How many minutes a Member Portal sign-in code and link stay valid."
+msgstr "Koliko minuta kod i poveznica za prijavu u Članski portal ostaju valjani."
+
+#: 
+msgid "Idle time (minutes)"
+msgstr "Vrijeme neaktivnosti (minute)"
+
+#: 
+msgid "Idle too long"
+msgstr "Predugo neaktivan"
+
+#: 
+msgid "If %1$s is your new address, use the button below to confirm it. Until it is confirmed, it cannot be used to sign in. The link works once, until %2$s."
+msgstr "Ako je %1$s vaša nova adresa, upotrijebite gumb u nastavku da biste je potvrdili. Dok nije potvrđena, ne može se koristiti za prijavu. Poveznica vrijedi jednom, do %2$s."
+
+#: 
+msgid "If this address can be used to sign in, we've emailed you a code. Nothing after a few minutes? Ask the church office."
+msgstr "Ako se ovom adresom možete prijaviti, poslali smo vam kod e-poštom. Ništa nakon nekoliko minuta? Obratite se crkvenom uredu."
+
+#: 
+msgid "If you didn't add it, remove it on the Sign-in and devices page and contact the church office."
+msgstr "Ako ga niste dodali, uklonite ga na stranici Prijava i uređaji i obratite se crkvenom uredu."
+
+#: 
+msgid "If you didn't ask for this change, please contact the church office."
+msgstr "Ako niste zatražili ovu promjenu, obratite se crkvenom uredu."
+
+#: 
+msgid "If you didn't ask for this, please contact the church office."
+msgstr "Ako ovo niste zatražili, obratite se crkvenom uredu."
+
+#: 
+msgid "It may have expired or already been used. If you need help, please contact the church office."
+msgstr "Možda je istekla ili je već iskorištena. Ako vam treba pomoć, obratite se crkvenom uredu."
+
+#: 
+msgid "Its plugin is not installed"
+msgstr "Njegov dodatak nije instaliran"
+
+#: 
+msgid "Jump to a letter"
+msgstr "Skoči na slovo"
+
+#: 
+msgid "Keep me signed in (days)"
+msgstr "Ostavi me prijavljenim (dani)"
+
+#: 
+msgid "Keeps it"
+msgstr "Zadržava je"
+
+#: 
+msgid "Kind of unconfirmed email"
+msgstr "Vrsta nepotvrđene e-pošte"
+
+#: 
+msgid "Last day"
+msgstr "Zadnji dan"
+
+#: 
+msgid "Last used"
+msgstr "Zadnji put korišteno"
+
+#: 
+msgid "Last used %s"
+msgstr "Zadnji put korišteno %s"
+
+#: 
+msgid "Leader of %s"
+msgstr "Voditelj %s"
+
+#: 
+msgid "Let administrators open a person's Member Portal as that person, from the person's Actions menu, while member sign-in is on."
+msgstr "Dopustite administratorima da otvore Članski portal osobe kao ta osoba, iz izbornika Radnje te osobe, dok je prijava članova uključena."
+
+#: 
+msgid "Let members add passkeys and sign in to the Member Portal with them."
+msgstr "Dopustite članovima da dodaju pristupne ključeve i da se njima prijave u Članski portal."
+
+#: 
+msgid "Let members sign in to the Member Portal with their own email address. It can only be turned on while email sending works."
+msgstr "Dopustite članovima prijavu u Članski portal vlastitom adresom e-pošte. Može se uključiti samo dok slanje e-pošte radi."
+
+#: 
+msgid "Let members sign in with their email"
+msgstr "Dopusti članovima prijavu e-poštom"
+
+#: 
+msgid "Link and code lifetime (minutes)"
+msgstr "Trajanje poveznice i koda (minute)"
+
+#: 
+msgid "Login as %s"
+msgstr "Prijava kao %s"
+
+#: 
+msgid "Login as Person"
+msgstr "Prijava kao osoba"
+
+#: 
+msgid "Login as Person could not start."
+msgstr "Prijava kao osoba nije se mogla pokrenuti."
+
+#: 
+msgid "Login as Person ended: %s"
+msgstr "Prijava kao osoba završila: %s"
+
+#: 
+msgid "Login as Person history"
+msgstr "Povijest prijave kao osoba"
+
+#: 
+msgid "Login as Person started"
+msgstr "Prijava kao osoba pokrenuta"
+
+#: 
+msgid "Login as Person stopped"
+msgstr "Prijava kao osoba zaustavljena"
+
+#: 
+msgid "Look up anyone"
+msgstr "Potraži bilo koga"
+
+#: 
+msgid "Loses it"
+msgstr "Gubi je"
+
+#: 
+msgid "Manage a team"
+msgstr "Vodi tim"
+
+#: 
+msgid "Manage my sign-in and devices"
+msgstr "Upravljaj mojom prijavom i uređajima"
+
+#: 
+msgid "Matches: %s"
+msgstr "Podudaranja: %s"
+
+#: 
+msgid "May sign in"
+msgstr "Smije se prijaviti"
+
+#: 
+msgid "May sign in now"
+msgstr "Smije se prijaviti sada"
+
+#: 
+msgid "Member Portal sign-in code"
+msgstr "Kod za prijavu u Članski portal"
+
+#: 
+msgid "Member Portal sign-in notice"
+msgstr "Obavijest o prijavi u Članski portal"
+
+#: 
+msgid "Member Portal sign-ins and activity, for members and for staff who open the portal from their staff sign-in."
+msgstr "Prijave u Članski portal i aktivnost, za članove i za osoblje koje portal otvara iz svoje prijave osoblja."
+
+#: 
+msgid "Member sign-in"
+msgstr "Prijava članova"
+
+#: 
+msgid "Member sign-in emails each person a code, so email (SMTP) must work before you turn it on."
+msgstr "Prijava članova svakoj osobi šalje kod e-poštom, pa e-pošta (SMTP) mora raditi prije nego što je uključite."
+
+#: 
+msgid "Member sign-in is off"
+msgstr "Prijava članova je isključena"
+
+#: 
+msgid "Member sign-in is off for the church."
+msgstr "Prijava članova je isključena za crkvu."
+
+#: 
+msgid "Member sign-in is off."
+msgstr "Prijava članova je isključena."
+
+#: 
+msgid "Member sign-in isn't available yet. Please contact the church office."
+msgstr "Prijava članova još nije dostupna. Obratite se crkvenom uredu."
+
+#: 
+msgid "Member sign-in never lets in people who are deceased, inactive, in an inactive family, awaiting review or have Disable sign-in on. These choices decide who else may."
+msgstr "Prijava članova nikad ne pušta osobe koje su preminule, neaktivne, u neaktivnoj obitelji, čekaju pregled ili imaju uključeno Onemogući prijavu. Ovi odabiri određuju tko se još smije prijaviti."
+
+#: 
+msgid "Member sign-in sends each member a code by email, so it can only be turned on while ChurchCRM can send email. Turn on email and set up the mail server first."
+msgstr "Prijava članova svakom članu šalje kod e-poštom, pa se može uključiti samo dok ChurchCRM može slati e-poštu. Najprije uključite e-poštu i postavite poslužitelj pošte."
+
+#: 
+msgid "Members see the Calendar page while at least one calendar is switched on."
+msgstr "Članovi vide stranicu Kalendar dok je uključen barem jedan kalendar."
+
+#: 
+msgid "Members type at least %d letters of a name and see up to %d matches. The full list is never shown."
+msgstr "Članovi upisuju barem %d slova imena i vide do %d podudaranja. Cijeli popis se nikad ne prikazuje."
+
+#: 
+msgid "Members who are signed in now are signed out, and nobody can sign in with their email until member sign-in is turned on again."
+msgstr "Članovi koji su sada prijavljeni bit će odjavljeni i nitko se neće moći prijaviti e-poštom dok se prijava članova ponovno ne uključi."
+
+#: 
+msgid "Members with these classifications find Directory in the Member Portal menu."
+msgstr "Članovi s ovim klasifikacijama nalaze Imenik u izborniku Članskog portala."
+
+#: 
+msgid "Minimum age"
+msgstr "Najmanja dob"
+
+#: 
+msgid "More attempts with this address in the next hour will not send another notice."
+msgstr "Daljnji pokušaji s ovom adresom u sljedećem satu neće poslati još jednu obavijest."
+
+#: 
+msgid "Moved from the family email"
+msgstr "Premješteno s obiteljske e-pošte"
+
+#: 
+msgid "Moved to a head of household"
+msgstr "Premješteno nositelju kućanstva"
+
+#: 
+msgid "Moved to a spouse"
+msgstr "Premješteno supružniku"
+
+#: 
+msgid "New to our church? Tell us about your family and we will reach out to welcome you."
+msgstr "Novi ste u našoj crkvi? Recite nam nešto o svojoj obitelji i javit ćemo vam se da vas dočekamo."
+
+#: 
+msgid "No Login as Person sessions yet."
+msgstr "Još nema sesija prijave kao osoba."
+
+#: 
+msgid "No birth date, and not a head of household or spouse"
+msgstr "Nema datuma rođenja i nije nositelj kućanstva ni supružnik"
+
+#: 
+msgid "No calendar is switched on, so members do not see the Calendar page."
+msgstr "Nijedan kalendar nije uključen, pa članovi ne vide stranicu Kalendar."
+
+#: 
+msgid "No changes"
+msgstr "Nema promjena"
+
+#: 
+msgid "No changes made."
+msgstr "Nema promjena."
+
+#: 
+msgid "No family role"
+msgstr "Nema obiteljske uloge"
+
+#: 
+msgid "No head of household or spouse can receive family email."
+msgstr "Nijedan nositelj kućanstva ni supružnik ne može primati obiteljsku e-poštu."
+
+#: 
+msgid "No head of household or spouse shares it"
+msgstr "Nijedan nositelj kućanstva ni supružnik je ne dijeli"
+
+#: 
+msgid "No match"
+msgstr "Nema podudaranja"
+
+#: 
+msgid "No one matches the sign-in rule yet. Tick more family roles or classifications, or lower the minimum age."
+msgstr "Još nitko ne odgovara pravilu prijave. Označite više obiteljskih uloga ili klasifikacija ili smanjite najmanju dob."
+
+#: 
+msgid "No passkey was added."
+msgstr "Nijedan pristupni ključ nije dodan."
+
+#: 
+msgid "No passkey was used. Try again, or sign in with your email address."
+msgstr "Nijedan pristupni ključ nije korišten. Pokušajte ponovno ili se prijavite adresom e-pošte."
+
+#: 
+msgid "No person has this email"
+msgstr "Nijedna osoba nema ovu e-poštu"
+
+#: 
+msgid "No personal email"
+msgstr "Nema osobne e-pošte"
+
+#: 
+msgid "No shared emails stop anyone from signing in."
+msgstr "Nijedna dijeljena adresa e-pošte nikoga ne sprječava u prijavi."
+
+#: 
+msgid "No such person"
+msgstr "Nema takve osobe"
+
+#: 
+msgid "No, thanks"
+msgstr "Ne, hvala"
+
+#: 
+msgid "Nobody can sign in with a personal email that two people who may sign in share. For an address shared within one family, the head of household keeps it, else the spouse (the oldest first). Everyone else sharing it loses it. Untick any you want to fix another way."
+msgstr "Nitko se ne može prijaviti osobnom adresom e-pošte koju dijele dvije osobe koje se smiju prijaviti. Za adresu dijeljenu unutar jedne obitelji zadržava je nositelj kućanstva, inače supružnik (prvo najstariji). Svi ostali koji je dijele gube je. Odznačite one koje želite ispraviti na drugi način."
+
+#: 
+msgid "Nobody can sign in yet: tick at least one classification under Who may sign in."
+msgstr "Još se nitko ne može prijaviti: označite barem jednu klasifikaciju pod Tko se smije prijaviti."
+
+#: 
+msgid "Nobody can sign in yet: tick at least one family role and at least one classification under Who may sign in."
+msgstr "Još se nitko ne može prijaviti: označite barem jednu obiteljsku ulogu i barem jednu klasifikaciju pod Tko se smije prijaviti."
+
+#: 
+msgid "Nobody can sign in yet: tick at least one family role under Who may sign in."
+msgstr "Još se nitko ne može prijaviti: označite barem jednu obiteljsku ulogu pod Tko se smije prijaviti."
+
+#: 
+msgid "Nobody in the directory matches that name."
+msgstr "Nitko u imeniku ne odgovara tom imenu."
+
+#: 
+msgid "Nobody is listed in the directory yet."
+msgstr "U imeniku još nitko nije naveden."
+
+#: 
+msgid "Not ended"
+msgstr "Nije završeno"
+
+#: 
+msgid "Not moved"
+msgstr "Nije premješteno"
+
+#: 
+msgid "Not sure which email we have? Contact the church office."
+msgstr "Niste sigurni koju e-poštu imamo? Obratite se crkvenom uredu."
+
+#: 
+msgid "Not yet"
+msgstr "Još ne"
+
+#: 
+msgid "Noted in the family timeline"
+msgstr "Zabilježeno na vremenskoj crti obitelji"
+
+#: 
+msgid "Of them, people who have signed in: {{total}}. They are signed out everywhere, and the address gets a notice."
+msgstr "Od njih, osobe koje su se prijavile: {{total}}. Odjavljene su posvuda, a adresa dobiva obavijest."
+
+#: 
+msgid "Off for everyone: \"%s\" is switched off"
+msgstr "Isključeno za sve: „%s” je isključeno"
+
+#: 
+msgid "Off for everyone: Volunteer Management is not set to V2"
+msgstr "Isključeno za sve: Upravljanje volonterima nije postavljeno na V2"
+
+#: 
+msgid "Off for everyone: its feature is switched off"
+msgstr "Isključeno za sve: njegova je značajka isključena"
+
+#: 
+msgid "Off for everyone: its plugin is turned off"
+msgstr "Isključeno za sve: njegov je dodatak isključen"
+
+#: 
+msgid "Off for everyone: no calendar is shared with members"
+msgstr "Isključeno za sve: nijedan kalendar nije podijeljen s članovima"
+
+#: 
+msgid "Office list"
+msgstr "Uredski popis"
+
+#: 
+msgid "Once it is confirmed, it can be used to sign in to the Member Portal."
+msgstr "Nakon potvrde može se koristiti za prijavu u Članski portal."
+
+#: 
+msgid "Only addresses you may confirm can be selected."
+msgstr "Mogu se odabrati samo adrese koje smijete potvrditi."
+
+#: 
+msgid "Only administrators see the reason."
+msgstr "Razlog vide samo administratori."
+
+#: 
+msgid "Only an administrator can change the email of a person who has a staff account or portal permissions."
+msgstr "Samo administrator može promijeniti e-poštu osobe koja ima račun osoblja ili dopuštenja portala."
+
+#: 
+msgid "Only an administrator can confirm an email that replaced one the person signed in with."
+msgstr "Samo administrator može potvrditi e-poštu koja je zamijenila onu kojom se osoba prijavila."
+
+#: 
+msgid "Only an administrator can confirm the email of a person who has a staff account or portal permissions."
+msgstr "Samo administrator može potvrditi e-poštu osobe koja ima račun osoblja ili dopuštenja portala."
+
+#: 
+msgid "Only an administrator can fix this address: someone sharing it has a staff account or portal permissions."
+msgstr "Samo administrator može ispraviti ovu adresu: netko tko je dijeli ima račun osoblja ili dopuštenja portala."
+
+#: 
+msgid "Only an adult of your family can confirm these details. Please contact the church office."
+msgstr "Ove podatke može potvrditi samo odrasla osoba vaše obitelji. Obratite se crkvenom uredu."
+
+#: 
+msgid "Only confirm addresses you know belong to that person. Anyone who reads an address can sign in as its person."
+msgstr "Potvrđujte samo adrese za koje znate da pripadaju toj osobi. Svatko tko pročita adresu može se prijaviti kao ta osoba."
+
+#: 
+msgid "Only living people with their own email can be on the office list."
+msgstr "Na uredskom popisu mogu biti samo žive osobe s vlastitom adresom e-pošte."
+
+#: 
+msgid "Only people with their own email can be added."
+msgstr "Mogu se dodati samo osobe s vlastitom adresom e-pošte."
+
+#: 
+msgid "Optional telemetry may include page routes, active locale, CRM version, PHP version, OS family, the country from your church information settings, and a random installation ID. Failure reports do not include the installation ID. Data is sent to PostHog in the United States."
+msgstr "Neobavezna telemetrija može uključivati putanje stranica, aktivni jezik, verziju CRM-a, verziju PHP-a, obitelj operacijskog sustava, državu iz postavki podataka o crkvi i nasumični identifikator instalacije. Izvješća o neuspjehu ne uključuju identifikator instalacije. Podaci se šalju u PostHog u Sjedinjenim Američkim Državama."
+
+#: 
+msgid "Passkey"
+msgstr "Pristupni ključ"
+
+#: 
+msgid "Passkey added"
+msgstr "Pristupni ključ dodan"
+
+#: 
+msgid "Passkey removed"
+msgstr "Pristupni ključ uklonjen"
+
+#: 
+msgid "Passkeys"
+msgstr "Pristupni ključevi"
+
+#: 
+msgid "Passkeys are turned off."
+msgstr "Pristupni ključevi su isključeni."
+
+#: 
+msgid "Passkeys cannot be used here."
+msgstr "Pristupni ključevi se ovdje ne mogu koristiti."
+
+#: 
+msgid "Passkeys cannot be used on this site yet. Please contact the church office."
+msgstr "Pristupni ključevi se na ovom mjestu još ne mogu koristiti. Obratite se crkvenom uredu."
+
+#: 
+msgid "Passkeys need a host name, not an IP address, in the site address."
+msgstr "Pristupnim ključevima treba naziv glavnog računala, a ne IP adresa, u adresi mjesta."
+
+#: 
+msgid "Passkeys need a secure (HTTPS) connection to this site."
+msgstr "Pristupnim ključevima treba sigurna (HTTPS) veza s ovim mjestom."
+
+#: 
+msgid "Passkeys need the site address to be set in Config.php."
+msgstr "Pristupnim ključevima treba adresa mjesta postavljena u Config.php."
+
+#: 
+msgid "Passkeys need the site to be served over HTTPS. Members are not offered passkeys until it is."
+msgstr "Pristupnim ključevima treba da se mjesto poslužuje preko HTTPS-a. Članovima se ne nude dok to nije tako."
+
+#: 
+msgid "Passkeys work only at %s."
+msgstr "Pristupni ključevi rade samo na %s."
+
+#: 
+msgid "Passkeys: %d"
+msgstr "Pristupni ključevi: %d"
+
+#: 
+msgid "People the saved settings let in: %s"
+msgstr "Osobe koje spremljene postavke puštaju: %s"
+
+#: 
+msgid "People to email when someone could not sign in to the Member Portal"
+msgstr "Osobe kojima se šalje e-pošta kad se netko nije mogao prijaviti u Članski portal"
+
+#: 
+msgid "People who hold it"
+msgstr "Osobe koje ga imaju"
+
+#: 
+msgid "People who lose an address: {{total}}"
+msgstr "Osobe koje gube adresu: {{total}}"
+
+#: 
+msgid "People who lost an address: {{total}}"
+msgstr "Osobe koje su izgubile adresu: {{total}}"
+
+#: 
+msgid "People who may sign in: {{total}}"
+msgstr "Osobe koje se smiju prijaviti: {{total}}"
+
+#: 
+msgid "People who used to sign in to the Member Portal: %d"
+msgstr "Osobe koje su se nekad prijavljivale u Članski portal: %d"
+
+#: 
+msgid "People with these classifications appear in the directory. The number is how many active people have each classification."
+msgstr "Osobe s ovim klasifikacijama pojavljuju se u imeniku. Broj je koliko aktivnih osoba ima svaku klasifikaciju."
+
+#: 
+msgid "People with this email: %s"
+msgstr "Osobe s ovom e-poštom: %s"
+
+#: 
+msgid "Person %d"
+msgstr "Osoba %d"
+
+#: 
+msgid "Pick classifications from the list."
+msgstr "Odaberite klasifikacije s popisa."
+
+#: 
+msgid "Pick family roles from the list."
+msgstr "Odaberite obiteljske uloge s popisa."
+
+#: 
+msgid "Pick people for the office list."
+msgstr "Odaberite osobe za uredski popis."
+
+#: 
+msgid "Please choose a language from the list."
+msgstr "Odaberite jezik s popisa."
+
+#: 
+msgid "Portal permission given"
+msgstr "Dopuštenje portala dodijeljeno"
+
+#: 
+msgid "Portal permission removed"
+msgstr "Dopuštenje portala uklonjeno"
+
+#: 
+msgid "Portal permissions"
+msgstr "Dopuštenja portala"
+
+#: 
+msgid "Portal sign-in"
+msgstr "Prijava na portal"
+
+#: 
+msgid "Problem"
+msgstr "Problem"
+
+#: 
+msgid "Reason"
+msgstr "Razlog"
+
+#: 
+msgid "Reason: %s"
+msgstr "Razlog: %s"
+
+#: 
+msgid "Refused"
+msgstr "Odbijeno"
+
+#: 
+msgid "Register your family"
+msgstr "Registrirajte svoju obitelj"
+
+#: 
+msgid "Remembered device"
+msgstr "Zapamćeni uređaj"
+
+#: 
+msgid "Remembered device removed"
+msgstr "Zapamćeni uređaj uklonjen"
+
+#: 
+msgid "Remembered devices: %d"
+msgstr "Zapamćeni uređaji: %d"
+
+#: 
+msgid "Remove Emails"
+msgstr "Ukloni adrese e-pošte"
+
+#: 
+msgid "Remove this passkey"
+msgstr "Ukloni ovaj pristupni ključ"
+
+#: 
+msgid "Remove this permission"
+msgstr "Ukloni ovo dopuštenje"
+
+#: 
+msgid "Removed from: {{names}}"
+msgstr "Uklonjeno s: {{names}}"
+
+#: 
+msgid "Replaced after a sign-in"
+msgstr "Zamijenjeno nakon prijave"
+
+#: 
+msgid "Replaced by another sign-in"
+msgstr "Zamijenjeno drugom prijavom"
+
+#: 
+msgid "Result"
+msgstr "Rezultat"
+
+#: 
+msgid "Run a volunteer team: positions, volunteers, schedules, staffing and headcounts."
+msgstr "Vodite volonterski tim: mjesta, volonteri, rasporedi, popunjenost i broj ljudi."
+
+#: 
+msgid "Say why sign-in is being disabled."
+msgstr "Navedite zašto se prijava onemogućuje."
+
+#: 
+msgid "Say why this permission is being given."
+msgstr "Navedite zašto se ovo dopuštenje dodjeljuje."
+
+#: 
+msgid "Search anyone on file. Each row says whether they may sign in to the Member Portal and, if not, why."
+msgstr "Pretražite bilo koga u evidenciji. Svaki redak kaže smije li se prijaviti u Članski portal i, ako ne, zašto."
+
+#: 
+msgid "Search method"
+msgstr "Način pretraživanja"
+
+#: 
+msgid "Search only"
+msgstr "Samo pretraživanje"
+
+#: 
+msgid "See family contact details"
+msgstr "Vidi podatke za kontakt obitelji"
+
+#: 
+msgid "See my family"
+msgstr "Vidi moju obitelj"
+
+#: 
+msgid "See the Member Portal as this person sees it? Staff pages stay closed until you press Stop, and the session is recorded on this page and on your user page."
+msgstr "Vidjeti Članski portal onako kako ga vidi ova osoba? Stranice osoblja ostaju zatvorene dok ne pritisnete Zaustavi, a sesija se bilježi na ovoj stranici i na vašoj korisničkoj stranici."
+
+#: 
+msgid "See the calendars the church shares with members, and subscribe to them."
+msgstr "Vidite kalendare koje crkva dijeli s članovima i pretplatite se na njih."
+
+#: 
+msgid "See the church calendar"
+msgstr "Vidi crkveni kalendar"
+
+#: 
+msgid "See the devices and passkeys that sign them in, and sign out or remove any of them."
+msgstr "Vidite uređaje i pristupne ključeve kojima se prijavljuju te odjavite ili uklonite bilo koji od njih."
+
+#: 
+msgid "See the email addresses and phone numbers of the people in their family."
+msgstr "Vidite adrese e-pošte i telefonske brojeve osoba u njihovoj obitelji."
+
+#: 
+msgid "See the member directory"
+msgstr "Vidi imenik članova"
+
+#: 
+msgid "See the names and photos of the people in their family."
+msgstr "Vidite imena i fotografije osoba u njihovoj obitelji."
+
+#: 
+msgid "See the people the church lists in its directory, with the details the church chooses to share."
+msgstr "Vidite osobe koje crkva navodi u imeniku, s podacima koje crkva odluči podijeliti."
+
+#: 
+msgid "See their volunteer schedule, sign up for open places and ask for a substitute."
+msgstr "Vidite svoj volonterski raspored, prijavite se za slobodna mjesta i zatražite zamjenu."
+
+#: 
+msgid "Send browse as true or false."
+msgstr "Pošaljite browse kao true ili false."
+
+#: 
+msgid "Send the classifications as a list of ids."
+msgstr "Pošaljite klasifikacije kao popis identifikatora."
+
+#: 
+msgid "Send the directory settings as a JSON object."
+msgstr "Pošaljite postavke imenika kao JSON objekt."
+
+#: 
+msgid "Send the fields to show as an object of true and false values."
+msgstr "Pošaljite polja za prikaz kao objekt vrijednosti true i false."
+
+#: 
+msgid "Send the settings as a JSON object."
+msgstr "Pošaljite postavke kao JSON objekt."
+
+#: 
+msgid "Session ended"
+msgstr "Sesija je završila"
+
+#: 
+msgid "Set up email"
+msgstr "Postavi e-poštu"
+
+#: 
+msgid "Set up email first."
+msgstr "Najprije postavite e-poštu."
+
+#: 
+msgid "Shared addresses fixed: {{total}}"
+msgstr "Ispravljene dijeljene adrese: {{total}}"
+
+#: 
+msgid "Shared addresses to fix: {{total}}"
+msgstr "Dijeljene adrese za ispravak: {{total}}"
+
+#: 
+msgid "Shared by"
+msgstr "Dijele"
+
+#: 
+msgid "Shared emails that stop people from signing in"
+msgstr "Dijeljene adrese e-pošte koje sprječavaju prijavu"
+
+#: 
+msgid "Show or hide this member"
+msgstr "Prikaži ili sakrij ovog člana"
+
+#: 
+msgid "Show the Directory page in the Member Portal to the classifications chosen below."
+msgstr "Prikažite stranicu Imenik u Članskom portalu klasifikacijama odabranima u nastavku."
+
+#: 
+msgid "Show the member directory"
+msgstr "Prikaži imenik članova"
+
+#: 
+msgid "Show the member directory in the Member Portal."
+msgstr "Prikaži imenik članova u Članskom portalu."
+
+#: 
+msgid "Show with year"
+msgstr "Prikaži s godinom"
+
+#: 
+msgid "Show without year"
+msgstr "Prikaži bez godine"
+
+#: 
+msgid "Showing the first %d matches. Type more of the name to find the person you are looking for."
+msgstr "Prikazuje se prvih %d podudaranja. Upišite više imena da biste pronašli osobu koju tražite."
+
+#: 
+msgid "Sign in as %s?"
+msgstr "Prijaviti se kao %s?"
+
+#: 
+msgid "Sign in next time on this device with Face ID, a fingerprint or your device PIN."
+msgstr "Sljedeći put prijavite se na ovom uređaju pomoću Face ID-a, otiska prsta ili PIN-a uređaja."
+
+#: 
+msgid "Sign in to see your family, the church calendar and ways to serve. You do not need a password or an account."
+msgstr "Prijavite se da biste vidjeli svoju obitelj, crkveni kalendar i načine služenja. Ne trebate lozinku ni račun."
+
+#: 
+msgid "Sign in with a passkey"
+msgstr "Prijavi se pristupnim ključem"
+
+#: 
+msgid "Sign out every device"
+msgstr "Odjavi svaki uređaj"
+
+#: 
+msgid "Sign out every device now?"
+msgstr "Odjavi svaki uređaj sada?"
+
+#: 
+msgid "Sign out everywhere"
+msgstr "Odjavi se posvuda"
+
+#: 
+msgid "Sign out this device"
+msgstr "Odjavi ovaj uređaj"
+
+#: 
+msgid "Sign-in"
+msgstr "Prijava"
+
+#: 
+msgid "Sign-in and devices"
+msgstr "Prijava i uređaji"
+
+#: 
+msgid "Sign-in could not be disabled."
+msgstr "Prijavu nije bilo moguće onemogućiti."
+
+#: 
+msgid "Sign-in could not be enabled."
+msgstr "Prijavu nije bilo moguće omogućiti."
+
+#: 
+msgid "Sign-in disabled"
+msgstr "Prijava onemogućena"
+
+#: 
+msgid "Sign-in email requested"
+msgstr "Zatražena e-pošta za prijavu"
+
+#: 
+msgid "Sign-in emails per IP address per hour"
+msgstr "Poruke za prijavu po IP adresi na sat"
+
+#: 
+msgid "Sign-in enabled"
+msgstr "Prijava omogućena"
+
+#: 
+msgid "Sign-in is already disabled for this person."
+msgstr "Prijava je već onemogućena za ovu osobu."
+
+#: 
+msgid "Sign-in is disabled"
+msgstr "Prijava je onemogućena"
+
+#: 
+msgid "Sign-in is disabled for this person."
+msgstr "Prijava je onemogućena za ovu osobu."
+
+#: 
+msgid "Sign-in is enabled for this person."
+msgstr "Prijava je omogućena za ovu osobu."
+
+#: 
+msgid "Sign-in is not disabled for this person."
+msgstr "Prijava nije onemogućena za ovu osobu."
+
+#: 
+msgid "Sign-in refused"
+msgstr "Prijava odbijena"
+
+#: 
+msgid "Sign-in, sessions and the API key are blocked until this is resolved on the linked person's record."
+msgstr "Prijava, sesije i API ključ blokirani su dok se ovo ne riješi na zapisu povezane osobe."
+
+#: 
+msgid "Signed in, last 30 days"
+msgstr "Prijavljeni, zadnjih 30 dana"
+
+#: 
+msgid "Signed out"
+msgstr "Odjavljen"
+
+#: 
+msgid "Signed out by a change to their sign-in"
+msgstr "Odjavljen zbog promjene svoje prijave"
+
+#: 
+msgid "Signed out everywhere"
+msgstr "Odjavljen posvuda"
+
+#: 
+msgid "Someone asked for a Member Portal sign-in email, but none was sent."
+msgstr "Netko je zatražio e-poštu za prijavu u Članski portal, ali nijedna nije poslana."
+
+#: 
+msgid "Someone could not sign in to the Member Portal"
+msgstr "Netko se nije mogao prijaviti u Članski portal"
+
+#: 
+msgid "Staff pages stay closed during Login as Person. Press Stop in the banner to go back."
+msgstr "Stranice osoblja ostaju zatvorene tijekom prijave kao osoba. Pritisnite Zaustavi na traci da biste se vratili."
+
+#: 
+msgid "Stop"
+msgstr "Zaustavi"
+
+#: 
+msgid "Stopped"
+msgstr "Zaustavljeno"
+
+#: 
+msgid "Tell the church office whether the family details are still right."
+msgstr "Recite crkvenom uredu jesu li podaci o obitelji još točni."
+
+#: 
+msgid "That code did not work. Check the newest email from us, or ask for a new one."
+msgstr "Taj kod nije odgovarao. Provjerite najnoviju poruku od nas ili zatražite novu."
+
+#: 
+msgid "That could not be removed."
+msgstr "To nije bilo moguće ukloniti."
+
+#: 
+msgid "That device is signed out."
+msgstr "Taj uređaj je odjavljen."
+
+#: 
+msgid "That is not a valid email address."
+msgstr "To nije valjana adresa e-pošte."
+
+#: 
+msgid "That page had been open too long. Please try again."
+msgstr "Ta je stranica bila otvorena predugo. Pokušajte ponovno."
+
+#: 
+msgid "That passkey is removed. It can no longer sign you in."
+msgstr "Taj pristupni ključ je uklonjen. Više vas ne može prijaviti."
+
+#: 
+msgid "That took too long. Please try again."
+msgstr "To je predugo trajalo. Pokušajte ponovno."
+
+#: 
+msgid "The 7.8.3 upgrade gave each family email to a person. These it could not, so it left a note in the family's timeline instead."
+msgstr "Nadogradnja 7.8.3 dala je svaku obiteljsku adresu e-pošte jednoj osobi. Ove nije mogla, pa je umjesto toga ostavila bilješku na vremenskoj crti obitelji."
+
+#: 
+msgid "The Member Portal and the emails it sends you use this language."
+msgstr "Članski portal i e-pošta koju vam šalje koriste ovaj jezik."
+
+#: 
+msgid "The change could not be saved."
+msgstr "Promjenu nije bilo moguće spremiti."
+
+#: 
+msgid "The code and the button work once, until %s."
+msgstr "Kod i gumb vrijede jednom, do %s."
+
+#: 
+msgid "The code or link went to an address that is no longer their email"
+msgstr "Kod ili poveznica otišli su na adresu koja više nije njihova e-pošta"
+
+#: 
+msgid "The confirmation email could not be sent. Please try again later."
+msgstr "E-poštu za potvrdu nije bilo moguće poslati. Pokušajte ponovno kasnije."
+
+#: 
+msgid "The device is signed out."
+msgstr "Uređaj je odjavljen."
+
+#: 
+msgid "The email address %2$s was removed from your record at %1$s. You have been signed out of the Member Portal on every device."
+msgstr "Adresa e-pošte %2$s uklonjena je s vašeg zapisa u %1$s. Odjavljeni ste iz Članskog portala na svakom uređaju."
+
+#: 
+msgid "The email address on your record at %1$s was changed from %2$s to %3$s. You have been signed out of the Member Portal on every device."
+msgstr "Adresa e-pošte na vašem zapisu u %1$s promijenjena je s %2$s na %3$s. Odjavljeni ste iz Članskog portala na svakom uređaju."
+
+#: 
+msgid "The email could not be confirmed."
+msgstr "E-poštu nije bilo moguće potvrditi."
+
+#: 
+msgid "The email could not be sent."
+msgstr "E-poštu nije bilo moguće poslati."
+
+#: 
+msgid "The email is confirmed. It can now be used to sign in."
+msgstr "E-pošta je potvrđena. Sada se može koristiti za prijavu."
+
+#: 
+msgid "The end date is before the start date."
+msgstr "Datum završetka je prije datuma početka."
+
+#: 
+msgid "The family has no living, active head of household or spouse"
+msgstr "Obitelj nema živog, aktivnog nositelja kućanstva ni supružnika"
+
+#: 
+msgid "The family is inactive"
+msgstr "Obitelj je neaktivna"
+
+#: 
+msgid "The head of household and spouse both have their own email"
+msgstr "Nositelj kućanstva i supružnik oboje imaju vlastitu adresu e-pošte"
+
+#: 
+msgid "The last day cannot be in the past."
+msgstr "Zadnji dan ne može biti u prošlosti."
+
+#: 
+msgid "The linked person may not sign in, so this account cannot sign in"
+msgstr "Povezana osoba se ne smije prijaviti, pa se ni ovaj račun ne može prijaviti"
+
+#: 
+msgid "The list could not be loaded."
+msgstr "Popis nije bilo moguće učitati."
+
+#: 
+msgid "The passkey could not be added. Please try again."
+msgstr "Pristupni ključ nije bilo moguće dodati. Pokušajte ponovno."
+
+#: 
+msgid "The passkey could not be verified"
+msgstr "Pristupni ključ nije bilo moguće provjeriti"
+
+#: 
+msgid "The passkey is not on record, or was removed"
+msgstr "Pristupni ključ nije u evidenciji ili je uklonjen"
+
+#: 
+msgid "The passkey was removed."
+msgstr "Pristupni ključ je uklonjen."
+
+#: 
+msgid "The people sharing it are in different families, or not in a family"
+msgstr "Osobe koje je dijele u različitim su obiteljima ili nisu u obitelji"
+
+#: 
+msgid "The people sharing this address have changed. Open Fix shared emails again."
+msgstr "Osobe koje dijele ovu adresu su se promijenile. Ponovno otvorite Ispravi dijeljene adrese e-pošte."
+
+#: 
+msgid "The permission could not be given."
+msgstr "Dopuštenje nije bilo moguće dodijeliti."
+
+#: 
+msgid "The permission ends after this day. It can be given again."
+msgstr "Dopuštenje završava nakon ovog dana. Može se ponovno dodijeliti."
+
+#: 
+msgid "The permission was given."
+msgstr "Dopuštenje je dodijeljeno."
+
+#: 
+msgid "The permission was removed."
+msgstr "Dopuštenje je uklonjeno."
+
+#: 
+msgid "The permissions could not be loaded."
+msgstr "Dopuštenja nije bilo moguće učitati."
+
+#: 
+msgid "The person loses this permission in the Member Portal at once."
+msgstr "Osoba odmah gubi ovo dopuštenje u Članskom portalu."
+
+#: 
+msgid "The reason can be at most %d characters long."
+msgstr "Razlog može imati najviše %d znakova."
+
+#: 
+msgid "The sign-in rules let them in, and each has their own email that nobody else who may sign in uses."
+msgstr "Pravila prijave ih puštaju i svatko ima vlastitu adresu e-pošte koju ne koristi nitko drugi tko se smije prijaviti."
+
+#: 
+msgid "The sign-in rules let them in, but their email does not: they have none, share it with someone else who may sign in, or it is not confirmed yet."
+msgstr "Pravila prijave ih puštaju, ali njihova e-pošta ne: nemaju je, dijele je s nekim drugim tko se smije prijaviti ili još nije potvrđena."
+
+#: 
+msgid "The sign-in settings could not be saved."
+msgstr "Postavke prijave nije bilo moguće spremiti."
+
+#: 
+msgid "The unconfirmed email has changed. Reload the page and try again."
+msgstr "Nepotvrđena e-pošta se promijenila. Ponovno učitajte stranicu i pokušajte opet."
+
+#: 
+msgid "Their classification may not sign in"
+msgstr "Njihova klasifikacija se ne smije prijaviti"
+
+#: 
+msgid "Their email changed"
+msgstr "Njihova e-pošta je promijenjena"
+
+#: 
+msgid "Their email is not confirmed yet"
+msgstr "Njihova e-pošta još nije potvrđena"
+
+#: 
+msgid "Their email is shared with someone else"
+msgstr "Njihova e-pošta dijeli se s nekim drugim"
+
+#: 
+msgid "Their family role may not sign in"
+msgstr "Njihova obiteljska uloga se ne smije prijaviti"
+
+#: 
+msgid "Their old logins were removed by the upgrade. Turn on member sign-in so they can sign in with their own email."
+msgstr "Njihove stare prijave uklonila je nadogradnja. Uključite prijavu članova kako bi se mogli prijaviti vlastitom e-poštom."
+
+#: 
+msgid "Their remembered device had expired"
+msgstr "Njihov zapamćeni uređaj je istekao"
+
+#: 
+msgid "Their remembered device was signed out"
+msgstr "Njihov zapamćeni uređaj je odjavljen"
+
+#: 
+msgid "Theme development"
+msgstr "Razvoj teme"
+
+#: 
+msgid "There is no classification with id %d."
+msgstr "Nema klasifikacije s identifikatorom %d."
+
+#: 
+msgid "There is no picker for this kind of scope."
+msgstr "Nema birača za ovu vrstu opsega."
+
+#: 
+msgid "There is no such audit event."
+msgstr "Nema takvog događaja revizije."
+
+#: 
+msgid "There is no such email problem."
+msgstr "Nema takvog problema s e-poštom."
+
+#: 
+msgid "There is no such kind of unconfirmed email."
+msgstr "Nema takve vrste nepotvrđene e-pošte."
+
+#: 
+msgid "There is no such list."
+msgstr "Nema takvog popisa."
+
+#: 
+msgid "There is no such portal permission."
+msgstr "Nema takvog dopuštenja portala."
+
+#: 
+msgid "These are the phones and computers where you chose to stay signed in. Sign out any you no longer use or don't recognize."
+msgstr "Ovo su telefoni i računala na kojima ste odabrali ostati prijavljeni. Odjavite one koje više ne koristite ili ne prepoznajete."
+
+#: 
+msgid "They have a staff account"
+msgstr "Imaju račun osoblja"
+
+#: 
+msgid "They may sign in but never have."
+msgstr "Smiju se prijaviti, ali nikad nisu."
+
+#: 
+msgid "This action needs a signed-in browser session."
+msgstr "Ovoj radnji treba prijavljena sesija preglednika."
+
+#: 
+msgid "This address could not be changed. Open Fix shared emails again to see where it stands."
+msgstr "Ovu adresu nije bilo moguće promijeniti. Ponovno otvorite Ispravi dijeljene adrese e-pošte da biste vidjeli u kakvom je stanju."
+
+#: 
+msgid "This address is no longer shared by people who may sign in."
+msgstr "Ovu adresu više ne dijele osobe koje se smiju prijaviti."
+
+#: 
+msgid "This browser cannot make passkeys."
+msgstr "Ovaj preglednik ne može stvarati pristupne ključeve."
+
+#: 
+msgid "This device"
+msgstr "Ovaj uređaj"
+
+#: 
+msgid "This device already has a passkey for you."
+msgstr "Ovaj uređaj već ima pristupni ključ za vas."
+
+#: 
+msgid "This device will no longer keep the person signed in, and a session open on it ends. They can sign in again by email."
+msgstr "Ovaj uređaj više neće držati osobu prijavljenom, a sesija otvorena na njemu završava. Mogu se ponovno prijaviti e-poštom."
+
+#: 
+msgid "This is my own device. Keep me signed in."
+msgstr "Ovo je moj uređaj. Ostavi me prijavljenim."
+
+#: 
+msgid "This is where you decide about guests. The number is how many active people have each classification."
+msgstr "Ovdje odlučujete o gostima. Broj je koliko aktivnih osoba ima svaku klasifikaciju."
+
+#: 
+msgid "This link cannot be used"
+msgstr "Ova se poveznica ne može upotrijebiti"
+
+#: 
+msgid "This link has expired or was already used"
+msgstr "Ova je poveznica istekla ili je već iskorištena"
+
+#: 
+msgid "This part of the Member Portal is not available to you."
+msgstr "Ovaj dio Članskog portala vam nije dostupan."
+
+#: 
+msgid "This passkey is already on record."
+msgstr "Ovaj pristupni ključ već je u evidenciji."
+
+#: 
+msgid "This passkey will no longer sign the person in. They can sign in by email and add a new one."
+msgstr "Ovaj pristupni ključ više neće prijavljivati osobu. Može se prijaviti e-poštom i dodati novi."
+
+#: 
+msgid "This permission cannot be given on the person page."
+msgstr "Ovo dopuštenje nije moguće dodijeliti na stranici osobe."
+
+#: 
+msgid "This person already has every permission that can be given."
+msgstr "Ova osoba već ima svako dopuštenje koje se može dodijeliti."
+
+#: 
+msgid "This person already has this permission."
+msgstr "Ova osoba već ima ovo dopuštenje."
+
+#: 
+msgid "This person can no longer sign in anywhere, to the Member Portal or as staff. Every session ends, and their remembered devices and passkeys are removed."
+msgstr "Ova se osoba više nigdje ne može prijaviti, ni u Članski portal ni kao osoblje. Svaka sesija završava, a njezini zapamćeni uređaji i pristupni ključevi se uklanjaju."
+
+#: 
+msgid "This person could not be signed out."
+msgstr "Ovu osobu nije bilo moguće odjaviti."
+
+#: 
+msgid "This person has a staff account. Login as Person never opens a staff account."
+msgstr "Ova osoba ima račun osoblja. Prijava kao osoba nikad ne otvara račun osoblja."
+
+#: 
+msgid "This person has no such passkey."
+msgstr "Ova osoba nema takav pristupni ključ."
+
+#: 
+msgid "This person has no such permission."
+msgstr "Ova osoba nema takvo dopuštenje."
+
+#: 
+msgid "This person has no such remembered device."
+msgstr "Ova osoba nema takav zapamćeni uređaj."
+
+#: 
+msgid "This person has no unconfirmed email."
+msgstr "Ova osoba nema nepotvrđenu e-poštu."
+
+#: 
+msgid "This person has signed in to the Member Portal. Changing this email signs them out everywhere, and the new address cannot be used to sign in until it is confirmed."
+msgstr "Ova se osoba prijavila u Članski portal. Promjena ove e-pošte odjavljuje je posvuda, a nova se adresa ne može koristiti za prijavu dok se ne potvrdi."
+
+#: 
+msgid "This person is deceased."
+msgstr "Ova osoba je preminula"
+
+#: 
+msgid "This person is signed out of the Member Portal everywhere."
+msgstr "Ova je osoba odjavljena iz Članskog portala posvuda."
+
+#: 
+msgid "This person no longer exists."
+msgstr "Ova osoba više ne postoji."
+
+#: 
+msgid "This signs you out everywhere, including here, and forgets every device. You can sign in again with your email address."
+msgstr "Ovo vas odjavljuje posvuda, uključujući ovdje, i zaboravlja svaki uređaj. Možete se ponovno prijaviti adresom e-pošte."
+
+#: 
+msgid "This signs you out everywhere, including here, and forgets every device. Your passkeys stay: you can sign in again with a passkey or your email address."
+msgstr "Ovo vas odjavljuje posvuda, uključujući ovdje, i zaboravlja svaki uređaj. Vaši pristupni ključevi ostaju: možete se ponovno prijaviti pristupnim ključem ili adresom e-pošte."
+
+#: 
+msgid "This tool never changes these. Give each person their own email on their record."
+msgstr "Ovaj alat to nikad ne mijenja. Svakoj osobi dajte vlastitu adresu e-pošte na njezinu zapisu."
+
+#: 
+msgid "Tick this only on your own phone or computer, never on a shared or public one."
+msgstr "Ovo označite samo na vlastitom telefonu ili računalu, nikad na dijeljenom ili javnom."
+
+#: 
+msgid "Time: %s"
+msgstr "Vrijeme: %s"
+
+#: 
+msgid "Timed out"
+msgstr "Isteklo je vrijeme"
+
+#: 
+msgid "To change this email, please contact the church office."
+msgstr "Da biste promijenili ovu e-poštu, obratite se crkvenom uredu."
+
+#: 
+msgid "To fix"
+msgstr "Za ispravak"
+
+#: 
+msgid "To stay signed in on your own phone or computer, tick \"This is my own device\" the next time you sign in."
+msgstr "Da biste ostali prijavljeni na vlastitom telefonu ili računalu, sljedeći put pri prijavi označite „Ovo je moj uređaj”."
+
+#: 
+msgid "Too many attempts"
+msgstr "Previše pokušaja"
+
+#: 
+msgid "Too many sign-in emails today"
+msgstr "Previše poruka za prijavu danas"
+
+#: 
+msgid "Too many sign-in requests for this email address"
+msgstr "Previše zahtjeva za prijavu za ovu adresu e-pošte"
+
+#: 
+msgid "Too many sign-in requests from this IP address"
+msgstr "Previše zahtjeva za prijavu s ove IP adrese"
+
+#: 
+msgid "Too many wrong codes"
+msgstr "Previše netočnih kodova"
+
+#: 
+msgid "Turn off"
+msgstr "Isključi"
+
+#: 
+msgid "Turn off member sign-in?"
+msgstr "Isključiti prijavu članova?"
+
+#: 
+msgid "Turn on"
+msgstr "Uključi"
+
+#: 
+msgid "Turn on member sign-in"
+msgstr "Uključi prijavu članova"
+
+#: 
+msgid "Turn on member sign-in?"
+msgstr "Uključiti prijavu članova?"
+
+#: 
+msgid "Type a name"
+msgstr "Upišite ime"
+
+#: 
+msgid "Type a name or email"
+msgstr "Upišite ime ili e-poštu"
+
+#: 
+msgid "Type at least %d letters of a name, then search."
+msgstr "Upišite barem %d slova imena, zatim pretražite."
+
+#: 
+msgid "Unconfirmed email"
+msgstr "Nepotvrđena e-pošta"
+
+#: 
+msgid "Understand where ChurchCRM is used"
+msgstr "Shvatite gdje se ChurchCRM koristi"
+
+#: 
+msgid "Unknown device"
+msgstr "Nepoznat uređaj"
+
+#: 
+msgid "Unknown directory field: %s"
+msgstr "Nepoznato polje imenika: %s"
+
+#: 
+msgid "Unknown directory setting: %s"
+msgstr "Nepoznata postavka imenika: %s"
+
+#: 
+msgid "Unnamed device"
+msgstr "Neimenovani uređaj"
+
+#: 
+msgid "Unnamed passkey"
+msgstr "Neimenovani pristupni ključ"
+
+#: 
+msgid "Until the church office confirms it, the new address cannot be used to sign in."
+msgstr "Dok je crkveni ured ne potvrdi, nova se adresa ne može koristiti za prijavu."
+
+#: 
+msgid "Use %1$s as the email address for %2$s at %3$s?"
+msgstr "Upotrijebiti %1$s kao adresu e-pošte za %2$s u %3$s?"
+
+#: 
+msgid "Use a different email address"
+msgstr "Upotrijebite drugu adresu e-pošte"
+
+#: 
+msgid "Use a passkey on this device?"
+msgstr "Upotrijebiti pristupni ključ na ovom uređaju?"
+
+#: 
+msgid "Use the button below to confirm that %1$s is your email address at %2$s. The link works once, until %3$s."
+msgstr "Gumbom u nastavku potvrdite da je %1$s vaša adresa e-pošte u %2$s. Poveznica vrijedi jednom, do %3$s."
+
+#: 
+msgid "User %d"
+msgstr "Korisnik %d"
+
+#: 
+msgid "View Permissions"
+msgstr "Prikaži dopuštenja"
+
+#: 
+msgid "Waiting for you to confirm %s. Use the link we sent to that address."
+msgstr "Čekamo da potvrdite %s. Upotrijebite poveznicu koju smo poslali na tu adresu."
+
+#: 
+msgid "Waiting for you to confirm {{email}}. Use the link we sent to that address."
+msgstr "Čekamo da potvrdite {{email}}. Upotrijebite poveznicu koju smo poslali na tu adresu."
+
+#: 
+msgid "We could not send the email. Please try again later, or contact the church office."
+msgstr "Nismo mogli poslati e-poštu. Pokušajte ponovno kasnije ili se obratite crkvenom uredu."
+
+#: 
+msgid "We could not sign you in"
+msgstr "Nismo vas mogli prijaviti"
+
+#: 
+msgid "We emailed a link to %s. Use it to confirm your new email address."
+msgstr "Poslali smo poveznicu na %s. Upotrijebite je da biste potvrdili novu adresu e-pošte."
+
+#: 
+msgid "We sent a link to {{email}}. Your email changes when you use it."
+msgstr "Poslali smo poveznicu na {{email}}. Vaša se e-pošta mijenja kad je upotrijebite."
+
+#: 
+msgid "We will email you a code and a link to sign in with."
+msgstr "E-poštom ćemo vam poslati kod i poveznicu za prijavu."
+
+#: 
+msgid "We're so glad you're here! It takes about three minutes."
+msgstr "Drago nam je što ste ovdje! Traje oko tri minute."
+
+#: 
+msgid "We're so glad your family has joined us! Your registration has been received. Our team will be in touch soon to personally welcome you."
+msgstr "Drago nam je što nam se vaša obitelj pridružila! Vaša je registracija zaprimljena. Naš će vam se tim uskoro javiti da vas osobno dočeka."
+
+#: 
+msgid "Wedding Anniversary"
+msgstr "Godišnjica vjenčanja"
+
+#: 
+msgid "Welcome"
+msgstr "Dobrodošli"
+
+#: 
+msgid "What it was given for no longer exists"
+msgstr "Ono čemu je dodijeljeno više ne postoji"
+
+#: 
+msgid "What members can see and do in the portal, and where each permission comes from. People are counted among everyone the sign-in rules let in, and staff."
+msgstr "Što članovi mogu vidjeti i činiti u portalu i odakle dolazi svako dopuštenje. Osobe se broje među svima koje pravila prijave puštaju i među osobljem."
+
+#: 
+msgid "What members can use"
+msgstr "Što članovi mogu koristiti"
+
+#: 
+msgid "What to do"
+msgstr "Što učiniti"
+
+#: 
+msgid "Who can see it"
+msgstr "Tko to može vidjeti"
+
+#: 
+msgid "Who is listed"
+msgstr "Tko je naveden"
+
+#: 
+msgid "Who may sign in"
+msgstr "Tko se smije prijaviti"
+
+#: 
+msgid "Who may sign in to the Member Portal, who has, and whose email stops them. The lists follow the rules on the Sign-in tab."
+msgstr "Tko se smije prijaviti u Članski portal, tko jest i čija e-pošta to sprječava. Popisi slijede pravila na kartici Prijava."
+
+#: 
+msgid "Who the Member Portal directory lists, who can see it and what it shows, chosen on Admin -> Member Portal -> Directory."
+msgstr "Koga imenik Članskog portala navodi, tko ga može vidjeti i što prikazuje, odabrano u Administracija -> Članski portal -> Imenik."
+
+#: 
+msgid "Why"
+msgstr "Zašto"
+
+#: 
+msgid "Why not"
+msgstr "Zašto ne"
+
+#: 
+msgid "With the token the device replaced moments ago"
+msgstr "S tokenom koji je uređaj maloprije zamijenio"
+
+#: 
+msgid "Yes, add a passkey"
+msgstr "Da, dodaj pristupni ključ"
+
+#: 
+msgid "Yes, remove this passkey"
+msgstr "Da, ukloni ovaj pristupni ključ"
+
+#: 
+msgid "Yes, sign out every device"
+msgstr "Da, odjavi svaki uređaj"
+
+#: 
+msgid "You are not allowed to confirm this email."
+msgstr "Nije vam dopušteno potvrditi ovu e-poštu."
+
+#: 
+msgid "You are not kept signed in on any device."
+msgstr "Niste ostavljeni prijavljeni ni na jednom uređaju."
+
+#: 
+msgid "You are signed out on every device."
+msgstr "Odjavljeni ste na svakom uređaju."
+
+#: 
+msgid "You are signed out on this device."
+msgstr "Odjavljeni ste na ovom uređaju."
+
+#: 
+msgid "You can also sign in with your email address."
+msgstr "Možete se prijaviti i adresom e-pošte."
+
+#: 
+msgid "You can't disable your own sign-in."
+msgstr "Ne možete onemogućiti vlastitu prijavu."
+
+#: 
+msgid "You cannot open the Member Portal. Please contact the church office."
+msgstr "Ne možete otvoriti Članski portal. Obratite se crkvenom uredu."
+
+#: 
+msgid "You have asked to change your email too many times. Please try again later."
+msgstr "Previše ste puta zatražili promjenu e-pošte. Pokušajte ponovno kasnije."
+
+#: 
+msgid "You have no passkeys."
+msgstr "Nemate pristupnih ključeva."
+
+#: 
+msgid "You're logged in as %s in the Member Portal (changes allowed)."
+msgstr "Prijavljeni ste kao %s u Članskom portalu (promjene su dopuštene)."
+
+#: 
+msgid "You're logged in as %s in the Member Portal (read-only)."
+msgstr "Prijavljeni ste kao %s u Članskom portalu (samo za čitanje)."
+
+#: 
+msgid "Younger than the minimum age"
+msgstr "Mlađi od najmanje dobi"
+
+#: 
+msgid "Youngest age at which a person may sign in to the Member Portal. When the birth date is unknown, only a head of household or spouse qualifies."
+msgstr "Najmanja dob u kojoj se osoba smije prijaviti u Članski portal. Kad datum rođenja nije poznat, ispunjava uvjet samo nositelj kućanstva ili supružnik."
+
+#: 
+msgid "Your Member Portal sign-in code"
+msgstr "Vaš kod za prijavu u Članski portal"
+
+#: 
+msgid "Your code"
+msgstr "Vaš kod"
+
+#: 
+msgid "Your email address %s is not confirmed yet, so it cannot be used to sign in. We will email a link to it; using the link confirms it."
+msgstr "Vaša adresa e-pošte %s još nije potvrđena, pa se ne može koristiti za prijavu. Poslat ćemo na nju poveznicu; njezina uporaba je potvrđuje."
+
+#: 
+msgid "Your email address cannot be removed here. Please contact the church office."
+msgstr "Vašu adresu e-pošte ovdje nije moguće ukloniti. Obratite se crkvenom uredu."
+
+#: 
+msgid "Your email address is confirmed"
+msgstr "Vaša adresa e-pošte je potvrđena"
+
+#: 
+msgid "Your email address was changed"
+msgstr "Vaša adresa e-pošte je promijenjena"
+
+#: 
+msgid "Your passkey was added. Next time, sign in with it on this device."
+msgstr "Vaš pristupni ključ je dodan. Sljedeći put prijavite se njime na ovom uređaju."
+
+#: 
+msgid "an administrator"
+msgstr "administrator"
+
+#: 
+msgid "name@example.com"
+msgstr "name@example.com"
+
+#: 
+msgid "no head of household or spouse has an email address"
+msgstr "nijedan nositelj kućanstva ni supružnik nema adresu e-pošte"
+
+#: 
+msgid "or"
+msgstr "ili"
+
+#: 
+msgid "until %s"
+msgstr "do %s"
+
+#: 
+msgid "A request was made in the Member Portal to change your email address at %1$s from %2$s to %3$s. The change happens only when the link sent to the new address is used."
+msgstr "U portalu za članove zatražena je promjena vaše adrese e-pošte na %1$s s %2$s na %3$s. Promjena se izvršava tek kada se upotrebi poveznica poslana na novu adresu."
+
+#: 
+msgid "Please use the link below to review your family information. On the review page, select \"Confirm Family Info\" to confirm that everything is correct or send corrections to the church office."
+msgstr "Upotrijebite poveznicu u nastavku da pregledate podatke o svojoj obitelji. Na stranici za pregled odaberite „Potvrdi podatke o obitelji” da potvrdite da je sve točno ili pošaljite ispravke crkvenom uredu."
+
+#: 
+msgid "Review Family Information"
+msgstr "Pregled podataka o obitelji"
 

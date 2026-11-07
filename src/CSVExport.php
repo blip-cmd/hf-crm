@@ -4,9 +4,11 @@ require_once __DIR__ . '/Include/Config.php';
 require_once __DIR__ . '/Include/PageInit.php';
 
 use ChurchCRM\Authentication\AuthenticationManager;
+use ChurchCRM\Utils\DateTimeUtils;
 use ChurchCRM\Utils\InputUtils;
 use ChurchCRM\Utils\RedirectUtils;
 use ChurchCRM\view\PageHeader;
+use ChurchCRM\Service\CustomFieldService;
 
 if (!AuthenticationManager::getCurrentUser()->isAdmin()) {
     RedirectUtils::securityRedirect('Admin');
@@ -33,14 +35,7 @@ $sSQL = 'SELECT family_custom_master.* FROM family_custom_master ORDER BY fam_cu
 $rsFamCustomFields = RunQuery($sSQL);
 $numFamCustomFields = mysqli_num_rows($rsFamCustomFields);
 
-// Get Field Security List Matrix
-$sSQL = 'SELECT * FROM list_lst WHERE lst_ID = 5 ORDER BY lst_OptionSequence';
-$rsSecurityGrp = RunQuery($sSQL);
-
-while ($aRow = mysqli_fetch_array($rsSecurityGrp)) {
-    extract($aRow);
-    $aSecurityType[$lst_OptionID] = $lst_OptionName;
-}
+$customFieldService = new CustomFieldService();
 
 $sPageTitle = gettext('CSV Export');
 $sPageSubtitle = gettext('Export data to CSV format for external applications');
@@ -185,7 +180,7 @@ require_once __DIR__ . '/Include/Header.php';
               <div class="form-selectgroup form-selectgroup-pills mb-3">
                 <?php while ($Row = mysqli_fetch_array($rsCustomFields)) {
                     extract($Row);
-                    if (AuthenticationManager::getCurrentUser()->isEnabledSecurity($aSecurityType[$custom_FieldSec])) { ?>
+                    if ($customFieldService->canView((int) $custom_FieldSec)) { ?>
                     <label class="form-selectgroup-item">
                       <input type="checkbox" class="form-selectgroup-input" name="<?= InputUtils::escapeAttribute($custom_Field) ?>" value="1">
                       <span class="form-selectgroup-label"><?= InputUtils::escapeHTML($custom_Name) ?></span>
@@ -199,7 +194,7 @@ require_once __DIR__ . '/Include/Header.php';
               <div class="form-selectgroup form-selectgroup-pills">
                 <?php while ($Row = mysqli_fetch_array($rsFamCustomFields)) {
                     extract($Row);
-                    if (AuthenticationManager::getCurrentUser()->isEnabledSecurity($aSecurityType[$fam_custom_FieldSec])) { ?>
+                    if ($customFieldService->canView((int) $fam_custom_FieldSec)) { ?>
                     <label class="form-selectgroup-item">
                       <input type="checkbox" class="form-selectgroup-input" name="<?= InputUtils::escapeAttribute($fam_custom_Field) ?>" value="1">
                       <span class="form-selectgroup-label"><?= InputUtils::escapeHTML($fam_custom_Name) ?></span>
@@ -287,7 +282,7 @@ require_once __DIR__ . '/Include/Header.php';
                 </div>
                 <div class="col-6">
                   <label class="form-label small text-secondary"><?= gettext('To') ?></label>
-                  <input id="MembershipDate2" class="form-control date-picker" type="text" name="MembershipDate2" maxlength="10" value="<?= date('Y-m-d') ?>">
+                  <input id="MembershipDate2" class="form-control date-picker" type="text" name="MembershipDate2" maxlength="10" value="<?= DateTimeUtils::formatForDatePicker(date('Y-m-d')) ?>">
                 </div>
               </div>
             </div>
@@ -301,7 +296,7 @@ require_once __DIR__ . '/Include/Header.php';
                 </div>
                 <div class="col-6">
                   <label class="form-label small text-secondary"><?= gettext('To') ?></label>
-                  <input type="text" name="BirthDate2" class="form-control date-picker" maxlength="10" value="<?= date('Y-m-d') ?>" id="BirthdayDate2">
+                  <input type="text" name="BirthDate2" class="form-control date-picker" maxlength="10" value="<?= DateTimeUtils::formatForDatePicker(date('Y-m-d')) ?>" id="BirthdayDate2">
                 </div>
               </div>
             </div>
@@ -315,7 +310,7 @@ require_once __DIR__ . '/Include/Header.php';
                 </div>
                 <div class="col-6">
                   <label class="form-label small text-secondary"><?= gettext('To') ?></label>
-                  <input type="text" class="form-control date-picker" name="AnniversaryDate2" maxlength="10" value="<?= date('Y-m-d') ?>" id="AnniversaryDate2">
+                  <input type="text" class="form-control date-picker" name="AnniversaryDate2" maxlength="10" value="<?= DateTimeUtils::formatForDatePicker(date('Y-m-d')) ?>" id="AnniversaryDate2">
                 </div>
               </div>
             </div>
@@ -329,7 +324,7 @@ require_once __DIR__ . '/Include/Header.php';
                 </div>
                 <div class="col-6">
                   <label class="form-label small text-secondary"><?= gettext('To') ?></label>
-                  <input id="EnterDate2" type="text" name="EnterDate2" maxlength="10" value="<?= date('Y-m-d') ?>" class="form-control date-picker">
+                  <input id="EnterDate2" type="text" name="EnterDate2" maxlength="10" value="<?= DateTimeUtils::formatForDatePicker(date('Y-m-d')) ?>" class="form-control date-picker">
                 </div>
               </div>
             </div>

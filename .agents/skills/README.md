@@ -57,8 +57,10 @@ All project-specific skills live in **[`churchcrm/`](./churchcrm/)**. See [`chur
 - [Plugin Security Scan](./churchcrm/plugin-security-scan.md)
 - [Plugin Compliance (Admin Audit)](./churchcrm/plugin-compliance.md)
 
+### Reports
+- [Reports](./churchcrm/reports.md)
+
 ### Testing
-- [Testing](./churchcrm/testing.md)
 - [Cypress Testing](./churchcrm/cypress-testing.md)
 
 ### MVC Migration

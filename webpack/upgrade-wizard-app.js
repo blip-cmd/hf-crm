@@ -706,6 +706,10 @@ function setupApplyStep() {
       }),
     })
       .done((_data) => {
+        if (_data.databaseUpgradePending) {
+          window.location.href = `${window.CRM.root}/external/system/db-upgrade`;
+          return;
+        }
         $spinner.removeClass("active");
 
         $applyStatus.html(`<div class="alert alert-success">
@@ -728,7 +732,7 @@ function setupApplyStep() {
             $("#upgradeRedirectCountdown strong").text(countdown);
             if (countdown <= 0) {
               clearInterval(countdownInterval);
-              window.location.href = `${window.CRM.root}/`;
+              window.location.href = `${window.CRM.root}/admin/`;
             }
           }, 1000);
         }, 1000);

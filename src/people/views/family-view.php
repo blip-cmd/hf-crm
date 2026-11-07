@@ -3,6 +3,7 @@
 use ChurchCRM\Authentication\AuthenticationManager;
 use ChurchCRM\dto\Photo;
 use ChurchCRM\Utils\CSRFUtils;
+use ChurchCRM\Utils\FiscalYearUtils;
 use ChurchCRM\dto\SystemConfig;
 use ChurchCRM\dto\SystemURLs;
 use ChurchCRM\model\ChurchCRM\EventQuery;
@@ -51,13 +52,15 @@ if ($showFamilyCheckin) {
     }
 }
 
-// Store family email for JavaScript (used by MailChimp plugin if active)
-$familyEmailMD5 = $family->getEmail() ? md5(strtolower($family->getEmail())) : '';
-
 // Group family members by role
 $headPeople = $family->getHeadPeople();
 $spousePeople = $family->getSpousePeople();
 $keyPeople = array_merge($headPeople, $spousePeople);
+
+$adultsWithEmail = $family->getAdultsWithEmail();
+$familyMailRecipient = $family->getEmailRecipient();
+$familyMailEmail = $familyMailRecipient?->getEmail() ?? '';
+$familyEmailMD5 = $familyMailEmail !== '' ? md5(strtolower($familyMailEmail)) : '';
 $childPeople = $family->getChildPeople();
 $otherPeople = $family->getOtherPeople();
 
@@ -82,7 +85,7 @@ $canEditRecords = AuthenticationManager::getCurrentUser()->isEditRecordsEnabled(
     window.CRM.currentFamilyView = 2;
     window.CRM.currentFYId = <?= (int) $currentFYId ?>;
     window.CRM.currentFY = <?= InputUtils::jsonEncodeForScript($currentFY) ?>;
-    window.CRM.familyEmail ="<?= InputUtils::escapeAttribute($family->getEmail() ?? '') ?>";
+    window.CRM.familyEmail = <?= InputUtils::jsonEncodeForScript($familyMailEmail) ?>;
     window.CRM.familyEmailMD5 ="<?= $familyEmailMD5 ?>";
     <?php if ($showFamilyCheckin): ?>
     window.CRM.familyCheckin = {
@@ -110,25 +113,25 @@ $taxEmailError = filter_input(INPUT_GET, 'TaxEmailError', FILTER_DEFAULT);
 <?php if ($taxEmailSent) { ?>
 <div class="alert alert-success alert-dismissible fade show" role="alert">
     <i class="fa-solid fa-check-circle me-2"></i>
-    <?= sprintf(gettext('%d tax document emailed to the family successfully.'), (int)$taxEmailSent) ?>
+    <?= sprintf(gettext('%d giving statement emailed to the family successfully.'), (int)$taxEmailSent) ?>
     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="<?= gettext('Close') ?>"></button>
 </div>
 <?php } elseif ($taxEmailError === 'NoEmail') { ?>
 <div class="alert alert-warning alert-dismissible fade show" role="alert">
     <i class="fa-solid fa-triangle-exclamation me-2"></i>
-    <?= gettext('Unable to email tax document: this family has no email address on file.') ?>
+    <?= gettext('Unable to email giving statement: this family has no email address on file.') ?>
     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="<?= gettext('Close') ?>"></button>
 </div>
 <?php } elseif ($taxEmailError === 'NoData') { ?>
 <div class="alert alert-warning alert-dismissible fade show" role="alert">
     <i class="fa-solid fa-triangle-exclamation me-2"></i>
-    <?= gettext('Unable to email tax document: no payment data found for that year.') ?>
+    <?= gettext('Unable to email giving statement: no payment data found for that year.') ?>
     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="<?= gettext('Close') ?>"></button>
 </div>
 <?php } elseif ($taxEmailError === 'SendFailed') { ?>
 <div class="alert alert-danger alert-dismissible fade show" role="alert">
     <i class="fa-solid fa-circle-xmark me-2"></i>
-    <?= gettext('Tax document email failed to send. Please check your email server settings.') ?>
+    <?= gettext('Giving statement email failed to send. Please check your email server settings.') ?>
     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="<?= gettext('Close') ?>"></button>
 </div>
 <?php } ?>
@@ -168,17 +171,17 @@ $taxEmailError = filter_input(INPUT_GET, 'TaxEmailError', FILTER_DEFAULT);
                     </a>
                     <?php if (!empty($taxYears)) { ?>
                     <div class="dropdown-divider"></div>
-                    <h6 class="dropdown-header"><i class="fa-solid fa-file-invoice-dollar me-1"></i><?= gettext('Tax Documents') ?></h6>
+                    <h6 class="dropdown-header"><i class="fa-solid fa-file-invoice-dollar me-1"></i><?= gettext('Giving Statements') ?></h6>
                     <?php foreach ($taxYears as $taxYear) { ?>
-                    <a class="dropdown-item" href="<?= SystemURLs::getRootPath() ?>/Reports/TaxReport.php?familyId=<?= $family->getId() ?>&amp;year=<?= (int)$taxYear ?>" target="_blank">
-                        <i class="fa-solid fa-print me-2"></i><?= sprintf(gettext('Print %d Tax Doc'), (int)$taxYear) ?>
+                    <a class="dropdown-item" href="<?= SystemURLs::getRootPath() ?>/finance/reports/giving-statements/download?familyId=<?= $family->getId() ?>&amp;year=<?= (int)$taxYear ?>" target="_blank">
+                        <i class="fa-solid fa-print me-2"></i><?= sprintf(gettext('Print %s Giving Statement'), FiscalYearUtils::getFiscalYearDatesForCalendarYear((int) $taxYear)['label']) ?>
                     </a>
-                    <form method="post" action="<?= SystemURLs::getRootPath() ?>/Reports/FamilyTaxReportEmail.php" class="m-0">
+                    <form method="post" action="<?= SystemURLs::getRootPath() ?>/finance/reports/giving-statements/email" class="m-0">
                         <input type="hidden" name="familyId" value="<?= $family->getId() ?>">
                         <input type="hidden" name="year" value="<?= (int)$taxYear ?>">
                         <?= CSRFUtils::getTokenInputField('tax_email_' . (int)$taxYear) ?>
                         <button type="submit" class="dropdown-item border-0 bg-transparent w-100 text-start">
-                            <i class="fa-solid fa-envelope me-2"></i><?= sprintf(gettext('Email %d Tax Doc'), (int)$taxYear) ?>
+                            <i class="fa-solid fa-envelope me-2"></i><?= sprintf(gettext('Email %s Giving Statement'), FiscalYearUtils::getFiscalYearDatesForCalendarYear((int) $taxYear)['label']) ?>
                         </button>
                     </form>
                     <?php } ?>
@@ -259,8 +262,21 @@ $taxEmailError = filter_input(INPUT_GET, 'TaxEmailError', FILTER_DEFAULT);
             </div>
         <?php }
 
+        // Helper: "can sign in to the Member Portal" line under a member's email
+        function renderPortalSignInStatus($person, array $portalStatuses): void {
+            $status = $portalStatuses[(int) $person->getId()] ?? null;
+            if ($status === null) { return; } ?>
+            <div class="small mt-1" data-portal-signin-status="<?= $status['maySignIn'] ? 'yes' : 'no' ?>">
+                <?php if ($status['maySignIn']) { ?>
+                    <span class="text-green"><i class="fa-solid fa-circle-check me-1"></i><?= gettext('Can sign in to the Member Portal') ?></span>
+                <?php } else { ?>
+                    <a class="text-secondary" href="<?= $person->getViewURI() ?>#portal-signin-card"><i class="fa-solid fa-ban me-1"></i><?= gettext('Cannot sign in') ?>: <?= InputUtils::escapeHTML((string) $status['reason']) ?></a>
+                <?php } ?>
+            </div>
+        <?php }
+
         // Helper: standard member table (Key People / Other)
-        function renderMemberTable(array $members, string $label, string $icon, string $color, bool $canSendEmail = false): void {
+        function renderMemberTable(array $members, string $label, string $icon, string $color, bool $canSendEmail = false, array $portalStatuses = []): void {
             if (empty($members)) { return; } ?>
             <div class="mb-1">
                 <?php renderSectionHeader($label, $icon, $color, count($members)); ?>
@@ -309,6 +325,7 @@ $taxEmailError = filter_input(INPUT_GET, 'TaxEmailError', FILTER_DEFAULT);
                                             </button>
                                             <?php } ?>
                                         <?php } ?>
+                                        <?php renderPortalSignInStatus($person, $portalStatuses); ?>
                                     </td>
                                     <td><?php renderMemberActions($person); ?></td>
                                 </tr>
@@ -320,7 +337,7 @@ $taxEmailError = filter_input(INPUT_GET, 'TaxEmailError', FILTER_DEFAULT);
         <?php }
 
         // Helper: children table (no Role column, adds Sunday School column if enabled)
-        function renderChildrenTable(array $members, string $label, string $icon, string $color, bool $canSendEmail = false): void {
+        function renderChildrenTable(array $members, string $label, string $icon, string $color, bool $canSendEmail = false, array $portalStatuses = []): void {
             if (empty($members)) { return; }
 
             $ssEnabled = SystemConfig::getBooleanValue('bEnabledSundaySchool');
@@ -405,6 +422,7 @@ $taxEmailError = filter_input(INPUT_GET, 'TaxEmailError', FILTER_DEFAULT);
                                             </button>
                                             <?php } ?>
                                         <?php } ?>
+                                        <?php renderPortalSignInStatus($person, $portalStatuses); ?>
                                     </td>
                                     <td><?php renderMemberActions($person); ?></td>
                                 </tr>
@@ -439,9 +457,9 @@ $taxEmailError = filter_input(INPUT_GET, 'TaxEmailError', FILTER_DEFAULT);
                 <?php } ?>
             </div>
             <div class="card-body">
-                <?php renderMemberTable($keyPeople, gettext("Key People"), 'fa-crown', 'warning', $canSendEmail); ?>
-                <?php renderChildrenTable($childPeople, gettext("Children"), 'fa-children', 'info', $canSendEmail); ?>
-                <?php renderMemberTable($otherPeople, gettext("Other Members"), 'fa-user-group', 'secondary', $canSendEmail); ?>
+                <?php renderMemberTable($keyPeople, gettext("Key People"), 'fa-crown', 'warning', $canSendEmail, $portalSignInStatuses ?? []); ?>
+                <?php renderChildrenTable($childPeople, gettext("Children"), 'fa-children', 'info', $canSendEmail, $portalSignInStatuses ?? []); ?>
+                <?php renderMemberTable($otherPeople, gettext("Other Members"), 'fa-user-group', 'secondary', $canSendEmail, $portalSignInStatuses ?? []); ?>
             </div>
         </div>
 
@@ -623,42 +641,66 @@ $taxEmailError = filter_input(INPUT_GET, 'TaxEmailError', FILTER_DEFAULT);
         </div>
         <?php endif; ?>
 
-        <?php if (!empty($family->getEmail())) { ?>
-        <!-- Email Card (with Mailchimp status if plugin enabled) -->
-        <div class="card mb-3">
+        <!-- Email Card: the adults' own emails (with Mailchimp status if plugin enabled) -->
+        <div class="card mb-3" id="family-email-card">
             <div class="card-header d-flex align-items-center">
                 <h3 class="card-title m-0"><i class="fa-solid fa-envelope me-1"></i> <?= gettext("Email") ?></h3>
+                <?php if ($canSendEmail && $familyMailRecipient !== null) : ?>
+                <button class="btn btn-sm btn-outline-primary ms-auto" type="button" id="family-email-composer"
+                        data-email-composer
+                        data-email-family-id="<?= (int) $family->getId() ?>"
+                        data-email-address="<?= InputUtils::escapeAttribute($familyMailRecipient->getEmail()) ?>"
+                        data-email-name="<?= InputUtils::escapeAttribute(sprintf(gettext('%s Family'), $family->getName())) ?>"
+                        data-email-title="<?= InputUtils::escapeAttribute(sprintf(gettext('Email %s Family'), $family->getName())) ?>"
+                        title="<?= gettext('Send email from ChurchCRM') ?>">
+                    <i class="fa-solid fa-paper-plane me-1"></i><?= sprintf(gettext('Email %s Family'), InputUtils::escapeHTML($family->getName())) ?>
+                </button>
+                <?php endif; ?>
             </div>
             <div class="card-body">
+                <?php if ($adultsWithEmail === []) : ?>
+                <span class="text-body-secondary" id="family-email-none"><?= gettext('No head of household or spouse can receive family email.') ?></span>
+                <?php else : ?>
                 <ul class="list-unstyled mb-0">
-                    <li class="mb-1">
-                        <i class="fa-solid fa-envelope me-2 text-body-secondary icon-fixed-width"></i><a href="mailto:<?= InputUtils::escapeAttribute($family->getEmail()) ?>" target="_blank" rel="noopener noreferrer"><?= InputUtils::escapeHTML($family->getEmail()) ?></a>
-                        <?php if ($canSendEmail) : ?>
-                        <button class="btn btn-sm btn-ghost-primary ms-1" type="button"
-                                data-email-composer
-                                data-email-family-id="<?= (int) $family->getId() ?>"
-                                data-email-address="<?= InputUtils::escapeAttribute($family->getEmail()) ?>"
-                                data-email-name="<?= InputUtils::escapeAttribute(sprintf(gettext('%s Family'), $family->getName())) ?>"
-                                data-email-title="<?= InputUtils::escapeAttribute(sprintf(gettext('Email %s Family'), $family->getName())) ?>"
-                                title="<?= gettext('Send email from ChurchCRM') ?>">
-                            <i class="fa-solid fa-paper-plane"></i>
-                        </button>
-                        <?php endif; ?>
-                        <button class="btn btn-sm btn-ghost-secondary ms-1 copy-email-btn" type="button"
-                                data-email="<?= InputUtils::escapeAttribute($family->getEmail()) ?>"
-                                title="<?= gettext('Copy to clipboard') ?>">
-                            <i class="fa-solid fa-copy"></i>
-                        </button>
+                    <?php foreach ($adultsWithEmail as $adult) {
+                        $adultEmail = $adult->getEmail(); ?>
+                    <li class="mb-2 d-flex align-items-start" data-family-adult-email="<?= (int) $adult->getId() ?>">
+                        <i class="fa-solid fa-envelope me-2 mt-1 text-body-secondary icon-fixed-width"></i>
+                        <div class="min-w-0">
+                            <div class="text-truncate"><a href="mailto:<?= InputUtils::escapeAttribute($adultEmail) ?>" target="_blank" rel="noopener noreferrer"><?= InputUtils::escapeHTML($adultEmail) ?></a></div>
+                            <div class="small text-body-secondary d-flex align-items-center flex-wrap gap-1">
+                                <span><?= InputUtils::escapeHTML($adult->getFullName()) ?></span>
+                                <?php if ($canSendEmail) : ?>
+                                <button class="btn btn-sm btn-ghost-primary py-0" type="button"
+                                        data-email-composer
+                                        data-email-person-id="<?= (int) $adult->getId() ?>"
+                                        data-email-address="<?= InputUtils::escapeAttribute($adultEmail) ?>"
+                                        data-email-name="<?= InputUtils::escapeAttribute($adult->getFullName()) ?>"
+                                        data-email-title="<?= InputUtils::escapeAttribute(sprintf(gettext('Email %s'), $adult->getFullName())) ?>"
+                                        title="<?= gettext('Send email from ChurchCRM') ?>">
+                                    <i class="fa-solid fa-paper-plane"></i>
+                                </button>
+                                <?php endif; ?>
+                                <button class="btn btn-sm btn-ghost-secondary py-0 copy-email-btn" type="button"
+                                        data-email="<?= InputUtils::escapeAttribute($adultEmail) ?>"
+                                        title="<?= gettext('Copy to clipboard') ?>">
+                                    <i class="fa-solid fa-copy"></i>
+                                </button>
+                            </div>
+                        </div>
                     </li>
+                    <?php } ?>
+                    <?php if ($familyMailRecipient !== null) : ?>
                     <!-- MailChimp status - populated by JavaScript if plugin is active -->
                     <li class="d-none mb-1" id="mailchimp-status-container">
                         <i class="fa-regular fa-paper-plane me-2 text-body-secondary icon-fixed-width"></i>Mailchimp:
                         <span id="mailchimp-status">... <?= gettext("loading")?> ...</span>
                     </li>
+                    <?php endif; ?>
                 </ul>
+                <?php endif; ?>
             </div>
         </div>
-        <?php } ?>
 
         <?php if (!empty($familyCustom)) { ?>
         <!-- Custom Fields Card (collapsible) -->

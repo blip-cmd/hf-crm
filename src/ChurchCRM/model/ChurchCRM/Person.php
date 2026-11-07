@@ -10,14 +10,17 @@ use ChurchCRM\dto\SystemURLs;
 use ChurchCRM\Emails\notifications\NewPersonOrFamilyEmail;
 use ChurchCRM\Exceptions\PersonDeletionBlockedException;
 use ChurchCRM\model\ChurchCRM\Base\Person as BasePerson;
+use ChurchCRM\model\ChurchCRM\Map\PersonTableMap;
 use ChurchCRM\PhotoInterface;
 use ChurchCRM\Plugin\Hook\HookManager;
 use ChurchCRM\Plugin\Hooks;
+use ChurchCRM\Service\CustomFieldService;
 use ChurchCRM\Service\GradeService;
 use ChurchCRM\Service\GroupService;
 use ChurchCRM\Utils\CustomFieldUtils;
 use ChurchCRM\Utils\GeoUtils;
 use ChurchCRM\Utils\LoggerUtils;
+use ChurchCRM\Utils\MiscUtils;
 use DateTime;
 use Propel\Runtime\ActiveQuery\Criteria;
 use Propel\Runtime\Connection\ConnectionInterface;
@@ -32,9 +35,16 @@ use Propel\Runtime\Map\TableMap;
  */
 class Person extends BasePerson implements PhotoInterface
 {
+    use GeocodedAddress;
+
     public const SELF_REGISTER = -1;
     public const SELF_VERIFY = -2;
     public const SCHEDULED_TASK = -3;
+    public const UPGRADE = -4;
+
+    /** @var array<int, array<int, ListOption>> */
+    private static array $listOptionsByListId = [];
+
     private ?Photo $photo = null;
     private bool $skipPostUpdateNote = false;
 
@@ -86,6 +96,37 @@ class Person extends BasePerson implements PhotoInterface
         return !empty($this->getDateDeceased());
     }
 
+    /**
+     * Why this person may not sign in at all, staff or portal (member sign-in
+     * design §4, blocks for everyone): one of the User::SIGN_IN_BLOCKED_*
+     * values, or null. Member sign-in adds its own blocks (`PortalSignInRules`).
+     */
+    public function getSignInBlockedReason(): ?string
+    {
+        $state = PersonSigninQuery::create()->findPk($this->getId());
+
+        return self::signInBlockedReasonFor(
+            $this->getDateDeceased(),
+            $this->getDateDeactivated(),
+            $state instanceof PersonSignin && $state->getSignInDisabled(),
+        );
+    }
+
+    public static function signInBlockedReasonFor(mixed $dateDeceased, mixed $dateDeactivated, bool $signInDisabled = false): ?string
+    {
+        if (!empty($dateDeceased)) {
+            return User::SIGN_IN_BLOCKED_DECEASED;
+        }
+        if (!empty($dateDeactivated)) {
+            return User::SIGN_IN_BLOCKED_INACTIVE;
+        }
+        if ($signInDisabled) {
+            return User::SIGN_IN_BLOCKED_DISABLED;
+        }
+
+        return null;
+    }
+
     public function getBirthDate(): ?\DateTimeImmutable
     {
         if (
@@ -97,7 +138,9 @@ class Person extends BasePerson implements PhotoInterface
                 $birthYear = 0;
             }
 
-            return \DateTimeImmutable::createFromFormat('Y-m-d', $birthYear . '-' . $this->getBirthMonth() . '-' . $this->getBirthDay());
+            // '!' keeps the current time of day out, so an age measured from
+            // midnight 'today' counts the birthday itself.
+            return \DateTimeImmutable::createFromFormat('!Y-m-d', $birthYear . '-' . $this->getBirthMonth() . '-' . $this->getBirthDay());
         }
 
         return null;
@@ -128,35 +171,45 @@ class Person extends BasePerson implements PhotoInterface
 
     public function getFamilyRole()
     {
-        $familyRole = null;
         $roleId = $this->getFmrId();
-        if ($roleId !== 0) {
-            $familyRole = ListOptionQuery::create()->filterById(2)->filterByOptionId($roleId)->findOne();
+        if ($roleId === 0) {
+            return null;
         }
 
-        return $familyRole;
+        return self::listOption(2, (int) $roleId);
     }
 
     public function getFamilyRoleName(): string
     {
-        $roleName = 'Unassigned';
         $role = $this->getFamilyRole();
-        if ($role !== null) {
-            $roleName = $this->getFamilyRole()->getOptionName();
-        }
 
-        return $roleName;
+        return $role !== null ? $role->getOptionName() : 'Unassigned';
     }
 
     public function getClassification()
     {
-        $classification = null;
         $clsId = $this->getClsId();
-        if (!empty($clsId)) {
-            $classification = ListOptionQuery::create()->filterById(1)->filterByOptionId($clsId)->findOne();
+        if (empty($clsId)) {
+            return null;
         }
 
-        return $classification;
+        return self::listOption(1, (int) $clsId);
+    }
+
+    /**
+     * Classifications and family roles are the same short lists for every person.
+     * Load each list once per request instead of once per row.
+     */
+    private static function listOption(int $listId, int $optionId): ?ListOption
+    {
+        if (!isset(self::$listOptionsByListId[$listId])) {
+            self::$listOptionsByListId[$listId] = [];
+            foreach (ListOptionQuery::create()->filterById($listId)->find() as $option) {
+                self::$listOptionsByListId[$listId][(int) $option->getOptionId()] = $option;
+            }
+        }
+
+        return self::$listOptionsByListId[$listId][$optionId] ?? null;
     }
 
     public function getGradeName(): ?string
@@ -365,41 +418,57 @@ class Person extends BasePerson implements PhotoInterface
         return '';
     }
 
+    public function hasOwnAddress(): bool
+    {
+        return trim((string) $this->getAddress1()) !== '';
+    }
+
     /**
-     * Returns the latitude and longitude for this person.
-     *
-     * Priority:
-     *  1. Person has their own address → geocode it.
-     *  2. Geocoding fails or person has no address → use family's cached coords.
-     *  3. Family has no cached coords → geocode the family address and cache it.
-     *  4. Nothing available → returns ['Latitude' => 0, 'Longitude' => 0].
+     * Stored coordinates of the address the map pins for this person: their own when they have one
+     * and it was found, else their family's, else 0/0. Never geocodes; coordinates are stored on
+     * save and by Geocode all.
      */
     public function getLatLng(): array
     {
-        $family = $this->getFamily();
-
-        // Person has their own address — try geocoding it first.
-        if (!empty($this->getAddress1())) {
-            $latLng = GeoUtils::getLatLong($this->getAddress(), null, null, null, $this->getCountry());
-            if (!empty($latLng['Latitude']) && !empty($latLng['Longitude'])) {
-                return ['Latitude' => $latLng['Latitude'], 'Longitude' => $latLng['Longitude']];
-            }
+        if ($this->hasOwnAddress() && $this->hasLatitudeAndLongitude()) {
+            return ['Latitude' => $this->getLatitude(), 'Longitude' => $this->getLongitude()];
         }
 
-        // No personal address, or geocoding failed — fall back to family coords.
-        if ($family) {
-            if ($family->hasLatitudeAndLongitude()) {
-                return ['Latitude' => $family->getLatitude(), 'Longitude' => $family->getLongitude()];
-            }
-
-            // Family has no cached coords yet — geocode family address and cache it.
-            $family->updateLanLng();
-            if ($family->hasLatitudeAndLongitude()) {
-                return ['Latitude' => $family->getLatitude(), 'Longitude' => $family->getLongitude()];
-            }
+        $family = $this->getFamily();
+        if ($family && $family->hasLatitudeAndLongitude()) {
+            return ['Latitude' => $family->getLatitude(), 'Longitude' => $family->getLongitude()];
         }
 
         return ['Latitude' => 0, 'Longitude' => 0];
+    }
+
+    /** The address the map pin of {@see self::getLatLng()} stands for. */
+    public function getMapAddress(): string
+    {
+        if ($this->hasOwnAddress() && $this->hasLatitudeAndLongitude()) {
+            return $this->getAddress();
+        }
+
+        return $this->getFamily()?->getAddress() ?? '';
+    }
+
+    public function getMapDirectionsUrl(): string
+    {
+        if ($this->hasOwnAddress() && $this->hasLatitudeAndLongitude()) {
+            return $this->getDirectionsUrl();
+        }
+
+        return $this->getFamily()?->getDirectionsUrl() ?? '';
+    }
+
+    public function preSave(?ConnectionInterface $con = null): bool
+    {
+        $this->forgetGeocodeOnAddressChange(
+            [PersonTableMap::COL_PER_ADDRESS1, PersonTableMap::COL_PER_ADDRESS2, PersonTableMap::COL_PER_CITY, PersonTableMap::COL_PER_STATE, PersonTableMap::COL_PER_ZIP, PersonTableMap::COL_PER_COUNTRY],
+            [PersonTableMap::COL_PER_LATITUDE, PersonTableMap::COL_PER_LONGITUDE, PersonTableMap::COL_PER_GEOCODETRIEDAT],
+        );
+
+        return parent::preSave($con);
     }
 
     /**
@@ -410,12 +479,14 @@ class Person extends BasePerson implements PhotoInterface
      * - Person has no own address, family has address only: use family address string.
      * - No address anywhere: return empty string.
      *
-     * Note: per_Latitude/per_Longitude columns do not yet exist on person_per.
-     * When added (issue #8045) this method should be updated to prefer them.
      */
     public function getDirectionsUrl(): string
     {
         if (!empty($this->getAddress1())) {
+            if ($this->hasLatitudeAndLongitude()) {
+                return GeoUtils::buildDirectionsUrl('', (float) $this->getLatitude(), (float) $this->getLongitude());
+            }
+
             return GeoUtils::buildDirectionsUrl($this->getAddress());
         }
 
@@ -487,7 +558,7 @@ class Person extends BasePerson implements PhotoInterface
      * avoid a duplicate generic entry. Mirrors the private pattern used by
      * setImageFromBase64().
      */
-    public function saveWithoutUpdateNote(\Propel\Runtime\Connection\ConnectionInterface $con = null): void
+    public function saveWithoutUpdateNote(?ConnectionInterface $con = null): void
     {
         $this->skipPostUpdateNote = true;
         try {
@@ -497,18 +568,23 @@ class Person extends BasePerson implements PhotoInterface
         }
     }
 
-    public function setImageFromBase64($base64): void
+    /**
+     * @param int|null $editorId who uploaded it; the signed-in user when null. A member
+     *                           session has no user, so the portal passes the member's person id.
+     */
+    public function setImageFromBase64($base64, ?int $editorId = null): void
     {
+        $editorId ??= AuthenticationManager::getCurrentUser()->getId();
         $note = new Note();
         $note->setText(gettext('Profile Image uploaded'));
         $note->setType('photo');
-        $note->setEntered(AuthenticationManager::getCurrentUser()->getId());
+        $note->setEntered($editorId);
         $this->getPhoto()->setImageFromBase64($base64);
         $note->setPerId($this->getId());
         $note->save();
 
         $this->setDateLastEdited(new \DateTime());
-        $this->setEditedBy(AuthenticationManager::getCurrentUser()->getId());
+        $this->setEditedBy($editorId);
         $this->skipPostUpdateNote = true;
         try {
             $this->save();
@@ -816,9 +892,10 @@ class Person extends BasePerson implements PhotoInterface
         $name_func,
         array $exportCustomDefs
     ): array {
+        $customFieldService = new CustomFieldService();
         $rawQry = PersonCustomQuery::create();
         foreach ($allPersonCustomFields as $customfield) {
-            if (AuthenticationManager::getCurrentUser()->isEnabledSecurity($customfield->getFieldSecurity())) {
+            if ($customFieldService->canView($customfield->getFieldSecurity())) {
                 $rawQry->addAsColumn(
                     str_replace(['.', '(', ')'], '', $customfield->getId()),
                     $customfield->getId()
@@ -916,13 +993,16 @@ class Person extends BasePerson implements PhotoInterface
         if (!$birthDate instanceof \DateTimeImmutable || $this->hideAge()) {
             return false;
         }
-        $now = $date === null ? new \DateTimeImmutable('today') : \DateTimeImmutable::createFromFormat('Y-m-d', $date);
+        $now = $date === null ? new \DateTimeImmutable('today') : \DateTimeImmutable::createFromFormat('!Y-m-d', $date);
 
         if (!$now instanceof \DateTimeImmutable) {
             return false;
         }
 
-        $age = date_diff($now, $birthDate);
+        $age = MiscUtils::ageOn($birthDate, $now);
+        if ($age === null) {
+            return false;
+        }
 
         if ($age->y < 1) {
             $monthStr = ngettext('%d month old', '%d months old', $age->m);
@@ -943,22 +1023,15 @@ class Person extends BasePerson implements PhotoInterface
         }
     }
 
-    public function getNumericAge(): int
+    /** Whole years, 0 under a year, or null for a hidden age, an unknown birth date or a birth date in the future. */
+    public function getNumericAge(): ?int
     {
         $birthDate = $this->getBirthDate();
         if (!$birthDate instanceof \DateTimeImmutable || $this->hideAge()) {
-            return false;
+            return null;
         }
 
-        $now = date_create('today');
-        $age = date_diff($now, $birthDate);
-        if ($age->y < 1) {
-            $ageValue = 0;
-        } else {
-            $ageValue = $age->y;
-        }
-
-        return $ageValue;
+        return MiscUtils::ageOn($birthDate, new \DateTimeImmutable('today'))?->y;
     }
 
     public function getFullNameWithAge(): string
@@ -991,18 +1064,6 @@ class Person extends BasePerson implements PhotoInterface
     public function getStatusText(): string
     {
         return $this->isActive() ? gettext('Active') : gettext('Inactive');
-    }
-
-    public function getEmail(): ?string
-    {
-        if (parent::getEmail() === null) {
-            $family = $this->getFamily();
-            if ($family !== null) {
-                return $family->getEmail();
-            }
-        }
-
-        return parent::getEmail();
     }
 
     /**
@@ -1100,15 +1161,7 @@ class Person extends BasePerson implements PhotoInterface
 
     public function getVisibleCustomFieldDefinitions(): array
     {
-        $currentUser = AuthenticationManager::getCurrentUser();
-        $allFields = PersonCustomMasterQuery::create()->orderByOrder()->find();
-        $visibleFields = [];
-        foreach ($allFields as $field) {
-            if ($currentUser->isEnabledSecurity($field->getFieldSecurity())) {
-                $visibleFields[] = $field;
-            }
-        }
-        return $visibleFields;
+        return (new CustomFieldService())->getVisiblePersonFields();
     }
 
     /**

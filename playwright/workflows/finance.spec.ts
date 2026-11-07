@@ -1,37 +1,69 @@
 import { expect, test } from '@playwright/test';
 
-import { captureScreen } from '../support/capture';
+import { captureScreen, defineCapture } from '../support/capture';
 import { settle } from '../support/human';
 
 test.describe('Giving', () => {
-  test('finance-deposit-entry', async ({ page }, testInfo) => {
+  const votingReview = defineCapture({
+    name: 'finance-voting-review',
+    locales: 'en',
+    title: 'Prepare a voting review list',
+    category: 'Finance & Giving',
+    purpose: 'Help a treasurer choose church-specific criteria and prepare a list for leadership to review before a congregational meeting',
+  });
+  test('finance-voting-review', votingReview, async ({ page }, testInfo) => {
+    await page.goto('/finance/reports/voting-members');
+    await expect(page.locator('#votingMembersForm')).toBeVisible();
+    await page.locator('#votingClasses').selectOption({ index: 0 });
+    await page.locator('#votingAge').fill('18');
+    await captureScreen(page, testInfo, votingReview);
+  });
+
+  const depositReports = defineCapture({
+    name: 'finance-deposit-reports',
+    locales: 'all',
+    title: 'Review deposit payments',
+    category: 'Finance & Giving',
+    purpose: 'Help a treasurer review payments and prepare a selected deposit for the bank',
+  });
+  test('finance-deposit-reports', depositReports, async ({ page }, testInfo) => {
+    await page.goto('/finance/reports/deposits');
+    await expect(page.locator('#depositReportForm')).toBeVisible();
+    await captureScreen(page, testInfo, depositReports);
+  });
+
+  const financeDepositEntryCapture = defineCapture({
+    name: 'finance-deposit-entry',
+    locales: 'all',
+    title: 'Deposit Entry',
+    category: 'Finance & Giving',
+    purpose: 'Show deposit slip records — the transactional side of giving',
+    usedIn: ['docs'],
+  });
+  test('finance-deposit-entry', financeDepositEntryCapture, async ({ page }, testInfo) => {
     // The transactional side: seeded deposit slip records.
     await page.goto('/finance/deposit/search');
     await expect(page.locator('h2')).toBeVisible({ timeout: 15000 });
     await settle(page, 700);
 
-    await captureScreen(page, testInfo, {
-      name: 'finance-deposit-entry',
-      title: 'Deposit Entry',
-      category: 'Finance & Giving',
-      purpose: 'Show deposit slip records — the transactional side of giving',
-      usedIn: ['docs'],
-    });
+    await captureScreen(page, testInfo, financeDepositEntryCapture);
   });
 
-  test('finance-pledge-report', async ({ page }, testInfo) => {
+  const financePledgeReportCapture = defineCapture({
+    name: 'finance-pledge-report',
+    locales: 'all',
+    title: 'Pledges & Funds',
+    category: 'Finance & Giving',
+    purpose: 'Show fund/pledge totals and progress',
+    usedIn: ['website'],
+  });
+  test('finance-pledge-report', financePledgeReportCapture, async ({ page }, testInfo) => {
     // The "accountable without being accounting software" shot — pledge
     // totals/progress, not a raw ledger.
     await page.goto('/finance/pledge/dashboard');
     await expect(page.locator('h2')).toBeVisible({ timeout: 15000 });
     await settle(page, 700);
 
-    await captureScreen(page, testInfo, {
-      name: 'finance-pledge-report',
-      title: 'Pledges & Funds',
-      category: 'Finance & Giving',
-      purpose: 'Show fund/pledge totals and progress',
-      usedIn: ['website'],
-    });
+    await captureScreen(page, testInfo, financePledgeReportCapture);
   });
 });

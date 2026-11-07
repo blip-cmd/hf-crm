@@ -133,7 +133,7 @@ $_currencySymbolCss = json_encode(CurrencyFormatter::symbol(), JSON_UNESCAPED_UN
           'timeZone' => SystemConfig::getValue('sTimeZone'),
           'maxUploadSize' => SystemService::getMaxUploadFileSize(true),
           'maxUploadSizeBytes' => (string) SystemService::getMaxUploadFileSize(false),
-          'datePickerformat' => SystemConfig::getValue('sDatePickerPlaceHolder'),
+          'datePickerformat' => DateTimeUtils::datePickerJsFormat(),
           'churchWebSite' => SystemConfig::getValue('sChurchWebSite'),
           'systemConfigs' => [
               'sDateTimeFormat' => json_decode(DateTimeUtils::getDateTimeFormatForJs(), true),
@@ -159,6 +159,7 @@ $_currencySymbolCss = json_encode(CurrencyFormatter::symbol(), JSON_UNESCAPED_UN
           'PageName' => $_SERVER['REQUEST_URI'] ?? '',
           'telemetry' => [
               'level' => TelemetryService::getLevel(),
+              'install_profile' => TelemetryService::installProfile(),
               'key' => TelemetryService::isEnabled() ? TelemetryService::POSTHOG_KEY : '',
               'endpoint' => TelemetryService::POSTHOG_ENDPOINT,
               'distinctID' => SystemConfig::getValue('sSystemID'),
@@ -448,7 +449,7 @@ NotificationService::loadSessionNotifications();
 // Render all active notifications as dismissible alerts
 foreach (NotificationService::getNotifications() as $notification) {
 ?>
-      <div class="alert alert-<?= InputUtils::escapeHTML($notification->getType()) ?> alert-dismissible"
+      <div class="alert alert-<?= InputUtils::escapeHTML($notification->getType()) ?> alert-dismissible crm-system-notification"
            role="alert"
            <?= $notification->getId() ? 'data-notification-id="' . InputUtils::escapeAttribute($notification->getId()) . '"' : '' ?>
            <?= $notification->getDismissSettingKey() ? 'data-dismiss-key="' . InputUtils::escapeAttribute($notification->getDismissSettingKey()) . '"' : '' ?>>

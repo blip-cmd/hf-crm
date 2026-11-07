@@ -89,10 +89,6 @@ msgid "Generate Catalog"
 msgstr "Generate Catalogue"
 
 #: 
-msgid "City, State, Zip"
-msgstr "Suburb, State, Post Code"
-
-#: 
 msgid "Cell Phone"
 msgstr "Mobile Phone"
 
@@ -116,14 +112,6 @@ msgstr "Postcode"
 #: 
 msgid "Make user-entered zip/postcodes UPPERCASE when saving to the database."
 msgstr "Make user-entered postcodes UPPERCASE when saving to the database."
-
-#: 
-msgid "Customizable report with filtering by date, fund, family, and payment method."
-msgstr "Customisable report with filtering by date, fund, family, and payment method."
-
-#: 
-msgid "Customize the text that appears on tax statements (sTaxReport1, sTaxReport2, etc)."
-msgstr "Customise the text that appears on tax statements (sTaxReport1, sTaxReport2, etc)."
 
 #: 
 msgid "Require all users to enroll in two-factor authentication"

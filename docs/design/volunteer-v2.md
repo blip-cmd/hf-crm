@@ -87,7 +87,7 @@ These are settled. A PR does not reopen them.
 | D14 | **Volunteers are ChurchCRM members with logins** — the "Non-Admin Member Access" persona, an **EditSelf-exclusive** user. Self-service lives on authenticated member-facing pages in the Member Portal (`/portal/volunteer/*`), authorized per authenticated person. Volunteer scopes count for a self-service login: `VolunteerAuthorizationService::loadScopes()` loads grants for every account, and `User::isVolunteerTeamLeaderEnabled()` reports a held `team` grant. **A self-service-only account is never a coordinator; it may lead a team, exercised in the Member Portal (MP6/MP7).** `isVolunteerCoordinatorEnabled()` returns false for an EditSelf-exclusive account, which keeps the coordinator dashboard, the ministry pages and the sidebar's Ministries heading staff-only. Tokenized accept/decline links in email for people without logins are a documented future extension, not in scope. See §4.7. |
 | D15 | **Reminders and scheduling**: ChurchCRM has no scheduler. V2 uses a **notification outbox** table (idempotent enqueue keyed by assignment + type, send log, retry-safe) drained by the existing `POST /api/background/timerjobs` mechanism. Installations wanting punctual reminders run `src/cli/timerjobs.php` from cron, or ping the endpoint with an API key — no V2 code. Best-effort delivery on page load is the fallback. See §3.6. |
 | D16 | **A person may hold multiple qualifications within the same team and the same ministry**, and may be assigned to different positions on different occurrences. Multi-position on one occurrence is allowed, with a UI warning and no server-side block — one person can lead singing and serve communion in the same service (§2.7, §2.11.2 I7). |
-| D17 | **Release target is 7.8.0.** The rollout flag defaults to `v1` and V1 stays fully compatible. V2 migration scripts are named `7.8.0-volunteer-v2-*.sql`; fresh installs get the schema from `Install.sql` and the test database from `seed.sql`. |
+| D17 | **Release target is 7.8.0.** New installs start on `v2`; an upgraded install keeps its stored state, `v1` when it never chose (#10562). V1 stays fully compatible until it is retired (§3.9). V2 migration scripts are named `7.8.0-volunteer-v2-*.sql`; fresh installs get the schema from `Install.sql` and the test database from `seed.sql`. |
 | D18 | **Every ministry has at least one team, and positions and schedules belong to a team.** Creating a ministry auto-creates its first team, named `"{Ministry name} Team"`, in the same transaction; it is an ordinary team and can be renamed. `vpos_vtem_ID` and `vsch_vtem_ID` are `NOT NULL` with `ON DELETE CASCADE` foreign keys, and the API answers `400` to a position or schedule with no `teamId`. A ministry's only team cannot be deleted (`409`, *"A ministry needs at least one team. Rename it instead."*); deleting the ministry takes its teams with it. A ministry coordinator manages every team of their ministry, a team leader their own. Where a screen shows positions from more than one team (the qualification matrix on *All teams*, a cross-team "still needed" line, a dashboard gap list), a position is labelled `"{Team} · {Position}"`; where the context is one team, the bare name stands. |
 | D19 | **A ministry owns exactly one core Group — its volunteer pool — and coordinators may write it.** Creating a ministry creates that Group in the same transaction: named after the ministry, typed "Ministry", carrying the nullable core column `group_grp.grp_ministry_id` (FK → `vmin_ID`, `ON DELETE SET NULL`). Renaming the ministry renames the Group; deleting the ministry deletes it. **(a)** The `bManageGroups` model hooks have one exception: a write to a Group carrying a ministry id is allowed when the caller coordinates that ministry — decided by `VolunteerAuthorizationService` reading `volunteer_scope_vscp`, never `$_SESSION`, so API-key callers are judged identically — or when a V2 service has opened an explicit managed-write context (`VolunteerPoolWriter::run()`) after authorizing the write itself. A Group with a NULL ministry id takes the core path. **(b)** Qualification does not require pool membership: the picker may name anyone, qualifying somebody outside the pool adds them to it, revoking a qualification leaves them in the pool, and the qualification matrix's rows are the pool ∪ everyone qualified. Self-signup and `GET /me/opportunities` test qualification only. **(c)** A ministry can advertise: `vmin_HelpWanted` / `vmin_HelpWantedText` put it on the Open Opportunities page with an "I'd like to help" button that joins the pool and mails the coordinators (outbox type `help_offer`, one per coordinator per day). A ministry also advertises when **any active position has `vpos_Recruiting` on**, which lists those positions by name under "New volunteers needed for the following positions" (§5.6). Either alone is enough, and `recordHelpOffer()` shares the same test, so the button is never rendered over a `403`. **(d)** A team leader may add an existing person to the pool of their team's ministry (#10531): from the admin team view and the portal team page, through a person search limited to active people, optionally ticking positions of their own team; the ministry's coordinators are emailed who added whom (outbox type `pool_add`). Removing stays a coordinator's: it ends someone's part in every team of the ministry. The Groups module shows the Group and keeps its membership fully editable; its identity belongs to the ministry — `POST`/`DELETE /api/groups/{id}` answer `409`, the editor redirects, and the page says whose pool it is. |
 | D20–D35 | **Core-reuse decisions.** Every occurrence anchored to an event, with optional time offsets; four ways for a schedule to find its events; teams linked to Sunday School classes with V2 writing the Teacher role; coordinators create one-off and recurring ministry events from the ministry page; administrators open church calendars to ministries; class meetings are events with core headcounts; portal legend toggles; a class's events change only as the coordinator chooses; the Sunday School switch; empty Generate runs explained; schedules follow existing events up to a church-wide scheduling horizon, topped up daily; default volunteers; events, schedules and occurrences created separately; staffing status words; several default volunteers per position. Full text in §0.8. |
@@ -385,20 +385,20 @@ Legend for **Decision**:
 | M7 | OpenAPI | swagger-php 6 `@OA\*` DocBlocks; global tag list `docs/openapi/openapi-private-info.php` | **Extend** | Annotate routes with the `Volunteer` tag, then `cd src && composer run openapi:private` and commit `docs/openapi/generated/private-api.yaml`. |
 | M8 | Service layer | 29 instance services in `src/ChurchCRM/Service/`, instantiated with `new` | **Reuse** | Instance classes, Propel only (no raw SQL), `LoggerUtils` for business logic, `\RuntimeException(gettext('…'))` for validation failures caught by the route. **No DI container exists** (F17) — design V2 services to be `new`-able. |
 | M9 | Pagination | — none (F18) | **New, minimally** | Do not invent a pagination protocol for one module. Coordinator lists take a mandatory `from`/`to` date range plus a hard `->limit()` cap, mirroring `events.php`. |
-| S1 | V1/V2 rollout state | `ConfigItem` type `choice` (`src/ChurchCRM/dto/ConfigItem.php`); working four-state precedent `sTelemetryLevel` (`SystemConfig.php`, registered) | **Reuse** | `sVolunteerVersion` ∈ {`v1`,`v2`,`both`}, default `v1`. **No SQL needed on install or upgrade** (F27). Appendix B. |
+| S1 | V1/V2 rollout state | `ConfigItem` type `choice` (`src/ChurchCRM/dto/ConfigItem.php`); working four-state precedent `sTelemetryLevel` (`SystemConfig.php`, registered) | **Reuse** | `sVolunteerVersion` ∈ {`v1`,`v2`,`both`}, default `v2` (#10562). **No SQL needed on install or upgrade** (F27). Appendix B. |
 | S2 | Rollout enforcement middleware | `BaseAuthSettingMiddleware` (`src/ChurchCRM/Slim/Middleware/Request/Setting/BaseAuthSettingMiddleware.php`) | **Extend (new sibling, not a subclass)** | The base class only understands `getBooleanValue()` and returns an **empty body** with the reason in the HTTP reason-phrase. A choice-valued gate needs its own small middleware that returns proper JSON. §3.1. |
 | S3 | Reminder lead time | `ConfigItem` type `number`; `SystemConfig::getIntValue()` | **Reuse** | `iVolunteerReminderLeadHours`, default `48`. Appendix B. |
 | S4 | Admin settings surface | `window.CRM.settingsPanel` (U8) vs `src/SystemSettings.php` + `buildCategories()` | **Reuse the panel** | V2 settings are `ConfigItem`s in `buildConfigs()` surfaced through the settings panel on Admin → Ministry Settings (Appendix B). |
-| B1 | New tables / migration | `orm/schema.xml` + `src/mysql/upgrade/X.Y.Z-*.sql` + `src/mysql/upgrade.json` + `src/mysql/install/Install.sql` (+ `cypress/data/seed.sql`); worked example `src/mysql/upgrade/7.6.4-pledge-denominations.sql` | **Reuse the conventions** | Name the script `7.8.0-volunteer-v2-*.sql` (D17, F29). `CREATE TABLE IF NOT EXISTS`, InnoDB, `utf8mb4_unicode_ci`, index names `_idx` / `_uidx`, a leading comment naming the issue. Checklist in Appendix A. |
+| B1 | New tables / migration | `orm/schema.xml` + `src/mysql/upgrade/X.Y.Z-*.sql` + `src/mysql/upgrade.json` + `src/mysql/install/Install.sql`; worked example `src/mysql/upgrade/7.6.4-pledge-denominations.sql` | **Reuse the conventions** | Name the script `7.8.0-volunteer-v2-*.sql` (D17, F29). `CREATE TABLE IF NOT EXISTS`, InnoDB, `utf8mb4_unicode_ci`, index names `_idx` / `_uidx`, a leading comment naming the issue. Checklist in Appendix A. |
 | B2 | Model generation | `cd src && composer run orm-gen` | **Reuse** | `npm run build:orm` runs the same composer script. `orm/propel.php` is copied from `orm/propel.php.dist` first. Appendix A. |
 | L1 | Localization (PHP) | `gettext()` / `ngettext()`; bootstrapped in `Bootstrapper.php` | **Reuse** | Use `gettext()`; colons go outside the call. `locale/messages.po` changes only through the locale workflow (`git-workflow.md`). |
 | L2 | Localization (JS) | `i18next` UMD global; `webpack/locale-loader.js`; `window.CRM.onLocalesReady` | **Reuse, with one hard rule** | Every `i18next.t()` call lives in a file under `webpack/`, and init is deferred behind `window.CRM.onLocalesReady(init)` or `t()` returns `undefined` on non-`en_US` locales. |
 | R1 | Coordinator lists + CSV/print export | `window.CRM.plugin.dataTable` (U2) | **Reuse, unchanged** | CSV + print buttons free; `no-export` class excludes the action column. This is V2's default reporting answer. |
 | R2 | Server-side CSV export | `CsvExporter` + `getContent()` | **Not used** | V2 has no server-side CSV. A Slim route that needs one calls `getContent()` and writes to the PSR-7 body (`create()` and `output()` call `exit`). |
-| R3 | PDF reporting | FPDF only; mPDF framework not merged (§0.6) | **Avoid** | If a printable roster is genuinely needed, the DataTables print button covers it. Do not couple V2 to #8136. |
-| R4 | Report query runner (`query_qry`) | `src/QueryList.php`, `src/QueryView.php` | **Do not use** | Admin-gated deprecated subsystem; V2 seeded queries would add raw-SQL surface to it (`code-standards.md` Reports). |
+| R3 | PDF reporting | `MpdfRenderer`, report services and Twig templates; [report conventions](../../.agents/skills/churchcrm/reports.md) | **Use DataTables print for rosters** | The DataTables print button covers printable rosters. A dedicated PDF follows the shared report conventions when the workflow needs one. |
+| R4 | V1 volunteer reports | `PeopleReportService` (`volunteers`, `volunteers-two-opportunities`); `query_qry` was dropped in 7.8.0 | **Do not use** | V1 data reports, shown only while V1 is in use (§3.9) |
 | T1 | Tests | Cypress only (F12); `cypress/e2e/api/private/admin/private.admin.volunteer-opportunities.spec.js` is the closest in-repo template | **Reuse the conventions** | §6. Specs live under a `specPattern` directory (F32). |
-| V1x | V1 volunteer tables / models / editor / API | `volunteeropportunity_vol`, `person2volunteeropp_p2vo`, `src/VolunteerOpportunityEditor.php`, `src/admin/routes/api/system/volunteer-opportunities.php`, `PersonService::addVolunteerOpportunity()` | **Do not touch, do not read** | D7. The only permitted edits are the seven V1/V2 switch surfaces in §3.8, and even those are "decide whether to render", never "change behaviour". |
+| V1x | V1 volunteer tables / models / editor / API | `volunteeropportunity_vol`, `person2volunteeropp_p2vo`, `src/VolunteerOpportunityEditor.php`, `src/admin/routes/api/system/volunteer-opportunities.php`, `PersonService::addVolunteerOpportunity()` | **Do not touch, do not read** | D7. The only permitted edits are the seven V1/V2 switch surfaces in §3.8, and even those are "decide whether to render", never "change behaviour". `VolunteerV1Service` reads them to convert them (§3.9). |
 
 ---
 
@@ -566,7 +566,7 @@ key is `RESTRICT`) and the scope rows (no FK, §2.15); the FKs cascade the rest.
 A team may be linked to one Sunday School class, and a class to one team. Core keeps the class —
 its roster, its Student role, attendance, the dashboard, the reports. The link hands V2 exactly one
 thing: who holds the class's **Teacher** role, found by NAME in the class's role list as every core
-Sunday School read finds it (`SundaySchoolService`, the class page, `ClassAttendance.php`, the cart's
+Sunday School read finds it (`SundaySchoolService`, the class page, `ClassAttendanceService`, the cart's
 "Add Teachers"). Those reads keep working unchanged. `VolunteerClassLinkService` owns the rules.
 
 - **Linking** is part of team create/update (`classGroupId`; `null` unlinks) and is a
@@ -1203,9 +1203,8 @@ Naming follows the `events_event` column style — bare, prefixed with the table
 (`location_id`, `primary_contact_person_id`). Type is `INTEGER` to
 match `vmin_ID`. `ON DELETE SET NULL` so deleting a ministry never deletes church events.
 
-**What the column touches.** Schema changes follow Appendix A; `Install.sql` and `seed.sql` carry
-the column in their `events_event` `CREATE TABLE` (ask the user before editing `seed.sql`,
-`db-schema-migration.md`), and the script is `7.8.0-volunteer-v2-event-ministry.sql` (a plain
+**What the column touches.** Schema changes follow Appendix A; `Install.sql` carries
+the column in its `events_event` `CREATE TABLE` (`seed.sql` takes the column default), and the script is `7.8.0-volunteer-v2-event-ministry.sql` (a plain
 `ALTER`, since `ADD COLUMN IF NOT EXISTS` is not portable across the supported databases, see
 `src/mysql/upgrade/7.4.3-manage-fundraisers.sql`).
 
@@ -1490,7 +1489,7 @@ returns an **empty body** with the reason in the HTTP reason phrase (S2). It rea
 | Area | Path prefix | Gate |
 |---|---|---|
 | Coordinator MVC | `/ministries/dashboard`, `/ministries/{id}`, `/ministries/occurrences/{id}` | `VolunteerCoordinatorRoleAuthMiddleware` on the group. `/ministries` with no id is a 302 to the dashboard, inside the same group and behind the same gate; the sidebar's **Ministries** heading (§5.0) is the list |
-| Member MVC | `/portal/volunteer/schedule`, `/portal/volunteer/opportunities` (Member Portal pages) | **no role gate** — per-record authorization only, by authenticated person (D14). The rollout flag still applies: `PortalNav::isVolunteeringVisible()` gates both the route and the nav entry |
+| Member MVC | `/portal/volunteer/schedule`, `/portal/volunteer/opportunities` (Member Portal pages) | **no role gate** — per-record authorization only, by authenticated person (D14). The rollout flag still applies: the portal capability `portal.volunteer.use` (member sign-in design §8.4) gates both the route and the nav entry |
 | Coordinator API | `/api/ministries/...` | `VolunteerCoordinatorRoleAuthMiddleware` + `VolunteerV2EnabledMiddleware` on the group; per-entity middleware per route |
 | Member API | `/api/ministries/me/...` | `VolunteerV2EnabledMiddleware` only — every authenticated person is potentially a volunteer |
 | Global-manager-only API | `POST /api/ministries/ministries`, `DELETE /api/ministries/ministries/{id}`, `GET /api/ministries/scopes` | `ManageMinistriesRoleAuthMiddleware` on those routes |
@@ -1663,7 +1662,7 @@ are the contract; read the class for signatures.
 | Surface | File | Change |
 |---|---|---|
 | Sidebar menu | `src/ChurchCRM/Config/Menu/Menu.php` (registry) | One **Ministries** heading — see §5.0 — `'Ministries' => self::getMinistriesMenu($currentUser, $isVolunteerCoordinator)`, built the way `getGroupMenu()` builds its per-group entries. Visibility booleans are computed once in `buildMenuItems()` like the others. **Menu visibility mirrors the route middleware exactly.** |
-| Member menu entry | `ChurchCRM\Portal\PortalNav` | The member surface is the portal's **Volunteering** entry, built by `PortalNav::build()` and gated by `PortalNav::isVolunteeringVisible()`. A volunteer with no assignments still sees it: it is where they find open opportunities. |
+| Member menu entry | `ChurchCRM\Portal\PortalNav` | The member surface is the portal's **Volunteering** entry, built by `PortalNav::build()` and gated by the portal capability `portal.volunteer.use`. A volunteer with no assignments still sees it: it is where they find open opportunities. |
 | Person view tab | `src/people/views/person-view.php` (the tab nav and the Volunteer pane); route args in `src/people/routes/view.php` | **Direct edit** (F15). The route passes the rollout state; the view renders the V1 pane, the V2 pane, or both (§3.8). The V2 pane lists the person's qualifications and upcoming assignments, read-only, linking into `/ministries`. A `Hooks::PERSON_VIEW_TABS` filter is open question D-8. |
 | Event editor | `webpack/event-form.js` beside `#linkedGroupSelect` | the ministry select (§2.16 item 10) |
 | Event API | `src/api/routes/calendar/events.php` `applyEventExtendedFields()`, `getEvent` | §2.16 items 7–9 |
@@ -1848,14 +1847,33 @@ These are the only places the rollout flag has to be threaded. Everything else i
 | 3 | Person-view assign `POST` / `RemoveVO` `GET` | `src/people/routes/view.php` (the `VolunteerOpportunityIDs` `POST` and the `RemoveVO` `GET`) | **handlers untouched.** The flag only decides whether the form that posts to them is rendered; V2 writes live in V2 services. |
 | 4 | V1 editor page | `src/VolunteerOpportunityEditor.php` | in `v2`-only mode, a server-side redirect to `/ministries/dashboard`. This is the "enforce the rollout server-side" requirement of #9704, which explicitly permits changes "required to expose/disable the experience". |
 | 5 | V1 REST API group | `src/admin/routes/api/system/volunteer-opportunities.php` | **enabled in every state.** It is admin-only, and #9702's migration tooling uses it. |
-| 6 | `QueryView` empty-state admin link | `src/QueryView.php` | links to `VolunteerOpportunityEditor.php`, which redirects in `v2`-only mode (surface 4); left as is for #9702. |
-| 7 | Reports menu → `QueryList.php` | `Menu::getReportsMenu()` (`src/ChurchCRM/Config/Menu/Menu.php`) | the two seeded V1 volunteer queries stay listed in every state. Acceptable — they are V1 data reports and #9702 owns their retirement. |
+| 6 | People Settings link card | `src/admin/routes/people.php` | shown only while V1 is in use (§3.9). |
+| 7 | People Reports `volunteers` and `volunteers-two-opportunities` | `PeopleReportService::getReports()` | listed, and served, only while V1 is in use (§3.9). |
 
 ---
+
+### 3.9 Retiring V1 (#10606, epic #9702)
+
+**V1 is in use** while `sVolunteerVersion` is `v1` or `both`, opportunities exist that have not been converted, or people linked to a converted opportunity since still wait for their qualification (`VolunteerV1Service::isInUse()`). Every V1 surface above shows only then; the `v1` and `both` choices on Feature Toggles too. A new install never sees V1.
+
+While V1 is in use, administrators see a retirement notice: on the Admin Dashboard (dismissible until the next upgrade, `sVolunteerV1NoticeDismissed`), and on the V1 editor, the person-view V1 tab and the Feature Toggles row.
+
+**Admin → People Settings → Convert Volunteer Opportunities** (`/admin/volunteer-conversion`, API `/admin/api/volunteer-conversion`) converts them:
+- each opportunity becomes a position on the first team of one ministry, a new one or an existing one; the preview can make any opportunity a ministry of its own (one team, one position of the same name);
+- name, description, order and active carry over; self sign-up starts off;
+- each living person linked to it gets a qualification for the position and joins the pool; links to missing or deceased people are listed, not converted;
+- names already taken get a suffix, `(2)`, `(3)`…;
+- it runs through the V2 services in one transaction, holding a lock on the opportunities so two conversions cannot plan from the same map, and sends no email; an install on `v1` moves to `both` first; with nothing to do it writes nothing;
+- it runs only the plan the administrator confirmed: the preview returns a `revision` of its plan, the conversion sends it back, and a plan that changed since (new opportunities, links, names or choice) is refused with 409 before anything is written;
+- the opportunity → position map is `aVolunteerV1Conversion`, so a re-run converts only new opportunities, into the ministry used last time, and qualifies people linked to a converted opportunity since; a qualification removed in Ministries stays removed;
+- the V1 rows are not touched.
+
+V1 is removed in the first release after about 2027-01-10, three months after 7.8.0 made V2 available. That upgrade converts whatever is left the same way, then drops the V1 tables, screens, API and reports; `sVolunteerVersion` becomes a plain Ministries on/off.
 
 ## 4. Authorization model
 
 Everything here follows patterns in the tree. V2 does not depend on a generic RBAC engine (§0.6); §4.9 explains how one absorbs V2 later.
+
 
 ### 4.1 The five tiers and where each is decided
 
@@ -1901,7 +1919,7 @@ public function canManageTeam(User $user, int $teamId): bool
 
 | Thing | Storage | Why not the alternative |
 |---|---|---|
-| Rollout state | `SystemConfig` `sVolunteerVersion` (`choice`: `v1`\|`v2`\|`both`, default `v1`) | An explicit version/rollout state rather than a boolean (#9704). `sTelemetryLevel` is a multi-state precedent (`SystemConfig::getTelemetryLevelChoices()` and its `buildConfigs()` entry). `sVolunteerVersion` is the only rollout flag; two flags would drift. Needs no SQL (F27). |
+| Rollout state | `SystemConfig` `sVolunteerVersion` (`choice`: `v1`\|`v2`\|`both`, default `v2`) | An explicit version/rollout state rather than a boolean (#9704). `sTelemetryLevel` is a multi-state precedent (`SystemConfig::getTelemetryLevelChoices()` and its `buildConfigs()` entry). `sVolunteerVersion` is the only rollout flag; two flags would drift. Needs no SQL (F27). |
 | Global Volunteer Manager | `user_usr.usr_ManageMinistries` (Tier 1 boolean column) | Alternative: a `userconfig_ucfg` row `bManageVolunteers` read via `isEnabledSecurity()` — no migration, but it is the tier `user_usr` columns are replacing (the two-tier storage note in `User.php`) and it costs a per-request loop over `getUserConfigs()`. Every first-class permission since `usr_ManageFundraisers` uses Tier 1. |
 | Coordinator / Team Leader scope | `volunteer_scope_vscp` | Alternative: **Group Roles** — rejected. Reasons: `Group::preInsert()` allocates a fresh `lst_ID` per group and seeds it with a single `'Member'` option, **`Install.sql` seeds no "Leader" role anywhere**, `GroupService::deleteGroupRole()` renumbers surviving option ids so any stored reference silently re-points (F20), `SundaySchoolService::getClassByRole()` resolves roles by **literal name string**, and a person can hold **one** role per group (F19) so they could not lead two teams sharing a pool. |
 | Volunteer identity | nothing | `User::getId()` *is* the person id (F4). |
@@ -1913,8 +1931,8 @@ The pattern is `usr_ManageFundraisers` (`src/mysql/upgrade/7.4.3-manage-fundrais
 
 1. `orm/schema.xml` after `usr_ManageFundraisers`: `<column name="usr_ManageMinistries" phpName="ManageMinistries" type="BOOLEAN" size="1" sqlType="tinyint(1) unsigned" required="true" defaultValue="0"/>`.
 2. An upgrade script (`7.8.0-volunteer-v2-manager-permission.sql`): `ALTER TABLE \`user_usr\` ADD COLUMN \`usr_ManageMinistries\` tinyint(1) unsigned NOT NULL DEFAULT 0 AFTER \`usr_ManageFundraisers\`;` as a plain `ALTER`, not `IF NOT EXISTS` (`7.4.3-manage-fundraisers.sql`). Registered in `upgrade.json` by the epic PR (D17, F29).
-3. `src/mysql/install/Install.sql` and `cypress/data/seed.sql` (a seeded manager and coordinator, §6.4; ask the user before editing `seed.sql`).
-4. ORM regeneration: `cd src && composer run orm-gen`, then `npm run build:php:validate:orm`.
+3. `src/mysql/install/Install.sql`, and `cypress/data/seed.sql` for a seeded manager and coordinator (§6.4; named-column `INSERT`s only).
+4. ORM regeneration: `cd src && composer run orm-gen`, then `npm run lint`.
 5. `User.php`: the predicates, beside `isManageFundraisersEnabled()` (`isVolunteerV2Enabled()`, `isManageMinistriesEnabled()`, `isManageMyMinistriesEnabled()`, `isVolunteerCoordinatorEnabled()`, `isVolunteerTeamLeaderEnabled()`).
 6. `UserService::extractModulePerms()` (`'manageMinistries' => …`) and the `$permissions` array in `src/admin/views/user-editor.php`.
 7. `$allowedRoles` in `src/v2/routes/root.php`: `'ManageMinistries'` and `'VolunteerCoordinator'`.
@@ -2223,7 +2241,7 @@ member surface:
 `isVolunteerV2Enabled()` — exactly one volunteer entry, `/api/ministries/me/`, because the portal's
 volunteering templates load bundles that call that API. The member MVC pages are
 `/portal/volunteer/schedule` and `/portal/volunteer/opportunities`. Both branches consult the
-function, so the member surface is reachable by session and by API key (`cy.makePrivateEditSelfAPICall()`, §6.6).
+function, so the member surface is reachable by session and by API key (§6.6).
 
 **Why this is safe.** The allowed paths are matched literally with `str_starts_with()`, anchored at
 the install's root path (`SystemURLs::getRootPath()`), so `/api/person/1/api/ministries/me/…` or a
@@ -2309,8 +2327,8 @@ schedule through the Member Portal, which their user menu links to.
 
 | Where | Heading / entry | Icon | Shown to | Entries |
 |---|---|---|---|---|
-| Member Portal nav | **Volunteering** | `fa-solid fa-handshake-angle` | every member, while `PortalNav::isVolunteeringVisible()` — the rollout flag `User::isVolunteerV2Enabled()` **and** the administrator's `bPortalShowVolunteer` switch (read defensively: undeclared means on, MP3 declares it) | links to *My schedule* (S5); the page's own tab bar carries *Find something to do* (S6). The route and the entry ask the same predicate, so the portal never offers a page it will then 404 |
-| Member Portal nav | **My Teams** | `fa-solid fa-people-group` | a member who holds an explicit `team` grant (`User::isVolunteerTeamLeaderEnabled()`), while volunteering is visible at all. A coordinator, manager or administrator is **not** a team leader (§4.4) and gets no entry — their way into a team is the ministry page | `/portal/teams`, then one team page each with Positions · Volunteers · Schedules · Dates, and an occurrence page under it (Member Portal §5.5). The route is more generous than the entry: it also admits a coordinator-or-above who opens the portal as themselves |
+| Member Portal nav | **Volunteering** | `fa-solid fa-handshake-angle` | every member holding `portal.volunteer.use`: everyone, while the rollout flag `User::isVolunteerV2Enabled()` **and** the administrator's `bPortalShowVolunteer` switch are on | links to *My schedule* (S5); the page's own tab bar carries *Find something to do* (S6). The route and the entry ask the same predicate, so the portal never offers a page it will then 404 |
+| Member Portal nav | **My Teams** | `fa-solid fa-people-group` | a person holding `volunteer.team.manage` on a team: a `team` scope row (the portal's team-leader rule) or a grant an administrator gave them (member sign-in design §8). A coordinator, manager or administrator is **not** a team leader (§4.4) and gets no entry — their way into a team is the ministry page | `/portal/teams`, then one team page each with Positions · Volunteers · Schedules · Dates, and an occurrence page under it (Member Portal §5.5). The routes ask the same capability, and another team's page is 404 |
 | Admin sidebar | **Ministries** | `fa-sitemap` | a volunteer coordinator-or-above (`User::isVolunteerCoordinatorEnabled()` — the same predicate `VolunteerCoordinatorRoleAuthMiddleware` asks; **false** for a self-service login, D14) | *Dashboard* (S1), then **one entry per ministry the viewer may administer**, by name, linking to `/ministries/{id}` (S3) — the administration surface |
 
 The per-ministry entries are built exactly the way the Groups heading builds its per-group
@@ -2900,7 +2918,7 @@ The JS extractor reads `src/skin/js/**` and `webpack/**` (and `src/**/*.php` thr
 `php-inline-i18next-plugin`, `locale/scripts/i18next.config.ts`); V2 keeps its JS strings in its bundles.
 
 Rules the pre-commit hook enforces (`.githooks/pre-commit` →
-`scripts/locale-check.js`): no trailing colon inside the call (`gettext('Position') . ':'`), no HTML
+`scripts/lint/locale-check.js`): no trailing colon inside the call (`gettext('Position') . ':'`), no HTML
 inside a translatable string, no decorative em-dash wrappers. Also:
 
 - Defer any module-scope `i18next.t()` behind `window.CRM.onLocalesReady(init)` or it returns
@@ -2979,8 +2997,8 @@ Reusable seed objects (verified in `seed.sql`):
 | Standard user (all flags but Admin) | person 3, `user.api.key` | coordinator once granted a scope |
 | Notes-only user | person 900, `plainauth.api.key` | the "no volunteer rights" negative case |
 | Zero-permission user | person 901 | **its seeded API key has no env var in any config** — use `plainauth` instead, or add the env var |
-| EditSelf-exclusive user | person 99, `selfedit.api.key` | **the volunteer persona** (D14) |
-| EditSelf + Notes | person 100, `selfedit.plus.notes.api.key` | second volunteer, for the swap counterparty |
+| Member (no account) | person 99, `cy.makeMemberAPICall(99, …)` | **the volunteer persona** (D14) |
+| Member (no account) | person 100, `cy.makeMemberAPICall(100, …)` | second volunteer, for the swap counterparty |
 | Group "Angels class" | grp 1 (type 4, Teacher/Student roles) | a pool group with real members |
 | Group "Worship Service" | grp 10 (**type 1 = Ministry**) | the natural pool for a Worship fixture |
 | Family Riley | fam 18 (8 members) | bulk pool members |
@@ -2993,9 +3011,8 @@ be added to **three** configs — `docker.config.ts`, `docker-ui.config.ts` **an
 `cypress/support/api-commands.js`, and the declaration in `cypress/support/commands.d.ts`.
 Keys are defined in all three configs, or the `admin-ui` or `ui-shard-*` legs break.
 
-`seed.sql` carries the V2 `CREATE TABLE` blocks and the new columns —
-**ask the user before editing `seed.sql`** (`db-schema-migration.md`), and note that
-`.githooks/pre-commit` lints any staged `.sql`.
+The V2 tables and columns come from `Install.sql`; `seed.sql` holds rows only
+(`db-schema-migration.md`). `.githooks/pre-commit` lints any staged `.sql`.
 
 **Cleanup goes in `beforeEach`, not `afterEach`** — `afterEach` does
 not run if a test crashes mid-way. Delete through the API with an `allowedStatuses` array that
@@ -3025,11 +3042,11 @@ Idempotency is awkward to prove through E2E, so each case has a prescribed shape
 | Duplicate scope grant | `POST /scopes` twice; second is `200` with the same id, not `409` and not a duplicate row |
 | Concurrent double-submit | not testable through Cypress; the DB unique keys are the guarantee, and each unique key has a spec proving the second write is rejected |
 
-**Authorization negatives** (§4.8): use person 900 (`plainauth`) or person 99 (`selfedit`); a strict
+**Authorization negatives** (§4.8): use person 900 (`plainauth`) or person 99 (a member session); a strict
 `403` assertion needs a non-admin caller, because admin bypasses every role middleware except `AdminRoleAuthMiddleware`.
 
-**Member-surface specs authenticate with `cy.makePrivateEditSelfAPICall()`** (person 99). That only
-works because §4.7's exemption covers the API-key branch as well as the session branch.
+**Member-surface specs use a member session:** `cy.makeMemberAPICall(99, …)` signs person 99 in with
+an emailed code (`cypress/support/member-session.js`); there are no self-service accounts.
 
 ### 6.7 Other rules that bite
 
@@ -3040,7 +3057,7 @@ works because §4.7's exemption covers the API-key branch as well as the session
 - `x-api-key` authenticates Slim MVC pages (`/event`, `/ministries`, `/v2`), so a pure `cy.request()`
   can assert their status codes — but **not** `/people/*` or any root `.php` page: those
   require `Include/PageInit.php`, whose `ensureAuthentication()` runs at file-load time before any
-  middleware, so an API-key request 302s to `/session/begin`. Assertions on the person view or on
+  middleware, so an API-key request 302s to the staff sign-in at `/admin/`. Assertions on the person view or on
   `VolunteerOpportunityEditor.php` live in a `ui/` or `ui-admin/` spec with a real login.
 - SystemConfig is changed through the **admin** app: `POST /admin/api/system/config/{name}` with
   `{value: "…"}`. `/api/system/config/...` silently 404s.
@@ -3296,17 +3313,16 @@ Follow this for every V2 migration PR (#9705, #9706's permission column, #9713's
    calendars script comes first because it adds `calendars.ministry_id`, and the volunteer schema
    script adds the `calendars_ministry_fk` foreign key on that column. Every CREATE in the schema
    script is `IF NOT EXISTS`, so a half-applied run resumes cleanly. Until registration, fresh
-   installs get the tables from `Install.sql` and the Cypress database from `seed.sql`.
+   installs and the Cypress database get the tables from `Install.sql`.
 4. **`src/mysql/install/Install.sql`** — mirror every change; nothing in the build validates
    Install.sql against `schema.xml`.
-5. **`cypress/data/seed.sql`** — mirror the `CREATE TABLE` blocks and any new columns.
-   **Ask the user before editing `seed.sql`** (`db-schema-migration.md`). `.githooks/pre-commit`
-   lints staged `.sql`.
+5. **`cypress/data/seed.sql`** — test data only; add rows (named columns) when a spec reads them.
+   No `CREATE TABLE` (`db-schema-migration.md`). `.githooks/pre-commit` lints staged `.sql`.
 6. **Regenerate the ORM**:
    ```bash
    cp orm/propel.php.dist orm/propel.php      # orm/propel.php is not in the tree
    cd src && composer run orm-gen             # = php vendor/bin/propel --config-dir=../orm model:build
-   cd .. && npm run build:php:validate:orm
+   cd .. && npm run lint
    ```
    > `npm run build:orm` runs the composer script and needs `orm/propel.php` copied from
    > `orm/propel.php.dist` first (gitignored, absent from a fresh checkout).
@@ -3314,7 +3330,7 @@ Follow this for every V2 migration PR (#9705, #9706's permission column, #9713's
    > `src/ChurchCRM/model/ChurchCRM/Base/` and `Map/` are gitignored: only the hand-written
    > skeleton subclasses are committed.
    >
-   > `scripts/validate-orm-base-classes.js` passes (exit 0) when `Base/` is absent, so run
+   > `scripts/lint/validate-orm-base-classes.js` passes (exit 0) when `Base/` is absent, so run
    > `composer install` first for it to catch a schema/model mismatch.
 7. **Hand-write the model subclasses** — `src/ChurchCRM/model/ChurchCRM/VolunteerX.php` and
    `VolunteerXQuery.php`, each extending its generated Base class. Put lifecycle enum constants and
@@ -3338,7 +3354,7 @@ The items are `ConfigItem`s in `SystemConfig::buildConfigs()`; `getVolunteerVers
 
 | Setting | Type | Default | Notes |
 |---|---|---|---|
-| `sVolunteerVersion` | `choice` | `v1` | The rollout state. `s` = string, matching the `sTimeZone`/`sLogLevel`/`sTelemetryLevel` convention. The default stays `v1`: changing a default changes behaviour on every install that never overrode it. |
+| `sVolunteerVersion` | `choice` | `v2` | The rollout state. `s` = string, matching the `sTimeZone`/`sLogLevel`/`sTelemetryLevel` convention. New installs start on `v2`; the upgrade stores `v1` for an install that never chose, so its behaviour does not change (#10562). |
 | `iVolunteerReminderLeadHours` | `number` | `48` | D11: system-level, administrator-adjustable, **not** per volunteer. Read with `SystemConfig::getIntValue()`. |
 | `iVolunteerGapAlertLeadHours` | `number` | `48` | #10526: how far ahead the unfilled-position alert (§3.6) looks. Its own setting because coordinators want warning of an open slot earlier than a volunteer needs a reminder. 0 turns gap alerts off without touching reminders; the decline's `gap_alert` (`notifyGapOpened()`) has no lead and is unaffected. Read with `SystemConfig::getIntValue()`. |
 | `iVolunteerSchedulingHorizonWeeks` | `number` | `8` | D31: how many weeks ahead every schedule is generated, church-wide. Read through `VolunteerScheduleService::horizonWeeks()`: the config API refuses a blank or non-number (D32), but the row can be written other ways, so a blank or non-numeric value reads as 8 and a number is held within 1–52. |
@@ -3374,8 +3390,8 @@ single Twig template `src/templates/email/BaseEmail.html.twig` and the branding 
 |---|---|---|---|---|---|
 | `VolunteerAssignmentEmail` | outbox type `assignment` | the volunteer | responsible coordinator | `/portal/volunteer/schedule` | *View my schedule* |
 | `VolunteerReminderEmail` | outbox type `reminder` | the volunteer | responsible coordinator | `/portal/volunteer/schedule` | *View my schedule* |
-| `VolunteerDeclineAlertEmail` | outbox type `decline_alert` | coordinators in scope | the volunteer who declined | `/ministries/occurrences/{id}` | *Fill this gap* |
-| `VolunteerGapAlertEmail` | outbox type `gap_alert` | coordinators in scope | none (no single volunteer) | `/ministries/occurrences/{id}` | *Fill this gap* |
+| `VolunteerDeclineAlertEmail` | outbox type `decline_alert` | coordinators in scope | the volunteer who declined | `/ministries/occurrences/{id}` | *Fill this gap*; *View Assignments* when nothing is still needed |
+| `VolunteerGapAlertEmail` | outbox type `gap_alert` | coordinators in scope | none (no single volunteer) | `/ministries/occurrences/{id}` | *Fill this gap*; *View Assignments* when nothing is still needed |
 | `VolunteerGapAlertBatchEmail` | a recipient's batched `gap_alert` rows (#10529), one message a day | coordinators in scope | none | `/ministries/dashboard` (a team leader without Manage My Ministries: `/portal/teams`) | *Open the Ministry Dashboard* / *My Teams* |
 | `VolunteerSignupConfirmEmail` | outbox type `signup_confirm`: self sign-up, or an assignment recorded as accepted in the Assign dialog (#10528), whose `recordedBy` context switches the wording to *"{coordinator} recorded that you will serve. You are on the schedule."* | the volunteer | responsible coordinator | `/portal/volunteer/schedule` | *View my schedule* |
 | `VolunteerSwapProposedEmail` | outbox type `swap_proposed` | coordinators in scope | the proposing volunteer | `/ministries/dashboard` | *Review this request* |
@@ -3400,8 +3416,15 @@ subclass in the tree and gain no email-routing logic of their own.
   `BaseEmail::getCommonTokens()`).
 
 Gap and decline alerts additionally carry the number still needed and the list of positions short;
-the unfilled-position alert's list is its one position. The daily batch (subject *Volunteer positions
-to fill in the coming days*) gives the total still needed, then one paragraph per occurrence in date
+the unfilled-position alert's list is its one position. A decline alert is built when the drain
+sends it: it carries the volunteer's reason when they gave one, and one line per person assigned
+to that position since the decline (*The position is now assigned to {name}, who has (not yet)
+accepted it.*). It says the position is still covered only when nobody more is needed and
+everyone assigned since has accepted. The drain skips it (`skipped`) when the volunteer is back on
+that position.
+
+The daily batch (subject *Volunteer positions to fill in the coming days*) gives the total still
+needed, then one paragraph per occurrence in date
 order: when, the ministry and team, each position with *{position}: needs {n} more*, and the
 occurrence's link (the portal's copy of the date for a team leader without Manage My Ministries).
 Swap messages carry both names and the decision.
